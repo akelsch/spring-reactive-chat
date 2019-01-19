@@ -11,6 +11,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 
+/**
+ * User model implementing {@link UserDetails} for Spring Security.
+ *
+ * @author Arthur Kelsch
+ */
 @Data
 @NoArgsConstructor
 @Document

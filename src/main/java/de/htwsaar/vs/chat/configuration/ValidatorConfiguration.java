@@ -5,6 +5,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.mapping.event.ValidatingMongoEventListener;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+/**
+ * Configuration class for Spring Validation.
+ *
+ * @author Arthur Kelsch
+ */
 @Configuration
 public class ValidatorConfiguration {
 

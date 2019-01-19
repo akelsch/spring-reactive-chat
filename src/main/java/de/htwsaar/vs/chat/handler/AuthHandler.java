@@ -2,6 +2,7 @@ package de.htwsaar.vs.chat.handler;
 
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.UserRepository;
+import de.htwsaar.vs.chat.router.AuthRouter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,11 @@ import reactor.core.publisher.Mono;
 import javax.validation.ConstraintViolationException;
 import java.net.URI;
 
+/**
+ * Handler methods for {@link AuthRouter}.
+ *
+ * @author Arthur Kelsch
+ */
 @Component
 public class AuthHandler {
 

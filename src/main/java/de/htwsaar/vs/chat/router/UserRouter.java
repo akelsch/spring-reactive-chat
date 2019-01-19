@@ -10,6 +10,11 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 
+/**
+ * API routes starting with {@code /users}.
+ *
+ * @author Arthur Kelsch
+ */
 @Configuration
 public class UserRouter {
 
