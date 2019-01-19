@@ -4,6 +4,7 @@ import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.UserRepository;
 import de.htwsaar.vs.chat.router.AuthRouter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.codec.DecodingException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,7 +41,7 @@ public class AuthHandler {
                 .flatMap(userRepository::save)
                 .flatMap(user -> ServerResponse.created(URI.create("/users/" + user.getId())).build())
                 .onErrorResume(e -> {
-                    if (e instanceof ConstraintViolationException)
+                    if (e instanceof DecodingException | e instanceof ConstraintViolationException)
                         return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage()));
                     else if (e instanceof DuplicateKeyException)
                         return Mono.error(new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage()));

@@ -3,12 +3,11 @@ package de.htwsaar.vs.chat.auth;
 import de.htwsaar.vs.chat.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collections;
+import java.util.TreeSet;
 
 /**
  * {@link UserDetails} implementation used by Spring Security for authentication
@@ -24,11 +23,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // TODO proper authorities implementation
-        Set<GrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-
-        return authorities;
+        return Collections.unmodifiableSet(new TreeSet<>(user.getRoles()));
     }
 
     @Override
