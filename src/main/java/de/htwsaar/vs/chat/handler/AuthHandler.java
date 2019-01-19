@@ -50,7 +50,7 @@ public class AuthHandler {
     }
 
     public Mono<ServerResponse> signin(ServerRequest request) {
-        // TODO implement
+        // TODO implement JWT token authentication
         return null;
     }
 }

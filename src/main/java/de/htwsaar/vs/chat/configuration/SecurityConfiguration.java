@@ -1,5 +1,6 @@
 package de.htwsaar.vs.chat.configuration;
 
+import de.htwsaar.vs.chat.auth.UserPrincipal;
 import de.htwsaar.vs.chat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +28,9 @@ public class SecurityConfiguration {
 
     @Bean
     public ReactiveUserDetailsService userDetailsService() {
-        return userRepository::findByUsername;
+        return username -> userRepository
+                .findByUsername(username)
+                .map(UserPrincipal::new);
     }
 
     @Bean
