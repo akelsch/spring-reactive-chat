@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -31,5 +30,5 @@ public class User {
     @NotBlank
     private String password;
 
-    private List<Role> roles = Collections.singletonList(Role.USER);
+    private List<Role> roles;
 }
