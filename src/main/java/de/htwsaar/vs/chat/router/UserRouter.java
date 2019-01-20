@@ -22,9 +22,11 @@ public class UserRouter {
     public RouterFunction<ServerResponse> routeUsers(UserHandler userHandler) {
         RouterFunction<ServerResponse> userRoutes = RouterFunctions
                 .route(GET("/")
-                        .and(accept(APPLICATION_JSON)), userHandler::getUsers)
+                        .and(accept(APPLICATION_JSON)), userHandler::getAll)
                 .andRoute(GET("/{uid}")
-                        .and(accept(APPLICATION_JSON)), userHandler::getUser);
+                        .and(accept(APPLICATION_JSON)), userHandler::get)
+                .andRoute(DELETE("/{uid}")
+                        .and(accept(APPLICATION_JSON)), userHandler::delete);
 
         return RouterFunctions.nest(path("/api/v1/users"), userRoutes);
     }

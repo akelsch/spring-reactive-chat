@@ -4,6 +4,7 @@ import de.htwsaar.vs.chat.auth.Role;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -29,7 +30,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Mono<User> registerUser(User user) {
+    public Mono<User> save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Collections.singletonList(Role.USER));
 
@@ -42,5 +43,10 @@ public class UserService {
 
     public Flux<User> findAll() {
         return userRepository.findAll();
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
+    public Mono<Void> deleteById(String id) {
+        return userRepository.deleteById(id);
     }
 }

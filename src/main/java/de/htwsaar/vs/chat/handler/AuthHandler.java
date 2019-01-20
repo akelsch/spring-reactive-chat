@@ -33,7 +33,7 @@ public class AuthHandler {
     public Mono<ServerResponse> signup(ServerRequest request) {
         return request
                 .bodyToMono(User.class)
-                .flatMap(userService::registerUser)
+                .flatMap(userService::save)
                 .flatMap(user -> ServerResponse.created(URI.create("/users/" + user.getId())).build())
                 .onErrorResume(DecodingException.class, ResponseError::badRequest)
                 .onErrorResume(ConstraintViolationException.class, ResponseError::badRequest)

@@ -21,6 +21,10 @@ public class UserPrincipal implements UserDetails {
 
     private final User user;
 
+    public String getId() {
+        return user.getId();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.unmodifiableSet(new TreeSet<>(user.getRoles()));

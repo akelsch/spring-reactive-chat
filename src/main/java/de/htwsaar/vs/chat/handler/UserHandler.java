@@ -26,16 +26,21 @@ public class UserHandler {
         this.userService = userService;
     }
 
-    public Mono<ServerResponse> getUsers(ServerRequest request) {
+    public Mono<ServerResponse> getAll(ServerRequest request) {
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
                 .body(userService.findAll(), User.class);
     }
 
-    public Mono<ServerResponse> getUser(ServerRequest request) {
+    public Mono<ServerResponse> get(ServerRequest request) {
         return userService
                 .findById(request.pathVariable("uid"))
                 .flatMap(user -> ServerResponse.ok().body(Mono.just(user), User.class))
                 .switchIfEmpty(ServerResponse.notFound().build());
+    }
+
+    public Mono<ServerResponse> delete(ServerRequest request) {
+        return ServerResponse.noContent()
+                .build(userService.deleteById(request.pathVariable("uid")));
     }
 }
