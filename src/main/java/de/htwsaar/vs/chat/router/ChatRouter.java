@@ -1,6 +1,7 @@
 package de.htwsaar.vs.chat.router;
 
 import de.htwsaar.vs.chat.handler.ChatHandler;
+import de.htwsaar.vs.chat.handler.MessageHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -27,5 +28,15 @@ public class ChatRouter {
                         .and(accept(APPLICATION_JSON)), chatHandler::createChat);
 
         return RouterFunctions.nest(path("/api/v1/chats"), chatRoutes);
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> routeMessages(MessageHandler messageHandler) {
+        RouterFunction<ServerResponse> messageRoutes = RouterFunctions
+                .route(GET("/messages")
+                        .and(accept(APPLICATION_JSON)), messageHandler::getAllMessagesForChat)
+                .andRoute(POST("/messages")
+                        .and(accept(APPLICATION_JSON)), messageHandler::sendMessageToChat);
+        return RouterFunctions.nest(path("/api/v1/chats/{chatid}"), messageRoutes);
     }
 }

@@ -1,9 +1,9 @@
 package de.htwsaar.vs.chat.handler;
 
 import com.mongodb.DuplicateKeyException;
-import de.htwsaar.vs.chat.model.Chat;
+import de.htwsaar.vs.chat.model.Message;
 import de.htwsaar.vs.chat.router.ChatRouter;
-import de.htwsaar.vs.chat.service.ChatService;
+import de.htwsaar.vs.chat.service.MessageService;
 import de.htwsaar.vs.chat.util.ResponseError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.codec.DecodingException;
@@ -23,31 +23,29 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
  * @author Niklas Reinhard
  */
 @Component
-public class ChatHandler {
-
-    private final ChatService chatService;
+public class MessageHandler {
+    private final MessageService messageService;
 
     @Autowired
-    public ChatHandler(ChatService chatService) {
-        this.chatService = chatService;
+    public MessageHandler(MessageService messageService) {
+        this.messageService = messageService;
     }
 
-    public Mono<ServerResponse> getAll(ServerRequest request) {
-        // TODO: don't parse uid from uid param but jwt token
-        String uid = request.queryParam("uid").orElse("");
+    public Mono<ServerResponse> getAllMessagesForChat(ServerRequest request) {
+        String chatId = request.pathVariable("chatid");
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(chatService.findAllForUser(uid), Chat.class);
+                .body(messageService.findAllMessagesForChat(chatId), Message.class);
     }
 
-    public Mono<ServerResponse> createChat(ServerRequest request) {
+    public Mono<ServerResponse> sendMessageToChat(ServerRequest request){
+        String chatId = request.pathVariable("chatid");
         return request
-                .bodyToMono(Chat.class)
-                .flatMap(chatService::save)
-                .flatMap(chat -> ServerResponse.created(URI.create("/chats/" + chat.getId())).build())
+                .bodyToMono(Message.class)
+                .flatMap(messageService::addMessageToChat)
+                .flatMap(message -> ServerResponse.created(URI.create("/chats/" + chatId + "/messages/" + message.getId())).build())
                 .onErrorResume(DecodingException.class, ResponseError::badRequest)
                 .onErrorResume(ConstraintViolationException.class, ResponseError::badRequest)
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
     }
-
 }
