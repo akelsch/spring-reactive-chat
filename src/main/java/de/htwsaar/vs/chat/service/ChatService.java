@@ -2,7 +2,6 @@ package de.htwsaar.vs.chat.service;
 
 import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.repository.ChatRepository;
-import de.htwsaar.vs.chat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -12,7 +11,7 @@ import reactor.core.publisher.Mono;
  * Service layer for {@link Chat}.
  *
  * @author Niklas Reinhard
- * @see UserRepository
+ * @see ChatRepository
  */
 @Service
 public class ChatService {

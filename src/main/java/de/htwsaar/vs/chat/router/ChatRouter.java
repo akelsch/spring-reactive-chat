@@ -11,7 +11,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 
 /**
- * API routes starting with {@code /messages}.
+ * API routes starting with {@code /chats}.
  *
  * @author Niklas Reinhard
  */
@@ -28,19 +28,4 @@ public class ChatRouter {
 
         return RouterFunctions.nest(path("/api/v1/chats"), chatRoutes);
     }
-
-//    @Bean
-//    public RouterFunction<ServerResponse> routeMessages(MessageHandler messageHandler) {
-//        RouterFunction<ServerResponse> messageRoutes = RouterFunctions
-//                .route(GET("/{chatid}/messages")
-//                        .and(accept(APPLICATION_JSON)), messageHandler::getAllForChat)
-//                .andRoute(POST("/{chatid}/messages")
-//                        .and(accept(APPLICATION_JSON)), messageHandler::addMessageToChat)
-//                .andRoute(PUT("/{chatid}/messages/{messageid}")
-//                        .and(accept(APPLICATION_JSON)), messageHandler::addMessageToChat)
-//                .andRoute(DELETE("/{chatid}/messages/{messageid}")
-//                        .and(accept(APPLICATION_JSON)), messageHandler::addMessageToChat);
-//
-//        return RouterFunctions.nest(path("/api/v1/chats/"), messageRoutes);
-//    }
 }

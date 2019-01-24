@@ -2,7 +2,7 @@ package de.htwsaar.vs.chat.handler;
 
 import com.mongodb.DuplicateKeyException;
 import de.htwsaar.vs.chat.model.Chat;
-import de.htwsaar.vs.chat.router.UserRouter;
+import de.htwsaar.vs.chat.router.ChatRouter;
 import de.htwsaar.vs.chat.service.ChatService;
 import de.htwsaar.vs.chat.util.ResponseError;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.net.URI;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
- * Handler methods for {@link UserRouter}.
+ * Handler methods for {@link ChatRouter}.
  *
  * @author Niklas Reinhard
  */
