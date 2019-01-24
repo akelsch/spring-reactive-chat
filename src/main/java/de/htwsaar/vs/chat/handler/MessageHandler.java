@@ -38,6 +38,15 @@ public class MessageHandler {
                 .body(messageService.findAllMessagesForChat(chatId), Message.class);
     }
 
+    public Mono<ServerResponse> getAllMessagesForChatPaginated(ServerRequest request) {
+        String chatId = request.pathVariable("chatid");
+        String start = request.queryParam("start").orElse("1");
+        String chunk = request.queryParam("chunk").orElse("50");
+        return ServerResponse.ok()
+                .contentType(APPLICATION_JSON)
+                .body(messageService.findAllMessagesForChatPaginated(chatId, start, chunk), Message.class);
+    }
+
     public Mono<ServerResponse> sendMessageToChat(ServerRequest request){
         String chatId = request.pathVariable("chatid");
         return request

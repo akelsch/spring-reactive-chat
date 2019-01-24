@@ -35,6 +35,8 @@ public class ChatRouter {
         RouterFunction<ServerResponse> messageRoutes = RouterFunctions
                 .route(GET("/messages")
                         .and(accept(APPLICATION_JSON)), messageHandler::getAllMessagesForChat)
+                .andRoute(GET("/messages/paginated")
+                        .and(accept(APPLICATION_JSON)), messageHandler::getAllMessagesForChatPaginated)
                 .andRoute(POST("/messages")
                         .and(accept(APPLICATION_JSON)), messageHandler::sendMessageToChat);
         return RouterFunctions.nest(path("/api/v1/chats/{chatid}"), messageRoutes);

@@ -4,6 +4,7 @@ import de.htwsaar.vs.chat.model.Message;
 import de.htwsaar.vs.chat.repository.ChatRepository;
 import de.htwsaar.vs.chat.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -25,6 +26,12 @@ public class MessageService {
 
     public Flux<Message> findAllMessagesForChat(String chatId){
         return messageRepository.findAllByChatId(chatId);
+    }
+
+    public Flux<Message> findAllMessagesForChatPaginated(String chatId, String start, String chunk){
+        int startDoc = Integer.parseInt(start);
+        int chunkSize = Integer.parseInt(chunk);
+        return messageRepository.findAllByChatId(chatId, PageRequest.of(startDoc, chunkSize));
     }
 
     public Mono<Message> addMessageToChat(Message message){
