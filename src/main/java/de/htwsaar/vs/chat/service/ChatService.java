@@ -23,7 +23,7 @@ public class ChatService {
     }
 
     public Flux<Chat> findAllForUser(String userId){
-        return chatRepository.findAllByMemberIdsContains(userId);
+        return chatRepository.findAllByMembersUserId(userId);
     }
 
     public Mono<Chat> save(Chat chat){

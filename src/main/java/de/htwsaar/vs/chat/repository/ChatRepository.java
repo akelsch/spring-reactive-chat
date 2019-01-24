@@ -12,5 +12,5 @@ import reactor.core.publisher.Flux;
  */
 @Repository
 public interface ChatRepository extends ReactiveCrudRepository<Chat, String> {
-    Flux<Chat> findAllByMemberIdsContains(String id);
+    Flux<Chat> findAllByMembersUserId(String id);
 }

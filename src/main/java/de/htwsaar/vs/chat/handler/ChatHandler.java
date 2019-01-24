@@ -33,6 +33,7 @@ public class ChatHandler {
     }
 
     public Mono<ServerResponse> getAll(ServerRequest request) {
+        // TODO: don't parse uid from uid param but jwt token
         String uid = request.queryParam("uid").orElse("");
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
