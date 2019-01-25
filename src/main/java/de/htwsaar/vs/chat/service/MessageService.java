@@ -41,4 +41,8 @@ public class MessageService {
         message.setChat(chat);
         return messageRepository.save(message);
     }
+
+    public Mono<Void> delete(String messageId){
+        return messageRepository.deleteById(messageId);
+    }
 }

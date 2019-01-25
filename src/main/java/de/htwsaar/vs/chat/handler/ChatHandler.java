@@ -67,4 +67,10 @@ public class ChatHandler {
                 .onErrorResume(ConstraintViolationException.class, ResponseError::badRequest)
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
     }
+
+    public Mono<ServerResponse> removeMemberFromChat(ServerRequest request){
+        String chatId = request.pathVariable("chatid");
+        String userId = request.pathVariable("userid");
+        return ServerResponse.noContent().build(chatService.removeMember(chatId, userId));
+    }
 }

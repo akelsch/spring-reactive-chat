@@ -58,4 +58,10 @@ public class MessageHandler {
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
     }
 
+    public Mono<ServerResponse> deleteMessageFromChat(ServerRequest request){
+        String messageId = request.pathVariable("messageid");
+        return ServerResponse.noContent()
+                .build(messageService.delete(messageId));
+    }
+
 }

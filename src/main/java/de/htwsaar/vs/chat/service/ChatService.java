@@ -48,4 +48,16 @@ public class ChatService {
         })
         .flatMap(chatRepository::save);
     }
+
+    public Mono<Void> removeMember(String chatId, String userId){
+        // todo check if current user has permissions to delete other members
+        return chatRepository
+                .findById(chatId)
+                .flatMap(chat -> {
+                    chat.getMembers().removeIf(member ->
+                        member.getUser().getId().equals(userId));
+                    return Mono.just(chat);
+                })
+                .flatMap(chatRepository::save).then();
+    }
 }
