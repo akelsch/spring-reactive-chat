@@ -28,8 +28,6 @@ public class Chat {
     @NoArgsConstructor
     @Document
     public static class Member{
-        @Id
-        private String id;
         @DBRef
         private User user;
         private Boolean isAdmin = false;
