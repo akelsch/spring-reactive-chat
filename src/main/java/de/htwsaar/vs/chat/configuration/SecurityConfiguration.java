@@ -30,6 +30,10 @@ import static org.springframework.security.web.server.util.matcher.ServerWebExch
 @EnableReactiveMethodSecurity
 public class SecurityConfiguration {
 
+    private static final String AUTH_SIGNUP_MATCHER = "/auth/signup";
+    private static final String AUTH_SIGNIN_MATCHER = "/auth/signin";
+    private static final String API_MATCHER = "/api/**";
+
     private final UserRepository userRepository;
 
     @Autowired
@@ -49,8 +53,9 @@ public class SecurityConfiguration {
         http
                 .csrf().disable()
                 .authorizeExchange()
-                .pathMatchers("/auth/signup").permitAll()
-                .anyExchange().authenticated()
+                .pathMatchers(AUTH_SIGNUP_MATCHER).permitAll()
+                .pathMatchers(AUTH_SIGNIN_MATCHER, API_MATCHER).authenticated()
+                .anyExchange().permitAll()
                 .and()
                 .addFilterAt(basicAuthenticationFilter(), SecurityWebFiltersOrder.HTTP_BASIC)
                 .addFilterAt(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION);
@@ -70,7 +75,7 @@ public class SecurityConfiguration {
 
         AuthenticationWebFilter basicAuthenticationFilter = new AuthenticationWebFilter(authenticationManager);
         basicAuthenticationFilter.setAuthenticationSuccessHandler(new BasicAuthenticationSuccessHandler());
-        basicAuthenticationFilter.setRequiresAuthenticationMatcher(pathMatchers("/auth/signin"));
+        basicAuthenticationFilter.setRequiresAuthenticationMatcher(pathMatchers(AUTH_SIGNIN_MATCHER));
 
         return basicAuthenticationFilter;
     }
@@ -78,7 +83,7 @@ public class SecurityConfiguration {
     private WebFilter jwtAuthenticationFilter() {
         AuthenticationWebFilter jwtAuthenticationFilter = new AuthenticationWebFilter(new JwtAuthenticationManager());
         jwtAuthenticationFilter.setServerAuthenticationConverter(new JwtAuthenticationConverter());
-        jwtAuthenticationFilter.setRequiresAuthenticationMatcher(pathMatchers("/api/**"));
+        jwtAuthenticationFilter.setRequiresAuthenticationMatcher(pathMatchers(API_MATCHER));
 
         return jwtAuthenticationFilter;
     }
