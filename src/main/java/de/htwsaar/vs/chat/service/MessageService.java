@@ -1,5 +1,6 @@
 package de.htwsaar.vs.chat.service;
 
+import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.Message;
 import de.htwsaar.vs.chat.repository.ChatRepository;
 import de.htwsaar.vs.chat.repository.MessageRepository;
@@ -34,7 +35,10 @@ public class MessageService {
         return messageRepository.findAllByChatId(chatId, PageRequest.of(startDoc, chunkSize));
     }
 
-    public Mono<Message> addMessageToChat(Message message){
+    public Mono<Message> addMessageToChat(Message message, String chatId){
+        Chat chat = new Chat();
+        chat.setId(chatId);
+        message.setChat(chat);
         return messageRepository.save(message);
     }
 }
