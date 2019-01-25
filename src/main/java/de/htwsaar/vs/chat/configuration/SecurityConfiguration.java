@@ -81,7 +81,8 @@ public class SecurityConfiguration {
     }
 
     private WebFilter jwtAuthenticationFilter() {
-        AuthenticationWebFilter jwtAuthenticationFilter = new AuthenticationWebFilter(new JwtAuthenticationManager());
+        AuthenticationWebFilter jwtAuthenticationFilter =
+                new AuthenticationWebFilter(new JwtAuthenticationManager(userDetailsService()));
         jwtAuthenticationFilter.setServerAuthenticationConverter(new JwtAuthenticationConverter());
         jwtAuthenticationFilter.setRequiresAuthenticationMatcher(pathMatchers(API_MATCHER));
 
