@@ -50,4 +50,21 @@ public class ChatHandler {
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
     }
 
+    public Mono<ServerResponse> getAllMembersForChat(ServerRequest request){
+        String chatId = request.pathVariable("chatid");
+        return ServerResponse.ok()
+                .contentType(APPLICATION_JSON)
+                .body(chatService.findAllMembersForChat(chatId), Chat.Member.class);
+    }
+
+    public Mono<ServerResponse> addMemberToChat(ServerRequest request) {
+        String chatId = request.pathVariable("chatid");
+        return request
+                .bodyToMono(Chat.Member.class)
+                .flatMap(member -> chatService.saveNewMember(chatId, member))
+                .flatMap(chat -> ServerResponse.created(URI.create("/chats/" + chat.getId())).build())
+                .onErrorResume(DecodingException.class, ResponseError::badRequest)
+                .onErrorResume(ConstraintViolationException.class, ResponseError::badRequest)
+                .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
+    }
 }

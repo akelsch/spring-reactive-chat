@@ -27,7 +27,21 @@ public class ChatService {
         return chatRepository.findAllByMembersUserId(userId);
     }
 
+    public Flux<Chat.Member> findAllMembersForChat(String chatId){
+        return chatRepository.findById(chatId).flatMapMany(chat -> Flux.fromIterable(chat.getMembers()));
+    }
+
     public Mono<Chat> save(Chat chat){
         return chatRepository.save(chat);
+    }
+
+    public Mono<Chat> saveNewMember(String chatId, Chat.Member member) {
+        // todo validate if user has permission to add new admin user to chat
+        Mono<Chat> modifiedChat = chatRepository.findById(chatId);
+        return modifiedChat.map(chat -> {
+            chat.getMembers().add(member);
+            return chat;
+        })
+        .flatMap(chatRepository::save);
     }
 }

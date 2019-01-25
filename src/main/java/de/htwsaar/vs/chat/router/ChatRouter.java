@@ -31,6 +31,16 @@ public class ChatRouter {
     }
 
     @Bean
+    public RouterFunction<ServerResponse> routeMembers(ChatHandler chatHandler){
+        RouterFunction<ServerResponse> memberRoutes = RouterFunctions
+                .route(GET("/members")
+                        .and(accept(APPLICATION_JSON)), chatHandler::getAllMembersForChat)
+                .andRoute(POST("/members")
+                        .and(accept(APPLICATION_JSON)), chatHandler::addMemberToChat);
+        return RouterFunctions.nest(path("/api/v1/chats/{chatid}"), memberRoutes);
+    }
+
+    @Bean
     public RouterFunction<ServerResponse> routeMessages(MessageHandler messageHandler) {
         RouterFunction<ServerResponse> messageRoutes = RouterFunctions
                 .route(GET("/messages")
@@ -41,4 +51,5 @@ public class ChatRouter {
                         .and(accept(APPLICATION_JSON)), messageHandler::sendMessageToChat);
         return RouterFunctions.nest(path("/api/v1/chats/{chatid}"), messageRoutes);
     }
+
 }
