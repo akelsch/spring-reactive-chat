@@ -1,7 +1,6 @@
 package de.htwsaar.vs.chat.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
@@ -31,4 +30,9 @@ public class Message {
     private String content;
     @CreatedDate
     private LocalDateTime createdDate;
+
+    protected boolean canEqual(final Object other) {
+        return other instanceof Message;
+    }
+
 }

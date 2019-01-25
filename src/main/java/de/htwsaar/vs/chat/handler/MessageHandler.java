@@ -1,6 +1,7 @@
 package de.htwsaar.vs.chat.handler;
 
 import com.mongodb.DuplicateKeyException;
+import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.Message;
 import de.htwsaar.vs.chat.router.ChatRouter;
 import de.htwsaar.vs.chat.service.MessageService;
@@ -51,10 +52,19 @@ public class MessageHandler {
         String chatId = request.pathVariable("chatid");
         return request
                 .bodyToMono(Message.class)
+                .flatMap(message -> setChatId(message, chatId))
                 .flatMap(messageService::addMessageToChat)
                 .flatMap(message -> ServerResponse.created(URI.create("/chats/" + chatId + "/messages/" + message.getId())).build())
                 .onErrorResume(DecodingException.class, ResponseError::badRequest)
                 .onErrorResume(ConstraintViolationException.class, ResponseError::badRequest)
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
     }
+
+    private Mono<Message> setChatId(Message msg, String chatId) {
+        Chat chat = new Chat();
+        chat.setId(chatId);
+        msg.setChat(chat);
+        return Mono.just(msg);
+    }
+
 }
