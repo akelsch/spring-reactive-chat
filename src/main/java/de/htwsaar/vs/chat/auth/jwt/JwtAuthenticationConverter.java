@@ -1,7 +1,8 @@
 package de.htwsaar.vs.chat.auth.jwt;
 
 import com.auth0.jwt.JWT;
-import org.springframework.http.server.reactive.ServerHttpRequest;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import de.htwsaar.vs.chat.util.ResponseError;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
@@ -19,23 +20,20 @@ public class JwtAuthenticationConverter implements ServerAuthenticationConverter
 
     @Override
     public Mono<Authentication> convert(ServerWebExchange exchange) {
-        ServerHttpRequest request = exchange.getRequest();
+        return Mono.justOrEmpty(exchange.getRequest().getHeaders().getFirst(AUTHORIZATION))
+                .filter(authorization -> authorization.toLowerCase().startsWith(JWT_PREFIX.toLowerCase()))
+                .map(authorization -> authorization.substring(JWT_PREFIX.length()))
+                .map(JwtAuthenticationConverter::verifyToken)
+                .onErrorResume(JWTVerificationException.class,
+                        e -> ResponseError.badRequest(e, "Could not verify JWT token"))
+                .map(username -> new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
+    }
 
-        String authorization = request.getHeaders().getFirst(AUTHORIZATION);
-        if (authorization == null || !authorization.toLowerCase().startsWith("bearer ")) {
-            return Mono.empty();
-        }
-
-        String token = authorization.length() <= JWT_PREFIX.length() ?
-                "" : authorization.substring(JWT_PREFIX.length());
-
-        // TODO exception handling
-        String username = JWT.require(HMAC256(JWT_SECRET.getBytes()))
+    private static String verifyToken(String token) {
+        return JWT.require(HMAC256(JWT_SECRET.getBytes()))
                 .build()
                 .verify(token)
                 .getClaim("name")
                 .asString();
-
-        return Mono.just(new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
     }
 }
