@@ -1,10 +1,10 @@
 package de.htwsaar.vs.chat.configuration;
 
 import de.htwsaar.vs.chat.auth.UserPrincipal;
-import de.htwsaar.vs.chat.auth.jwt.JsonAuthenticationSuccessHandler;
-import de.htwsaar.vs.chat.auth.jwt.JsonAuthenticationConverter;
 import de.htwsaar.vs.chat.auth.jwt.JwtAuthenticationConverter;
-import de.htwsaar.vs.chat.auth.jwt.JwtAuthenticationManager;
+import de.htwsaar.vs.chat.auth.jwt.JwtAuthenticationSuccessHandler;
+import de.htwsaar.vs.chat.auth.jwt.JwtAuthorizationConverter;
+import de.htwsaar.vs.chat.auth.jwt.JwtAuthorizationManager;
 import de.htwsaar.vs.chat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -58,8 +58,8 @@ public class SecurityConfiguration {
                 .pathMatchers(AUTH_SIGNIN_MATCHER, API_MATCHER).authenticated()
                 .anyExchange().permitAll()
                 .and()
-                .addFilterAt(jsonAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
-                .addFilterAt(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION);
+                .addFilterAt(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
+                .addFilterAt(jwtAuthorizationFilter(), SecurityWebFiltersOrder.AUTHORIZATION);
 
         return http.build();
     }
@@ -69,25 +69,25 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    private WebFilter jsonAuthenticationFilter() {
+    private WebFilter jwtAuthenticationFilter() {
         UserDetailsRepositoryReactiveAuthenticationManager authenticationManager =
                 new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService());
         authenticationManager.setPasswordEncoder(passwordEncoder());
 
-        AuthenticationWebFilter jsonAuthenticationFilter = new AuthenticationWebFilter(authenticationManager);
-        jsonAuthenticationFilter.setServerAuthenticationConverter(new JsonAuthenticationConverter());
-        jsonAuthenticationFilter.setAuthenticationSuccessHandler(new JsonAuthenticationSuccessHandler());
-        jsonAuthenticationFilter.setRequiresAuthenticationMatcher(pathMatchers(AUTH_SIGNIN_MATCHER));
-
-        return jsonAuthenticationFilter;
-    }
-
-    private WebFilter jwtAuthenticationFilter() {
-        AuthenticationWebFilter jwtAuthenticationFilter =
-                new AuthenticationWebFilter(new JwtAuthenticationManager(userDetailsService()));
+        AuthenticationWebFilter jwtAuthenticationFilter = new AuthenticationWebFilter(authenticationManager);
         jwtAuthenticationFilter.setServerAuthenticationConverter(new JwtAuthenticationConverter());
-        jwtAuthenticationFilter.setRequiresAuthenticationMatcher(pathMatchers(API_MATCHER));
+        jwtAuthenticationFilter.setAuthenticationSuccessHandler(new JwtAuthenticationSuccessHandler());
+        jwtAuthenticationFilter.setRequiresAuthenticationMatcher(pathMatchers(AUTH_SIGNIN_MATCHER));
 
         return jwtAuthenticationFilter;
+    }
+
+    private WebFilter jwtAuthorizationFilter() {
+        AuthenticationWebFilter jwtAuthorizationFilter =
+                new AuthenticationWebFilter(new JwtAuthorizationManager(userDetailsService()));
+        jwtAuthorizationFilter.setServerAuthenticationConverter(new JwtAuthorizationConverter());
+        jwtAuthorizationFilter.setRequiresAuthenticationMatcher(pathMatchers(API_MATCHER));
+
+        return jwtAuthorizationFilter;
     }
 }

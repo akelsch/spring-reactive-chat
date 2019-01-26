@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 import static de.htwsaar.vs.chat.util.JwtUtil.createBearerToken;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-public class JsonAuthenticationSuccessHandler implements ServerAuthenticationSuccessHandler {
+public class JwtAuthenticationSuccessHandler implements ServerAuthenticationSuccessHandler {
 
     @Override
     public Mono<Void> onAuthenticationSuccess(WebFilterExchange webFilterExchange, Authentication authentication) {

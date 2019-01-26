@@ -7,11 +7,11 @@ import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import reactor.core.publisher.Mono;
 
-public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
+public class JwtAuthorizationManager implements ReactiveAuthenticationManager {
 
     private final ReactiveUserDetailsService userDetailsService;
 
-    public JwtAuthenticationManager(ReactiveUserDetailsService userDetailsService) {
+    public JwtAuthorizationManager(ReactiveUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
