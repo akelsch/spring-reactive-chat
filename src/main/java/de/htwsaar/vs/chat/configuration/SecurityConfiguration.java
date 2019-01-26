@@ -1,7 +1,8 @@
 package de.htwsaar.vs.chat.configuration;
 
 import de.htwsaar.vs.chat.auth.UserPrincipal;
-import de.htwsaar.vs.chat.auth.jwt.BasicAuthenticationSuccessHandler;
+import de.htwsaar.vs.chat.auth.jwt.JsonAuthenticationSuccessHandler;
+import de.htwsaar.vs.chat.auth.jwt.JsonAuthenticationConverter;
 import de.htwsaar.vs.chat.auth.jwt.JwtAuthenticationConverter;
 import de.htwsaar.vs.chat.auth.jwt.JwtAuthenticationManager;
 import de.htwsaar.vs.chat.repository.UserRepository;
@@ -57,7 +58,7 @@ public class SecurityConfiguration {
                 .pathMatchers(AUTH_SIGNIN_MATCHER, API_MATCHER).authenticated()
                 .anyExchange().permitAll()
                 .and()
-                .addFilterAt(basicAuthenticationFilter(), SecurityWebFiltersOrder.HTTP_BASIC)
+                .addFilterAt(jsonAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
                 .addFilterAt(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION);
 
         return http.build();
@@ -68,16 +69,17 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    private WebFilter basicAuthenticationFilter() {
+    private WebFilter jsonAuthenticationFilter() {
         UserDetailsRepositoryReactiveAuthenticationManager authenticationManager =
                 new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService());
         authenticationManager.setPasswordEncoder(passwordEncoder());
 
-        AuthenticationWebFilter basicAuthenticationFilter = new AuthenticationWebFilter(authenticationManager);
-        basicAuthenticationFilter.setAuthenticationSuccessHandler(new BasicAuthenticationSuccessHandler());
-        basicAuthenticationFilter.setRequiresAuthenticationMatcher(pathMatchers(AUTH_SIGNIN_MATCHER));
+        AuthenticationWebFilter jsonAuthenticationFilter = new AuthenticationWebFilter(authenticationManager);
+        jsonAuthenticationFilter.setServerAuthenticationConverter(new JsonAuthenticationConverter());
+        jsonAuthenticationFilter.setAuthenticationSuccessHandler(new JsonAuthenticationSuccessHandler());
+        jsonAuthenticationFilter.setRequiresAuthenticationMatcher(pathMatchers(AUTH_SIGNIN_MATCHER));
 
-        return basicAuthenticationFilter;
+        return jsonAuthenticationFilter;
     }
 
     private WebFilter jwtAuthenticationFilter() {
