@@ -9,6 +9,11 @@ import java.util.Date;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC256;
 
+/**
+ * Utility class providing methods to work with JSON Web Tokens.
+ *
+ * @author Arthur Kelsch
+ */
 @UtilityClass
 public class JwtUtil {
 

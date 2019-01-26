@@ -7,6 +7,11 @@ import reactor.core.publisher.Mono;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 
+/**
+ * Utility class wrapping exceptions so they dont cause 500 Internal Server Errors.
+ *
+ * @author Arthur Kelsch
+ */
 @UtilityClass
 public class ResponseError {
 

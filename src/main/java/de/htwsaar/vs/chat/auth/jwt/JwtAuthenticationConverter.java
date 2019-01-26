@@ -14,6 +14,11 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * Converts a JSON payload from a request into an {@link Authentication} object.
+ *
+ * @author Arthur Kelsch
+ */
 public class JwtAuthenticationConverter implements ServerAuthenticationConverter {
 
     private final Decoder<?> decoder;

@@ -9,6 +9,11 @@ import reactor.core.publisher.Mono;
 import static de.htwsaar.vs.chat.util.JwtUtil.createBearerToken;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+/**
+ * Adds an Authorization HTTP header with a token to the response.
+ *
+ * @author Arthur Kelsch
+ */
 public class JwtAuthenticationSuccessHandler implements ServerAuthenticationSuccessHandler {
 
     @Override

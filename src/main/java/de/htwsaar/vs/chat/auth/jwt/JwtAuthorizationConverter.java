@@ -14,6 +14,12 @@ import static de.htwsaar.vs.chat.util.JwtUtil.JWT_PREFIX;
 import static de.htwsaar.vs.chat.util.JwtUtil.JWT_SECRET;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+/**
+ * Converts a token from an Authorization HTTP header into an {@link Authentication}
+ * object. This includes verifying the tokens signature.
+ *
+ * @author Arthur Kelsch
+ */
 public class JwtAuthorizationConverter implements ServerAuthenticationConverter {
 
     @Override
