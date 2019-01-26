@@ -4,6 +4,7 @@ import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import reactor.core.publisher.Mono;
 
 public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
@@ -20,6 +21,7 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
 
         return userDetailsService
                 .findByUsername(username)
+                .switchIfEmpty(Mono.error(() -> new UsernameNotFoundException(username)))
                 .map(u -> new UsernamePasswordAuthenticationToken(u, u.getPassword(), u.getAuthorities()));
     }
 }
