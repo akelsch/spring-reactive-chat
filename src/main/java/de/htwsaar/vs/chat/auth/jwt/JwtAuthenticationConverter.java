@@ -9,8 +9,6 @@ import org.springframework.security.web.server.authentication.ServerAuthenticati
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-
 import static com.auth0.jwt.algorithms.Algorithm.HMAC256;
 import static de.htwsaar.vs.chat.util.JwtUtil.JWT_PREFIX;
 import static de.htwsaar.vs.chat.util.JwtUtil.JWT_SECRET;
@@ -26,7 +24,7 @@ public class JwtAuthenticationConverter implements ServerAuthenticationConverter
                 .map(JwtAuthenticationConverter::verifyToken)
                 .onErrorResume(JWTVerificationException.class,
                         e -> ResponseError.badRequest(e, "Could not verify JWT token"))
-                .map(username -> new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>()));
+                .map(username -> new UsernamePasswordAuthenticationToken(username, null));
     }
 
     private static String verifyToken(String token) {
