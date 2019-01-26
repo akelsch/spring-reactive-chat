@@ -3,6 +3,8 @@ plugins {
     id("org.springframework.boot") version "2.1.2.RELEASE"
 }
 
+val javaJwtVersion by extra("3.6.0")
+
 apply(plugin = "io.spring.dependency-management")
 
 group = "de.htwsaar.vs"
@@ -17,6 +19,8 @@ repositories {
 }
 
 dependencies {
+    implementation("com.auth0:java-jwt:$javaJwtVersion")
+    // Managed
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
     implementation("org.springframework.boot:spring-boot-starter-security")

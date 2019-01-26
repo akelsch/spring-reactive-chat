@@ -1,7 +1,6 @@
 package de.htwsaar.vs.chat.util;
 
 import lombok.experimental.UtilityClass;
-import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
@@ -11,11 +10,15 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 @UtilityClass
 public class ResponseError {
 
-    public static Mono<? extends ServerResponse> badRequest(Throwable e) {
-        return Mono.error(new ResponseStatusException(BAD_REQUEST, e.getMessage(), e));
+    public static <T> Mono<T> badRequest(Throwable e) {
+        return badRequest(e, e.getMessage());
     }
 
-    public static Mono<? extends ServerResponse> conflict(Throwable e) {
-        return Mono.error(new ResponseStatusException(CONFLICT, e.getMessage(), e));
+    public static <T> Mono<T> badRequest(Throwable e, String message) {
+        return Mono.error(() -> new ResponseStatusException(BAD_REQUEST, message, e));
+    }
+
+    public static <T> Mono<T> conflict(Throwable e) {
+        return Mono.error(() -> new ResponseStatusException(CONFLICT, e.getMessage(), e));
     }
 }
