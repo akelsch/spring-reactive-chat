@@ -6,6 +6,7 @@ plugins {
 val javaJwtVersion by extra("3.6.0")
 
 apply(plugin = "io.spring.dependency-management")
+apply(from = "gradle/integration-test.gradle.kts")
 
 group = "de.htwsaar.vs"
 version = "0.0.1-SNAPSHOT"
@@ -37,6 +38,6 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
-tasks.test {
+tasks.withType<Test> {
     useJUnitPlatform()
 }
