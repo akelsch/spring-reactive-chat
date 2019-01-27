@@ -34,7 +34,7 @@ public class AuthHandler {
         return request
                 .bodyToMono(User.class)
                 .flatMap(userService::save)
-                .flatMap(user -> ServerResponse.created(URI.create("/users/" + user.getId())).build())
+                .flatMap(user -> ServerResponse.created(URI.create("/api/v1/users/" + user.getId())).build())
                 .onErrorResume(DecodingException.class, ResponseError::badRequest)
                 .onErrorResume(ConstraintViolationException.class, ResponseError::badRequest)
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
