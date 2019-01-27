@@ -46,6 +46,140 @@ class AuthIntegrationTest {
     }
 
     @Test
+    void invalidJsonSignup() {
+        String payload = "{\"username\": woops}";
+
+        webTestClient
+                .post().uri("/auth/signup")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void emptyUsernameSignup() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("username", "");
+        payload.put("password", "testpassword");
+
+        webTestClient
+                .post().uri("/auth/signup")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void emptyPasswordSignup() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("username", "testuser2");
+        payload.put("password", "");
+
+        webTestClient
+                .post().uri("/auth/signup")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void emptyPayloadSignup() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("username", "");
+        payload.put("password", "");
+
+        webTestClient
+                .post().uri("/auth/signup")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void missingUsernameSignup() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("password", "testpassword");
+
+        webTestClient
+                .post().uri("/auth/signup")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void missingPasswordSignup() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("username", "testuser2");
+
+        webTestClient
+                .post().uri("/auth/signup")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void missingPayloadSignup() {
+        Map<String, String> payload = new LinkedHashMap<>();
+
+        webTestClient
+                .post().uri("/auth/signup")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void nullUsernameSignup() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("username", null);
+        payload.put("password", "testpassword");
+
+        webTestClient
+                .post().uri("/auth/signup")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void nullPasswordSignup() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("username", "testuser2");
+        payload.put("password", null);
+
+        webTestClient
+                .post().uri("/auth/signup")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void nullPayloadSignup() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("username", null);
+        payload.put("password", null);
+
+        webTestClient
+                .post().uri("/auth/signup")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
     void successfulSignin() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", "admin");
@@ -58,5 +192,139 @@ class AuthIntegrationTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().valueMatches(AUTHORIZATION, "Bearer .+\\..+\\..+");
+    }
+
+    @Test
+    void invalidJsonSignin() {
+        String payload = "{\"username\": woops}";
+
+        webTestClient
+                .post().uri("/auth/signin")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void emptyUsernameSignin() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("username", "");
+        payload.put("password", "nimda");
+
+        webTestClient
+                .post().uri("/auth/signin")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void emptyPasswordSignin() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("username", "admin");
+        payload.put("password", "");
+
+        webTestClient
+                .post().uri("/auth/signin")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void emptyPayloadSignin() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("username", "");
+        payload.put("password", "");
+
+        webTestClient
+                .post().uri("/auth/signin")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void missingUsernameSignin() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("password", "nimda");
+
+        webTestClient
+                .post().uri("/auth/signin")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void missingPasswordSignin() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("username", "admin");
+
+        webTestClient
+                .post().uri("/auth/signin")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void missingPayloadSignin() {
+        Map<String, String> payload = new LinkedHashMap<>();
+
+        webTestClient
+                .post().uri("/auth/signin")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void nullUsernameSignin() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("username", null);
+        payload.put("password", "nimda");
+
+        webTestClient
+                .post().uri("/auth/signin")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void nullPasswordSignin() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("username", "admin");
+        payload.put("password", null);
+
+        webTestClient
+                .post().uri("/auth/signin")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void nullPayloadSignin() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("username", null);
+        payload.put("password", null);
+
+        webTestClient
+                .post().uri("/auth/signin")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isUnauthorized();
     }
 }
