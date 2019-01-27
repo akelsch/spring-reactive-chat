@@ -3,7 +3,10 @@ plugins {
     id("org.springframework.boot") version "2.1.2.RELEASE"
 }
 
+val javaJwtVersion by extra("3.6.0")
+
 apply(plugin = "io.spring.dependency-management")
+apply(from = "gradle/integration-test.gradle.kts")
 
 group = "de.htwsaar.vs"
 version = "0.0.1-SNAPSHOT"
@@ -17,6 +20,8 @@ repositories {
 }
 
 dependencies {
+    implementation("com.auth0:java-jwt:$javaJwtVersion")
+    // Managed
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -33,6 +38,6 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
-tasks.test {
+tasks.withType<Test> {
     useJUnitPlatform()
 }

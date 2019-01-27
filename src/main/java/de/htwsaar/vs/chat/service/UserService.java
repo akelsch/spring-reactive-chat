@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.util.Collections;
 
 /**
@@ -19,6 +21,7 @@ import java.util.Collections;
  * @see UserRepository
  */
 @Service
+@Validated
 public class UserService {
 
     private final UserRepository userRepository;
@@ -30,7 +33,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Mono<User> save(User user) {
+    public Mono<User> save(@Valid User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Collections.singletonList(Role.USER));
 

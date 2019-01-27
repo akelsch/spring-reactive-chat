@@ -7,7 +7,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-class ChatApplicationTests {
+class ChatApplicationTest {
+
+    ChatApplicationTest() {
+        System.out.println("--- Unit test ---");
+    }
 
     @Test
     void contextLoads() {
