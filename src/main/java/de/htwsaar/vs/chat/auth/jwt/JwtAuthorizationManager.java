@@ -7,6 +7,11 @@ import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import reactor.core.publisher.Mono;
 
+/**
+ * Finds an authenticated user in the database and authorizes him.
+ *
+ * @author Arthur Kelsch
+ */
 public class JwtAuthorizationManager implements ReactiveAuthenticationManager {
 
     private final ReactiveUserDetailsService userDetailsService;
