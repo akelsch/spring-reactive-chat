@@ -15,6 +15,7 @@ import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
@@ -43,6 +44,20 @@ class AuthIntegrationTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().valueMatches(LOCATION, "\\/api\\/v1\\/users\\/\\w{24}");
+    }
+
+    @Test
+    void duplicateUsernameSignup() {
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("username", "admin");
+        payload.put("password", "testpassword");
+
+        webTestClient
+                .post().uri("/auth/signup")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isEqualTo(CONFLICT);
     }
 
     @Test
