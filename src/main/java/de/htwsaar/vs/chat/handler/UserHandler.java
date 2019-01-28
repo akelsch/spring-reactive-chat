@@ -33,15 +33,19 @@ public class UserHandler {
     }
 
     public Mono<ServerResponse> get(ServerRequest request) {
+        String uid = request.pathVariable("uid");
+
         return userService
-                .findById(request.pathVariable("uid"))
-                .flatMap(user -> ServerResponse.ok().body(Mono.just(user), User.class))
+                .findById(uid)
+                .flatMap(user -> ServerResponse.ok().contentType(APPLICATION_JSON).body(Mono.just(user), User.class))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
     public Mono<ServerResponse> delete(ServerRequest request) {
+        String uid = request.pathVariable("uid");
+
         return userService
-                .deleteById(request.pathVariable("uid"))
+                .deleteById(uid)
                 .flatMap(signal -> ServerResponse.noContent().build())
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
