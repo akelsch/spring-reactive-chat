@@ -40,7 +40,9 @@ public class UserHandler {
     }
 
     public Mono<ServerResponse> delete(ServerRequest request) {
-        return ServerResponse.noContent()
-                .build(userService.deleteById(request.pathVariable("uid")));
+        return userService
+                .deleteById(request.pathVariable("uid"))
+                .flatMap(signal -> ServerResponse.noContent().build())
+                .switchIfEmpty(ServerResponse.notFound().build());
     }
 }
