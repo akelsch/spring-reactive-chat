@@ -32,7 +32,7 @@ class AuthIntegrationTest {
     private WebTestClient webTestClient;
 
     @Test
-    void successfulSignup() {
+    void signupWithValidPayload() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", "testuser");
         payload.put("password", "testpassword");
@@ -47,7 +47,19 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void duplicateUsernameSignup() {
+    void signupWithMalformedPayload() {
+        String payload = "{\"username\": woops}";
+
+        webTestClient
+                .post().uri("/auth/signup")
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void signupWithDuplicateUsername() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", "admin");
         payload.put("password", "testpassword");
@@ -61,19 +73,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void invalidJsonSignup() {
-        String payload = "{\"username\": woops}";
-
-        webTestClient
-                .post().uri("/auth/signup")
-                .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
-                .exchange()
-                .expectStatus().isBadRequest();
-    }
-
-    @Test
-    void emptyUsernameSignup() {
+    void signupWithEmptyUsername() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", "");
         payload.put("password", "testpassword");
@@ -87,7 +87,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void emptyPasswordSignup() {
+    void signupWithEmptyPassword() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", "testuser2");
         payload.put("password", "");
@@ -101,7 +101,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void emptyPayloadSignup() {
+    void signupWithEmptyPayload() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", "");
         payload.put("password", "");
@@ -115,7 +115,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void missingUsernameSignup() {
+    void signupWithMissingUsername() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("password", "testpassword");
 
@@ -128,7 +128,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void missingPasswordSignup() {
+    void signupWithMissingPassword() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", "testuser2");
 
@@ -141,7 +141,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void missingPayloadSignup() {
+    void signupWithMissingPayload() {
         Map<String, String> payload = new LinkedHashMap<>();
 
         webTestClient
@@ -153,7 +153,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void nullUsernameSignup() {
+    void signupWithNullUsername() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", null);
         payload.put("password", "testpassword");
@@ -167,7 +167,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void nullPasswordSignup() {
+    void signupWithNullPassword() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", "testuser2");
         payload.put("password", null);
@@ -181,7 +181,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void nullPayloadSignup() {
+    void signupWithNullPayload() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", null);
         payload.put("password", null);
@@ -195,7 +195,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void successfulSignin() {
+    void signinWithValidPayload() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", "admin");
         payload.put("password", "nimda");
@@ -210,7 +210,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void invalidJsonSignin() {
+    void signinWithMalformedPayload() {
         String payload = "{\"username\": woops}";
 
         webTestClient
@@ -222,7 +222,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void emptyUsernameSignin() {
+    void signinWithEmptyUsername() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", "");
         payload.put("password", "nimda");
@@ -236,7 +236,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void emptyPasswordSignin() {
+    void signinWithEmptyPassword() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", "admin");
         payload.put("password", "");
@@ -250,7 +250,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void emptyPayloadSignin() {
+    void signinWithEmptyPayload() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", "");
         payload.put("password", "");
@@ -264,7 +264,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void missingUsernameSignin() {
+    void signinWithMissingUsername() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("password", "nimda");
 
@@ -277,7 +277,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void missingPasswordSignin() {
+    void signinWithMissingPassword() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", "admin");
 
@@ -290,7 +290,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void missingPayloadSignin() {
+    void signinWithMissingPayload() {
         Map<String, String> payload = new LinkedHashMap<>();
 
         webTestClient
@@ -302,7 +302,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void nullUsernameSignin() {
+    void signinWithNullUsername() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", null);
         payload.put("password", "nimda");
@@ -316,7 +316,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void nullPasswordSignin() {
+    void signinWithNullPassword() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", "admin");
         payload.put("password", null);
@@ -330,7 +330,7 @@ class AuthIntegrationTest {
     }
 
     @Test
-    void nullPayloadSignin() {
+    void signinWithNullPayload() {
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", null);
         payload.put("password", null);
