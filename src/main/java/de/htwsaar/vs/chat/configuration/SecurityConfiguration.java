@@ -64,7 +64,8 @@ public class SecurityConfiguration {
                 .anyExchange().permitAll()
                 .and()
                 .addFilterAt(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
-                .addFilterAt(jwtAuthorizationFilter(), SecurityWebFiltersOrder.AUTHORIZATION);
+                .addFilterAt(jwtAuthorizationFilter(), SecurityWebFiltersOrder.AUTHORIZATION)
+                .redirectToHttps();
 
         return http.build();
     }

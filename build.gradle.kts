@@ -38,6 +38,12 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
+tasks.bootRun {
+    if (project.hasProperty("args")) {
+        args = (project.properties["args"] as String).split(",")
+    }
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
