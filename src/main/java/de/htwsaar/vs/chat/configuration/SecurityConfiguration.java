@@ -7,6 +7,7 @@ import de.htwsaar.vs.chat.auth.jwt.JwtAuthorizationConverter;
 import de.htwsaar.vs.chat.auth.jwt.JwtAuthorizationManager;
 import de.htwsaar.vs.chat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
@@ -39,6 +40,9 @@ public class SecurityConfiguration {
     private static final String AUTH_SIGNIN_MATCHER = "/auth/signin";
     private static final String API_MATCHER = "/api/**";
 
+    @Value("${chat.redirectToHttps:false}")
+    private boolean redirectToHttps;
+
     private final UserRepository userRepository;
 
     @Autowired
@@ -64,8 +68,11 @@ public class SecurityConfiguration {
                 .anyExchange().permitAll()
                 .and()
                 .addFilterAt(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
-                .addFilterAt(jwtAuthorizationFilter(), SecurityWebFiltersOrder.AUTHORIZATION)
-                .redirectToHttps();
+                .addFilterAt(jwtAuthorizationFilter(), SecurityWebFiltersOrder.AUTHORIZATION);
+
+        if (redirectToHttps) {
+            http.redirectToHttps();
+        }
 
         return http.build();
     }
