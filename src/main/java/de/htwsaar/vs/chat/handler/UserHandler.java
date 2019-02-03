@@ -16,6 +16,7 @@ import reactor.util.function.Tuple2;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -29,7 +30,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class UserHandler {
 
     private final UserService userService;
-
+ 
     public static final String ID_QUERY_PARAM = "id";
     public static final String GROUP_QUERY_PARAM = "group";
     public static final String NAME_QUERY_PARAM = "name";
@@ -42,7 +43,7 @@ public class UserHandler {
     public Mono<ServerResponse> getAll(ServerRequest request) {
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(filterByQuery(request), User.class);
+                .body(userService.findAll().filter(u -> matchByQuery(u, request.queryParams())), User.class);
     }
 
     public Mono<ServerResponse> get(ServerRequest request) {
@@ -63,38 +64,29 @@ public class UserHandler {
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
-    public Flux<User> filterByQuery(ServerRequest request){
-        final MultiValueMap<String, String> queryparams = request.queryParams();
-        Flux<User> tmp = userService.findAll();
+    public boolean matchByQuery(User u, MultiValueMap<String, String> queryParams){
+        final List<String> userGroups = u.getRoles().stream().map(Object::toString).collect(Collectors.toList());
+        final List<String> queryGroups = queryParams.get(GROUP_QUERY_PARAM);
+        boolean b = true;
 
-        if(queryparams.size() == 0){
-            return tmp;
+        if(queryGroups != null){
+            b = userGroups.containsAll(queryGroups);
         }
 
-
-        for(final String key : queryparams.keySet()){
-            for(final String value : queryparams.get(key)){
-                    switch(key){
-                    case NAME_QUERY_PARAM:
-                        tmp = tmp.filter(x -> x.getUsername().equals(value));
-                        break;
+        for(String key : queryParams.keySet()){
+            for(String val : queryParams.get(key)){
+                switch(key){
                     case ID_QUERY_PARAM:
-                        tmp = tmp.filter(x -> x.getId().equals(value));
+                        b = b && u.getId().equals(val);
                         break;
-                    case GROUP_QUERY_PARAM:
-                        tmp = tmp.filter(x -> {
-                            Set<String> rolesAsString = new HashSet<>();
-                            for(Role i : x.getRoles()){
-                                rolesAsString.add(i.toString());
-                            }
-                            return rolesAsString.contains(value);
-                        });
-                        break;
-
+                    case NAME_QUERY_PARAM:
+                        b = b && u.getUsername().equals(val);
+                    default:
+                        continue;
                 }
             }
         }
-
-        return tmp;
+        return b;
     }
 }
+
