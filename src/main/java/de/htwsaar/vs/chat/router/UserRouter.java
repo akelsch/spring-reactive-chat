@@ -14,6 +14,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
  * API routes starting with {@code /users}.
  *
  * @author Arthur Kelsch
+ * @author Mahan Karimi
  */
 @Configuration
 public class UserRouter {
@@ -26,7 +27,9 @@ public class UserRouter {
                 .andRoute(GET("/{uid}")
                         .and(accept(APPLICATION_JSON)), userHandler::get)
                 .andRoute(DELETE("/{uid}")
-                        .and(accept(APPLICATION_JSON)), userHandler::delete);
+                        .and(accept(APPLICATION_JSON)), userHandler::delete)
+                .andRoute(POST("/{uid}/changePassword")
+                        .and(accept(APPLICATION_JSON)), userHandler::changePassword);
 
         return RouterFunctions.nest(path("/api/v1/users"), userRoutes);
     }

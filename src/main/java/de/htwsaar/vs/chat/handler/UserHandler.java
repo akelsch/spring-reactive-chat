@@ -1,5 +1,6 @@
 package de.htwsaar.vs.chat.handler;
 
+import de.htwsaar.vs.chat.model.Password;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.router.UserRouter;
 import de.htwsaar.vs.chat.service.UserService;
@@ -15,6 +16,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
  * Handler methods for {@link UserRouter}.
  *
  * @author Arthur Kelsch
+ * @author Mahan Karimi
  */
 @Component
 public class UserHandler {
@@ -47,6 +49,24 @@ public class UserHandler {
         return userService
                 .deleteById(uid)
                 .flatMap(signal -> ServerResponse.noContent().build())
+                .switchIfEmpty(ServerResponse.notFound().build());
+    }
+
+    public Mono<ServerResponse> changePassword(ServerRequest request) {
+        String uid = request.pathVariable("uid");
+        Mono<Password> password = request.bodyToMono(Password.class);
+
+        return userService
+                .findById(uid)
+                .zipWith(password)
+                // TODO passwordEncoder.matches()
+                //.filter(x -> x.getT1().getPassword().equals(x.getT2().getOldPassword()))
+                .flatMap(x -> {
+                    User user = x.getT1();
+                    user.setPassword(x.getT2().getNewPassword());
+                    return userService.updated(user);
+                })
+                .flatMap(u -> ServerResponse.ok().build())
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 }

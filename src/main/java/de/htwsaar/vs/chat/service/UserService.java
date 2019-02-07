@@ -18,6 +18,7 @@ import java.util.Collections;
  * Service layer for {@link User}.
  *
  * @author Arthur Kelsch
+ * @author Mahan Karimi
  * @see UserRepository
  */
 @Service
@@ -39,6 +40,14 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    public Mono<User> updated(@Valid User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        return userRepository.save(user);
+    }
+
+
 
     public Mono<User> findById(String id) {
         return userRepository.findById(id);
