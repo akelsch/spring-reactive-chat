@@ -64,7 +64,8 @@ public class SecurityConfiguration {
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
                 .csrf().disable()
-                .cors().and()
+                .cors()
+                .and()
                 .authorizeExchange()
                 .pathMatchers(AUTH_SIGNUP_MATCHER).permitAll()
                 .pathMatchers(AUTH_SIGNIN_MATCHER, API_MATCHER).authenticated()
@@ -74,7 +75,11 @@ public class SecurityConfiguration {
                 .addFilterAt(jwtAuthorizationFilter(), SecurityWebFiltersOrder.AUTHORIZATION);
 
         if (httpsEnabled) {
-            http.redirectToHttps();
+            http
+                    .redirectToHttps()
+                    .and()
+                    .headers()
+                    .hsts().includeSubdomains(false);
         }
 
         return http.build();
