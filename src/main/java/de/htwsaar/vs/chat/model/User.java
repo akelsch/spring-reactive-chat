@@ -1,5 +1,6 @@
 package de.htwsaar.vs.chat.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.htwsaar.vs.chat.auth.Role;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,7 @@ public class User {
     private String username;
 
     @NotBlank
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     private List<Role> roles;
