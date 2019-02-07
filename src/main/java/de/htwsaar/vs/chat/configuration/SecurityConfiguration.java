@@ -40,10 +40,13 @@ public class SecurityConfiguration {
     private static final String AUTH_SIGNIN_MATCHER = "/auth/signin";
     private static final String API_MATCHER = "/api/**";
 
-    @Value("${chat.redirectToHttps:false}")
-    private boolean redirectToHttps;
-
     private final UserRepository userRepository;
+
+    @Value("${chat.https.enabled:false}")
+    private boolean httpsEnabled;
+
+    @Value("${chat.cors.allowedOrigin:http://localhost:8080}")
+    private String allowedOrigin;
 
     @Autowired
     public SecurityConfiguration(UserRepository userRepository) {
@@ -70,7 +73,7 @@ public class SecurityConfiguration {
                 .addFilterAt(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
                 .addFilterAt(jwtAuthorizationFilter(), SecurityWebFiltersOrder.AUTHORIZATION);
 
-        if (redirectToHttps) {
+        if (httpsEnabled) {
             http.redirectToHttps();
         }
 
@@ -85,7 +88,7 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:8081");
+        configuration.addAllowedOrigin(allowedOrigin);
         configuration.addExposedHeader(HttpHeaders.AUTHORIZATION);
         configuration.applyPermitDefaultValues();
 
