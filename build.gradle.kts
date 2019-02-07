@@ -3,7 +3,7 @@ plugins {
     id("org.springframework.boot") version "2.1.2.RELEASE"
 }
 
-val javaJwtVersion by extra("3.6.0")
+val javaJwtVersion by extra("3.7.0")
 
 apply(plugin = "io.spring.dependency-management")
 apply(from = "gradle/integration-test.gradle.kts")
