@@ -13,6 +13,8 @@ import reactor.core.publisher.Mono;
  */
 @Repository
 public interface ChatRepository extends ReactiveCrudRepository<Chat, String> {
+
     Flux<Chat> findAllByMembersUserId(String id);
+
     Mono<Chat> findById(String id);
 }

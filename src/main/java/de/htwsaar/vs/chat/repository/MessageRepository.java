@@ -13,6 +13,8 @@ import reactor.core.publisher.Flux;
  */
 @Repository
 public interface MessageRepository extends ReactiveCrudRepository<Message, String> {
+
     Flux<Message> findAllByChatId(String chatId);
+
     Flux<Message> findAllByChatId(String chatId, Pageable pageable);
 }

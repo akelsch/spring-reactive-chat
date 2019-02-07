@@ -24,6 +24,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
  */
 @Component
 public class MessageHandler {
+
     private final MessageService messageService;
 
     @Autowired
@@ -33,6 +34,7 @@ public class MessageHandler {
 
     public Mono<ServerResponse> getAllMessagesForChat(ServerRequest request) {
         String chatId = request.pathVariable("chatid");
+
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
                 .body(messageService.findAllMessagesForChat(chatId), Message.class);
@@ -42,13 +44,15 @@ public class MessageHandler {
         String chatId = request.pathVariable("chatid");
         String start = request.queryParam("start").orElse("1");
         String chunk = request.queryParam("chunk").orElse("50");
+
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
                 .body(messageService.findAllMessagesForChatPaginated(chatId, start, chunk), Message.class);
     }
 
-    public Mono<ServerResponse> sendMessageToChat(ServerRequest request){
+    public Mono<ServerResponse> sendMessageToChat(ServerRequest request) {
         String chatId = request.pathVariable("chatid");
+
         return request
                 .bodyToMono(Message.class)
                 .flatMap(message -> messageService.addMessageToChat(message, chatId))
@@ -58,8 +62,9 @@ public class MessageHandler {
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
     }
 
-    public Mono<ServerResponse> deleteMessageFromChat(ServerRequest request){
+    public Mono<ServerResponse> deleteMessageFromChat(ServerRequest request) {
         String messageId = request.pathVariable("messageid");
+
         return ServerResponse.noContent()
                 .build(messageService.delete(messageId));
     }

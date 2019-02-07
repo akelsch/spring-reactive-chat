@@ -35,6 +35,7 @@ public class ChatHandler {
     public Mono<ServerResponse> getAll(ServerRequest request) {
         // TODO: don't parse uid from uid param but jwt token
         String uid = request.queryParam("uid").orElse("");
+
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
                 .body(chatService.findAllForUser(uid), Chat.class);
@@ -50,8 +51,9 @@ public class ChatHandler {
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
     }
 
-    public Mono<ServerResponse> getAllMembersForChat(ServerRequest request){
+    public Mono<ServerResponse> getAllMembersForChat(ServerRequest request) {
         String chatId = request.pathVariable("chatid");
+
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
                 .body(chatService.findAllMembersForChat(chatId), Chat.Member.class);
@@ -59,6 +61,7 @@ public class ChatHandler {
 
     public Mono<ServerResponse> addMemberToChat(ServerRequest request) {
         String chatId = request.pathVariable("chatid");
+
         return request
                 .bodyToMono(Chat.Member.class)
                 .flatMap(member -> chatService.saveNewMember(chatId, member))
@@ -68,9 +71,11 @@ public class ChatHandler {
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
     }
 
-    public Mono<ServerResponse> removeMemberFromChat(ServerRequest request){
+    public Mono<ServerResponse> removeMemberFromChat(ServerRequest request) {
         String chatId = request.pathVariable("chatid");
         String userId = request.pathVariable("userid");
-        return ServerResponse.noContent().build(chatService.removeMember(chatId, userId));
+
+        return ServerResponse.noContent()
+                .build(chatService.removeMember(chatId, userId));
     }
 }
