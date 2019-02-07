@@ -41,13 +41,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Mono<User> updated(@Valid User user) {
+    @PreAuthorize("hasRole('ADMIN') or #user.id == principal.id")
+    public Mono<User> update(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return userRepository.save(user);
     }
-
-
 
     public Mono<User> findById(String id) {
         return userRepository.findById(id);
