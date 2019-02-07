@@ -18,6 +18,7 @@ import java.util.Collections;
  * Service layer for {@link User}.
  *
  * @author Arthur Kelsch
+ * @author Mahan Karimi
  * @see UserRepository
  */
 @Service
@@ -36,6 +37,13 @@ public class UserService {
     public Mono<User> save(@Valid User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Collections.singletonList(Role.USER));
+
+        return userRepository.save(user);
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or #user.id == principal.id")
+    public Mono<User> update(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return userRepository.save(user);
     }
