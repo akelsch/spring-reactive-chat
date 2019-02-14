@@ -1,5 +1,6 @@
 package de.htwsaar.vs.chat.handler;
 
+import com.auth0.jwt.JWT;
 import com.mongodb.DuplicateKeyException;
 import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.router.ChatRouter;
@@ -15,6 +16,8 @@ import reactor.core.publisher.Mono;
 import javax.validation.ConstraintViolationException;
 import java.net.URI;
 
+import static de.htwsaar.vs.chat.util.JwtUtil.JWT_PREFIX;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
@@ -33,8 +36,10 @@ public class ChatHandler {
     }
 
     public Mono<ServerResponse> getAll(ServerRequest request) {
-        // TODO: don't parse uid from uid param but jwt token
-        String uid = request.queryParam("uid").orElse("");
+        String token = request.exchange().getRequest().getHeaders().getFirst(AUTHORIZATION)
+                .substring(JWT_PREFIX.length());
+
+        String uid = JWT.decode(token).getSubject();
 
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
