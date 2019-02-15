@@ -1,6 +1,5 @@
 package de.htwsaar.vs.chat.handler;
 
-import com.auth0.jwt.JWT;
 import com.mongodb.DuplicateKeyException;
 import de.htwsaar.vs.chat.auth.UserPrincipal;
 import de.htwsaar.vs.chat.model.Chat;
@@ -17,7 +16,6 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.ConstraintViolationException;
 import java.net.URI;
-import java.security.Principal;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
@@ -78,7 +76,11 @@ public class ChatHandler {
         String chatId = request.pathVariable("chatid");
         String userId = request.pathVariable("userid");
 
-        return ServerResponse.noContent()
-                .build(chatService.removeMember(chatId, userId));
+        return request.principal()
+                .cast(UsernamePasswordAuthenticationToken.class)
+                .map(UsernamePasswordAuthenticationToken::getPrincipal)
+                .cast(UserPrincipal.class)
+                .flatMap(principal -> ServerResponse.noContent()
+                        .build(chatService.removeMember(chatId, userId, principal.getId())));
     }
 }
