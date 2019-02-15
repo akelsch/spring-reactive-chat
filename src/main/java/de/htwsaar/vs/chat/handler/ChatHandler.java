@@ -2,12 +2,14 @@ package de.htwsaar.vs.chat.handler;
 
 import com.auth0.jwt.JWT;
 import com.mongodb.DuplicateKeyException;
+import de.htwsaar.vs.chat.auth.UserPrincipal;
 import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.router.ChatRouter;
 import de.htwsaar.vs.chat.service.ChatService;
 import de.htwsaar.vs.chat.util.ResponseError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.codec.DecodingException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -15,9 +17,7 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.ConstraintViolationException;
 import java.net.URI;
-
-import static de.htwsaar.vs.chat.util.JwtUtil.JWT_PREFIX;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import java.security.Principal;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
@@ -36,14 +36,12 @@ public class ChatHandler {
     }
 
     public Mono<ServerResponse> getAll(ServerRequest request) {
-        String token = request.exchange().getRequest().getHeaders().getFirst(AUTHORIZATION)
-                .substring(JWT_PREFIX.length());
-
-        String uid = JWT.decode(token).getSubject();
-
-        return ServerResponse.ok()
-                .contentType(APPLICATION_JSON)
-                .body(chatService.findAllForUser(uid), Chat.class);
+        return request.principal()
+                .cast(UsernamePasswordAuthenticationToken.class)
+                .map(UsernamePasswordAuthenticationToken::getPrincipal)
+                .cast(UserPrincipal.class)
+                .flatMap(user -> ServerResponse.ok().contentType(APPLICATION_JSON).
+                        body(chatService.findAllForUser(user.getId()), Chat.class));
     }
 
     public Mono<ServerResponse> createChat(ServerRequest request) {
