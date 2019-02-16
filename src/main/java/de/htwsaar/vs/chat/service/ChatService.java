@@ -46,14 +46,19 @@ public class ChatService {
     }
 
     public Mono<Void> removeMember(String chatId, String userId, String principalId) {
-        // todo check if current user has permissions to delete other members
         return chatRepository
                 .findById(chatId)
-                .filter(chat -> userId.equals(principalId) ||
-                        chat.getMembers().stream().filter(member -> principalId.equals(member.getUser().getId()))
-                                .findAny().orElse(new Chat.Member()).getIsAdmin())
+                .filter(chat -> userId.equals(principalId) || isGroupAdmin(chat, principalId))
                 .filter(chat -> chat.getMembers().removeIf(member -> member.getUser().getId().equals(userId)))
                 .flatMap(chatRepository::save)
                 .then();
+    }
+
+    private static boolean isGroupAdmin(Chat chat, String principalId) {
+        return chat.getMembers().stream()
+                .filter(member -> member.getUser().getId().equals(principalId))
+                .findFirst()
+                .orElse(new Chat.Member())
+                .getIsAdmin();
     }
 }
