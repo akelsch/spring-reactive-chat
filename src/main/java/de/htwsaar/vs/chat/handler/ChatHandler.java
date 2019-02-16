@@ -46,7 +46,7 @@ public class ChatHandler {
         return request
                 .bodyToMono(Chat.class)
                 .flatMap(chatService::save)
-                .flatMap(chat -> ServerResponse.created(URI.create("/chats/" + chat.getId())).build())
+                .flatMap(chat -> ServerResponse.created(URI.create("/api/v1/chats/" + chat.getId())).build())
                 .onErrorResume(DecodingException.class, ResponseError::badRequest)
                 .onErrorResume(ConstraintViolationException.class, ResponseError::badRequest)
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
@@ -66,7 +66,7 @@ public class ChatHandler {
         return request
                 .bodyToMono(Chat.Member.class)
                 .flatMap(member -> chatService.saveNewMember(chatId, member))
-                .flatMap(chat -> ServerResponse.created(URI.create("/chats/" + chat.getId())).build())
+                .flatMap(chat -> ServerResponse.created(URI.create("/api/v1/chats/" + chat.getId())).build())
                 .onErrorResume(DecodingException.class, ResponseError::badRequest)
                 .onErrorResume(ConstraintViolationException.class, ResponseError::badRequest)
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);

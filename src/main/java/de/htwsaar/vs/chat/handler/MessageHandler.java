@@ -56,7 +56,7 @@ public class MessageHandler {
         return request
                 .bodyToMono(Message.class)
                 .flatMap(message -> messageService.addMessageToChat(message, chatId))
-                .flatMap(message -> ServerResponse.created(URI.create("/chats/" + chatId + "/messages/" + message.getId())).build())
+                .flatMap(message -> ServerResponse.created(URI.create("/api/v1/chats/" + chatId + "/messages/" + message.getId())).build())
                 .onErrorResume(DecodingException.class, ResponseError::badRequest)
                 .onErrorResume(ConstraintViolationException.class, ResponseError::badRequest)
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
