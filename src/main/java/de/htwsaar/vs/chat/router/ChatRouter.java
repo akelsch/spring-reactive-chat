@@ -24,8 +24,7 @@ public class ChatRouter {
         RouterFunction<ServerResponse> chatRoutes = RouterFunctions
                 .route(GET("/")
                         .and(accept(APPLICATION_JSON)), chatHandler::getAll)
-                .andRoute(POST("/")
-                        .and(accept(APPLICATION_JSON)), chatHandler::createChat);
+                .andRoute(POST("/"), chatHandler::createChat);
 
         return RouterFunctions.nest(path("/api/v1/chats"), chatRoutes);
     }
@@ -35,10 +34,8 @@ public class ChatRouter {
         RouterFunction<ServerResponse> memberRoutes = RouterFunctions
                 .route(GET("/members")
                         .and(accept(APPLICATION_JSON)), chatHandler::getAllMembersForChat)
-                .andRoute(POST("/members")
-                        .and(accept(APPLICATION_JSON)), chatHandler::addMemberToChat)
-                .andRoute(DELETE("/members/{userid}")
-                        .and(accept(APPLICATION_JSON)), chatHandler::removeMemberFromChat);
+                .andRoute(POST("/members"), chatHandler::addMemberToChat)
+                .andRoute(DELETE("/members/{userid}"), chatHandler::removeMemberFromChat);
 
         return RouterFunctions.nest(path("/api/v1/chats/{chatid}"), memberRoutes);
     }
@@ -50,10 +47,8 @@ public class ChatRouter {
                         .and(accept(APPLICATION_JSON)), messageHandler::getAllMessagesForChat)
                 .andRoute(GET("/messages/paginated")
                         .and(accept(APPLICATION_JSON)), messageHandler::getAllMessagesForChatPaginated)
-                .andRoute(POST("/messages")
-                        .and(accept(APPLICATION_JSON)), messageHandler::sendMessageToChat)
-                .andRoute(DELETE("/messages/{messageid}")
-                        .and(accept(APPLICATION_JSON)), messageHandler::deleteMessageFromChat);
+                .andRoute(POST("/messages"), messageHandler::sendMessageToChat)
+                .andRoute(DELETE("/messages/{messageid}"), messageHandler::deleteMessageFromChat);
 
         return RouterFunctions.nest(path("/api/v1/chats/{chatid}"), messageRoutes);
     }
