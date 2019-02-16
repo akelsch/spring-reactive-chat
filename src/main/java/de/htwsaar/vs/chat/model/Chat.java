@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Chat Model (MongoDB Document)
@@ -22,7 +22,7 @@ public class Chat {
     private String id;
     private Boolean isGroup;
     private String name;
-    private List<Member> members;
+    private Set<Member> members;
 
     @Data
     @NoArgsConstructor
