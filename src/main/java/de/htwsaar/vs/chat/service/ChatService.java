@@ -48,14 +48,10 @@ public class ChatService {
         // todo check if current user has permissions to delete other members
         return chatRepository
                 .findById(chatId)
-                .filter(chat -> {
-                    if (userId.equals(principalId) ||
-                            chat.getMembers().stream().filter(member -> principalId.equals(member.getUser().getId()))
-                                    .findAny().orElse(new Chat.Member()).getIsAdmin()) {
-                        return chat.getMembers().removeIf(member -> member.getUser().getId().equals(userId));
-                    }
-                    return false;
-                })
+                .filter(chat -> userId.equals(principalId) ||
+                        chat.getMembers().stream().filter(member -> principalId.equals(member.getUser().getId()))
+                                .findAny().orElse(new Chat.Member()).getIsAdmin())
+                .filter(chat -> chat.getMembers().removeIf(member -> member.getUser().getId().equals(userId)))
                 .flatMap(chatRepository::save)
                 .then();
     }
