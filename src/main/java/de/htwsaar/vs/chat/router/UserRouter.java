@@ -26,10 +26,8 @@ public class UserRouter {
                         .and(accept(APPLICATION_JSON)), userHandler::getAll)
                 .andRoute(GET("/{uid}")
                         .and(accept(APPLICATION_JSON)), userHandler::get)
-                .andRoute(DELETE("/{uid}")
-                        .and(accept(APPLICATION_JSON)), userHandler::delete)
-                .andRoute(POST("/{uid}/changePassword")
-                        .and(accept(APPLICATION_JSON)), userHandler::changePassword);
+                .andRoute(DELETE("/{uid}"), userHandler::delete)
+                .andRoute(POST("/{uid}/changePassword"), userHandler::changePassword);
 
         return RouterFunctions.nest(path("/api/v1/users"), userRoutes);
     }
