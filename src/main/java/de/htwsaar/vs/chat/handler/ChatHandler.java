@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.ConstraintViolationException;
 import java.net.URI;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
@@ -39,8 +40,8 @@ public class ChatHandler {
                 .cast(UsernamePasswordAuthenticationToken.class)
                 .map(UsernamePasswordAuthenticationToken::getPrincipal)
                 .cast(UserPrincipal.class)
-                .flatMap(user -> ServerResponse.ok().contentType(APPLICATION_JSON).
-                        body(chatService.findAllForUser(user.getId()), Chat.class));
+                .flatMap(user -> ServerResponse.ok().contentType(APPLICATION_JSON)
+                        .body(chatService.findAllForUser(user.getId()), Chat.class));
     }
 
     public Mono<ServerResponse> createChat(ServerRequest request) {
