@@ -32,24 +32,24 @@ public class ChatRouter {
     @Bean
     public RouterFunction<ServerResponse> routeMembers(ChatHandler chatHandler) {
         RouterFunction<ServerResponse> memberRoutes = RouterFunctions
-                .route(GET("/members")
+                .route(GET("/")
                         .and(accept(APPLICATION_JSON)), chatHandler::getAllMembersForChat)
-                .andRoute(POST("/members"), chatHandler::addMemberToChat)
-                .andRoute(DELETE("/members/{userid}"), chatHandler::removeMemberFromChat);
+                .andRoute(POST("/"), chatHandler::addMemberToChat)
+                .andRoute(DELETE("/{userid}"), chatHandler::removeMemberFromChat);
 
-        return RouterFunctions.nest(path("/api/v1/chats/{chatid}"), memberRoutes);
+        return RouterFunctions.nest(path("/api/v1/chats/{chatid}/members"), memberRoutes);
     }
 
     @Bean
     public RouterFunction<ServerResponse> routeMessages(MessageHandler messageHandler) {
         RouterFunction<ServerResponse> messageRoutes = RouterFunctions
-                .route(GET("/messages")
+                .route(GET("/")
                         .and(accept(APPLICATION_JSON)), messageHandler::getAllMessagesForChat)
-                .andRoute(GET("/messages/paginated")
+                .andRoute(GET("/paginated")
                         .and(accept(APPLICATION_JSON)), messageHandler::getAllMessagesForChatPaginated)
-                .andRoute(POST("/messages"), messageHandler::sendMessageToChat)
-                .andRoute(DELETE("/messages/{messageid}"), messageHandler::deleteMessageFromChat);
+                .andRoute(POST("/"), messageHandler::sendMessageToChat)
+                .andRoute(DELETE("/{messageid}"), messageHandler::deleteMessageFromChat);
 
-        return RouterFunctions.nest(path("/api/v1/chats/{chatid}"), messageRoutes);
+        return RouterFunctions.nest(path("/api/v1/chats/{chatid}/messages"), messageRoutes);
     }
 }
