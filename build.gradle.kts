@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "2.1.2.RELEASE"
+    id("org.springframework.boot") version "2.1.3.RELEASE"
 }
 
 val javaJwtVersion by extra("3.7.0")
