@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
 /**
- * chat
+ * Message Object Model (MongoDB Document)
  *
  * @author Niklas Reinhard
  */
@@ -20,13 +20,10 @@ import java.time.LocalDateTime;
 @Document
 public class Message {
 
-    @Version
-    private Long version;
     @Id
     private String id;
     @DBRef
     private Chat chat;
-    // only id needed
     @DBRef
     private User sender;
     private String content;
