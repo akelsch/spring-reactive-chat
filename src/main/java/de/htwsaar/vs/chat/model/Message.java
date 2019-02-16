@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
  * Message Object Model (MongoDB Document)
  *
  * @author Niklas Reinhard
+ * @author Julian Quint
  */
 @Data
 @NoArgsConstructor

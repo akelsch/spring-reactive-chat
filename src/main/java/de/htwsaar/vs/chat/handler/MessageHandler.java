@@ -21,6 +21,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
  * Handler methods for {@link ChatRouter}.
  *
  * @author Niklas Reinhard
+ * @author Julian Quint
  */
 @Component
 public class MessageHandler {

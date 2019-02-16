@@ -15,6 +15,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
  * API routes starting with {@code /chats}.
  *
  * @author Niklas Reinhard
+ * @author Julian Quint
  */
 @Configuration
 public class ChatRouter {

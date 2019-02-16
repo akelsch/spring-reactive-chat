@@ -15,6 +15,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
  *
  * @author Arthur Kelsch
  * @author Mahan Karimi
+ * @author Julian Quint
  */
 @Configuration
 public class UserRouter {

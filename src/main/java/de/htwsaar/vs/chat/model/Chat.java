@@ -12,6 +12,7 @@ import java.util.Set;
  * Chat Model (MongoDB Document)
  *
  * @author Niklas Reinhard
+ * @author Julian Quint
  */
 @Data
 @NoArgsConstructor

@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono;
  * Service layer for {@link Chat}.
  *
  * @author Niklas Reinhard
+ * @author Julian Quint
  * @see ChatRepository
  */
 @Service

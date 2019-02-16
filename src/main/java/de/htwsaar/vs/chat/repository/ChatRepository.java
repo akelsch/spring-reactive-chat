@@ -9,6 +9,7 @@ import reactor.core.publisher.Flux;
  * Spring Data Repository for {@link Chat}.
  *
  * @author Niklas Reinhard
+ * @author Julian Quint
  */
 @Repository
 public interface ChatRepository extends ReactiveCrudRepository<Chat, String> {
