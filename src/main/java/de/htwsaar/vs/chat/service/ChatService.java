@@ -39,16 +39,13 @@ public class ChatService {
 
     public Mono<Chat> saveNewMember(String chatId, Chat.Member member) {
         // todo validate if user has permission to add new admin user to chat
-        Mono<Chat> modifiedChat = chatRepository.findById(chatId);
-
-        return modifiedChat
-                .map(chat -> {
+        return chatRepository.findById(chatId)
+                .doOnNext(chat -> {
                     // only add member if not already exists
                     // unfortunately no possibility to do this directly with mongo
                     if (!chat.getMembers().contains(member)) {
                         chat.getMembers().add(member);
                     }
-                    return chat;
                 })
                 .flatMap(chatRepository::save);
     }
