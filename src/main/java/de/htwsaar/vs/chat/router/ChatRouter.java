@@ -1,7 +1,6 @@
 package de.htwsaar.vs.chat.router;
 
 import de.htwsaar.vs.chat.handler.ChatHandler;
-import de.htwsaar.vs.chat.handler.MessageHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -42,14 +41,14 @@ public class ChatRouter {
     }
 
     @Bean
-    public RouterFunction<ServerResponse> routeMessages(MessageHandler messageHandler) {
+    public RouterFunction<ServerResponse> routeMessages(ChatHandler chatHandler) {
         RouterFunction<ServerResponse> messageRoutes = RouterFunctions
                 .route(GET("/")
-                        .and(accept(APPLICATION_JSON)), messageHandler::getAllMessagesForChat)
+                        .and(accept(APPLICATION_JSON)), chatHandler::getAllMessagesForChat)
                 .andRoute(GET("/paginated")
-                        .and(accept(APPLICATION_JSON)), messageHandler::getAllMessagesForChatPaginated)
-                .andRoute(POST("/"), messageHandler::sendMessageToChat)
-                .andRoute(DELETE("/{messageid}"), messageHandler::deleteMessageFromChat);
+                        .and(accept(APPLICATION_JSON)), chatHandler::getAllMessagesForChatPaginated)
+                .andRoute(POST("/"), chatHandler::sendMessageToChat)
+                .andRoute(DELETE("/{messageid}"), chatHandler::deleteMessageFromChat);
 
         return RouterFunctions.nest(path("/api/v1/chats/{chatid}/messages"), messageRoutes);
     }
