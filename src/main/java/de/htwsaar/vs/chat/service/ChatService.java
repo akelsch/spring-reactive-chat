@@ -1,11 +1,15 @@
 package de.htwsaar.vs.chat.service;
 
+import de.htwsaar.vs.chat.auth.UserPrincipal;
 import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.ChatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,8 +31,12 @@ public class ChatService {
         this.chatRepository = chatRepository;
     }
 
-    public Flux<Chat> findAllForUser(String userId) {
-        return chatRepository.findAllByMembers(userId);
+    public Flux<Chat> findAllForUser() {
+        return ReactiveSecurityContextHolder.getContext()
+                .map(SecurityContext::getAuthentication)
+                .map(Authentication::getPrincipal)
+                .cast(UserPrincipal.class)
+                .flatMapMany(u -> chatRepository.findAllByMembers(u.getId()));
     }
 
     public Flux<User> findAllMembersForChat(String chatId) {

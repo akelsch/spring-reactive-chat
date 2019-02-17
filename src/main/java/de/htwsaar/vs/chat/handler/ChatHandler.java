@@ -1,7 +1,6 @@
 package de.htwsaar.vs.chat.handler;
 
 import com.mongodb.DuplicateKeyException;
-import de.htwsaar.vs.chat.auth.UserPrincipal;
 import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.router.ChatRouter;
@@ -9,7 +8,6 @@ import de.htwsaar.vs.chat.service.ChatService;
 import de.htwsaar.vs.chat.util.ResponseError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.codec.DecodingException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -37,12 +35,9 @@ public class ChatHandler {
     }
 
     public Mono<ServerResponse> getAll(ServerRequest request) {
-        return request.principal()
-                .cast(UsernamePasswordAuthenticationToken.class)
-                .map(UsernamePasswordAuthenticationToken::getPrincipal)
-                .cast(UserPrincipal.class)
-                .flatMap(user -> ServerResponse.ok().contentType(APPLICATION_JSON)
-                        .body(chatService.findAllForUser(user.getId()), Chat.class));
+        return ServerResponse.ok()
+                .contentType(APPLICATION_JSON)
+                .body(chatService.findAllForUser(), Chat.class);
     }
 
     public Mono<ServerResponse> createChat(ServerRequest request) {
