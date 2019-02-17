@@ -79,11 +79,8 @@ public class ChatHandler {
         String chatId = request.pathVariable("chatid");
         String userId = request.pathVariable("userid");
 
-        return request.principal()
-                .cast(UsernamePasswordAuthenticationToken.class)
-                .map(UsernamePasswordAuthenticationToken::getPrincipal)
-                .cast(UserPrincipal.class)
-                .flatMap(principal -> ServerResponse.noContent()
-                        .build(chatService.removeMember(chatId, userId, principal.getId())));
+        return chatService
+                .removeMember(chatId, userId)
+                .flatMap(signal -> ServerResponse.noContent().build());
     }
 }

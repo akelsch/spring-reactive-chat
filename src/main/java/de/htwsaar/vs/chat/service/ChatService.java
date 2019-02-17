@@ -5,6 +5,7 @@ import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.ChatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -42,28 +43,17 @@ public class ChatService {
     }
 
     public Mono<Chat> saveNewMember(String chatId, User member) {
-        // todo validate if user has permission to add new admin user to chat
         return chatRepository.findById(chatId)
                 .doOnNext(chat -> chat.getMembers().add(member))
                 .flatMap(chatRepository::save);
     }
 
-    public Mono<Void> removeMember(String chatId, String userId, String principalId) {
+    @PreAuthorize("hasAuthority('CHAT_' + #chatId + '_ADMIN') or #userId == principal.id")
+    public Mono<Void> removeMember(String chatId, String userId) {
         return chatRepository
                 .findById(chatId)
-                .filter(chat -> userId.equals(principalId) || isGroupAdmin(chat, principalId))
                 .filter(chat -> chat.getMembers().removeIf(member -> member.getId().equals(userId)))
                 .flatMap(chatRepository::save)
                 .then();
-    }
-
-    private static boolean isGroupAdmin(Chat chat, String principalId) {
-        // TODO
-        /*return chat.getMembers().stream()
-                .filter(member -> member.getId().equals(principalId))
-                .findFirst()
-                .orElse(new User())
-                .getIsAdmin();*/
-        return false;
     }
 }
