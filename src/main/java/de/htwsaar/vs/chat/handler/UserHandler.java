@@ -88,14 +88,14 @@ public class UserHandler {
                 .findById(uid)
                 .zipWith(password)
                 .doOnNext(this::matchOldPassword)
-                .doOnNext(t -> t.getT1().setPassword(t.getT2().getNewPassword()))
-                .flatMap(t -> userService.update(t.getT1()))
-                .flatMap(u -> ServerResponse.ok().build())
+                .doOnNext(tuple -> tuple.getT1().setPassword(tuple.getT2().getNewPassword()))
+                .flatMap(tuple -> userService.update(tuple.getT1()))
+                .flatMap(user -> ServerResponse.ok().build())
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
     private static Predicate<User> matchByQueryParams(MultiValueMap<String, String> queryParams) {
-        Predicate<User> predicate = u -> true;
+        Predicate<User> predicate = user -> true;
 
         for (Map.Entry<String, List<String>> entry : queryParams.entrySet()) {
             String key = entry.getKey();
@@ -103,13 +103,13 @@ public class UserHandler {
 
             switch (key) {
                 case "username":
-                    predicate = predicate.and(u -> u.getUsername().equals(values.get(0)));
+                    predicate = predicate.and(user -> user.getUsername().equals(values.get(0)));
                     break;
                 case "roles":
-                    predicate = predicate.and(u -> {
-                        List<String> roles = u.getRoles().stream()
+                    predicate = predicate.and(user -> {
+                        List<String> roles = user.getRoles().stream()
                                 .map(Object::toString)
-                                .map(s -> s.substring(ROLE_PREFIX_LENGTH))
+                                .map(role -> role.substring(ROLE_PREFIX_LENGTH))
                                 .collect(Collectors.toList());
                         return roles.containsAll(values);
                     });

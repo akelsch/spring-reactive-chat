@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 
 /**
- * Password Object Model.
+ * Password object model.
  *
  * @author Mahan Karimi
  * @see User

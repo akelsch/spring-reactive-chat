@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
 /**
- * Message Object Model (MongoDB Document)
+ * Message object model (MongoDB Document).
  *
  * @author Niklas Reinhard
  * @author Julian Quint
@@ -22,11 +22,15 @@ public class Message {
 
     @Id
     private String id;
-    @DBRef
-    private Chat chat;
-    @DBRef
-    private User sender;
-    private String content;
+
     @CreatedDate
     private LocalDateTime createdDate;
+
+    @DBRef
+    private Chat chat;
+
+    @DBRef
+    private User sender;
+
+    private String content;
 }

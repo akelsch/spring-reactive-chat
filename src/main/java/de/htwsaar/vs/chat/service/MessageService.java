@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
  * Service layer for {@link Message}.
  *
  * @author Niklas Reinhard
- * @see ChatRepository
+ * @see MessageRepository
  */
 @Service
 public class MessageService {

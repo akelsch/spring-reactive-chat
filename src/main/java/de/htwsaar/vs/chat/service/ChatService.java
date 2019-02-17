@@ -36,7 +36,7 @@ public class ChatService {
                 .map(SecurityContext::getAuthentication)
                 .map(Authentication::getPrincipal)
                 .cast(UserPrincipal.class)
-                .flatMapMany(u -> chatRepository.findAllByMembers(u.getId()));
+                .flatMapMany(principal -> chatRepository.findAllByMembers(principal.getId()));
     }
 
     public Flux<User> findAllMembersForChat(String chatId) {
@@ -51,7 +51,8 @@ public class ChatService {
     }
 
     public Mono<Chat> saveNewMember(String chatId, User member) {
-        return chatRepository.findById(chatId)
+        return chatRepository
+                .findById(chatId)
                 .doOnNext(chat -> chat.getMembers().add(member))
                 .flatMap(chatRepository::save);
     }

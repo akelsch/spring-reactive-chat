@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 /**
- * Chat Model (MongoDB Document)
+ * Chat object model (MongoDB Document).
  *
  * @author Niklas Reinhard
  * @author Julian Quint
