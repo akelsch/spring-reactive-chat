@@ -37,6 +37,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Component
 public class UserHandler {
 
+    private static final int ROLE_PREFIX_LENGTH = 5;
+
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final Validator validator;
@@ -101,14 +103,14 @@ public class UserHandler {
 
             switch (key) {
                 case "username":
-                    predicate = predicate.and(u -> {
-                        String username = u.getUsername();
-                        return username.equals(values.get(0));
-                    });
+                    predicate = predicate.and(u -> u.getUsername().equals(values.get(0)));
                     break;
                 case "roles":
                     predicate = predicate.and(u -> {
-                        List<String> roles = u.getRoles().stream().map(Enum::name).collect(Collectors.toList());
+                        List<String> roles = u.getRoles().stream()
+                                .map(Object::toString)
+                                .map(s -> s.substring(ROLE_PREFIX_LENGTH))
+                                .collect(Collectors.toList());
                         return roles.containsAll(values);
                     });
                     break;

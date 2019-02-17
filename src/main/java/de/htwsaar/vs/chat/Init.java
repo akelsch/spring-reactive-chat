@@ -1,12 +1,12 @@
 package de.htwsaar.vs.chat;
 
-import de.htwsaar.vs.chat.auth.Role;
 import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.ChatRepository;
 import de.htwsaar.vs.chat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +33,7 @@ public class Init implements CommandLineRunner {
         User admin = new User();
         admin.setUsername("admin");
         admin.setPassword(passwordEncoder.encode("nimda"));
-        admin.addRole(Role.ADMIN);
+        admin.addRole(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
         User user = new User();
         user.setUsername("user");

@@ -1,12 +1,12 @@
 package de.htwsaar.vs.chat.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.htwsaar.vs.chat.auth.Role;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
@@ -34,15 +34,17 @@ public class User {
     @JsonProperty(access = WRITE_ONLY)
     private String password;
 
-    private List<Role> roles = new ArrayList<>();
+    @JsonProperty(access = WRITE_ONLY)
+    private List<GrantedAuthority> roles = new ArrayList<>();
 
+    @JsonProperty(access = WRITE_ONLY)
     private List<GrantedAuthority> authorities = new ArrayList<>();
 
     public User() {
-        addRole(Role.USER);
+        addRole(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
-    public void addRole(Role role) {
+    public void addRole(GrantedAuthority role) {
         roles.add(role);
     }
 
