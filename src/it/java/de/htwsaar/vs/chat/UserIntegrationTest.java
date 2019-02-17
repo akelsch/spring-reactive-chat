@@ -41,7 +41,6 @@ public class UserIntegrationTest  {
     private UserRepository userRepository;
 
     private final User users[] = new User[20];
-    private String usersJSON;
 
     @BeforeEach
     void setUp(){
@@ -75,7 +74,7 @@ public class UserIntegrationTest  {
 
 
     @Test
-    @WithMockUser(username = "testuser", password = "testpassword")
+    @WithMockUser(username = "t0", password = "p0")
     void getAll(){
 
         webTestClient
@@ -87,7 +86,7 @@ public class UserIntegrationTest  {
     }
 
     @Test
-    @WithMockUser(username = "testuser", password = "testpassword")
+    @WithMockUser(username = "t0", password = "p0")
     void getAdmins(){
         webTestClient
                 .get().uri("/api/v1/users?group=ADMIN")
@@ -95,6 +94,73 @@ public class UserIntegrationTest  {
                 .expectStatus().isOk()
                 .expectBody(String.class).value(Pattern.compile("(.*\"id\".*){" + (users.length / 2) + "}")::matcher);
     }
+
+    @Test
+    @WithMockUser(username = "t0", password = "p0")
+    void getUsers(){
+        webTestClient
+                .get().uri("/api/v1/users?group=USER")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(String.class).value(Pattern.compile("(.*\"id\".*){" + users.length + "}")::matcher);
+    }
+
+    @Test
+    @WithMockUser(username = "t0", password = "p0")
+    void getSingleUser(){
+        final User u = userRepository.findByUsername(users[0].getUsername()).block();
+
+        webTestClient
+                .get().uri("/api/v1/users/" + u.getId())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(String.class).value(Pattern.compile(String.format("(.*%s.*)", u.getId()))::matcher);
+
+    }
+
+    @Test
+    @WithMockUser(username = "t0", password = "p0")
+    void deleteUser(){
+        final User u = userRepository.findByUsername(users[0].getUsername()).block();
+        final String id = u.getId();
+
+        webTestClient
+                .delete().uri("/api/v1/users/" + id)
+                .exchange()
+                .expectStatus().isNoContent();
+
+        webTestClient
+                .get().uri("/api/v1/users/"  + id)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    @WithMockUser(username = "t0", password = "p0")
+    void changePassword(){
+        final User u = userRepository.findByUsername(users[0].getUsername()).block();
+
+        webTestClient
+                .post().uri(String.format("/api/v1/users/%s/changePassword", u.getId()))
+                .exchange()
+                .expectStatus().isOk();
+
+    }
+
+
+    @Test
+    @WithMockUser(username = "t0", password = "p0")
+    void getNonExistingUser(){
+        final String id = "aaa";
+
+        webTestClient
+                .get().uri(String.format("/api/v1/users/%s", id))
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+
+
 
 
 
