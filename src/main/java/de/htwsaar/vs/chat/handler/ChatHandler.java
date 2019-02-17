@@ -3,6 +3,7 @@ package de.htwsaar.vs.chat.handler;
 import com.mongodb.DuplicateKeyException;
 import de.htwsaar.vs.chat.auth.UserPrincipal;
 import de.htwsaar.vs.chat.model.Chat;
+import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.router.ChatRouter;
 import de.htwsaar.vs.chat.service.ChatService;
 import de.htwsaar.vs.chat.util.ResponseError;
@@ -59,14 +60,14 @@ public class ChatHandler {
 
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(chatService.findAllMembersForChat(chatId), Chat.Member.class);
+                .body(chatService.findAllMembersForChat(chatId), User.class);
     }
 
     public Mono<ServerResponse> addMemberToChat(ServerRequest request) {
         String chatId = request.pathVariable("chatid");
 
         return request
-                .bodyToMono(Chat.Member.class)
+                .bodyToMono(User.class)
                 .flatMap(member -> chatService.saveNewMember(chatId, member))
                 .flatMap(chat -> ServerResponse.created(URI.create("/api/v1/chats/" + chat.getId())).build())
                 .onErrorResume(DecodingException.class, ResponseError::badRequest)

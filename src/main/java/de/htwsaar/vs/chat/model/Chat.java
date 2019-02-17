@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 /**
@@ -21,16 +22,10 @@ public class Chat {
 
     @Id
     private String id;
-    private Boolean isGroup;
-    private String name;
-    private Set<Member> members;
 
-    @Data
-    @NoArgsConstructor
-    @Document
-    public static class Member {
-        @DBRef
-        private User user;
-        private Boolean isAdmin = false;
-    }
+    @NotBlank
+    private String name;
+
+    @DBRef
+    private Set<User> members;
 }
