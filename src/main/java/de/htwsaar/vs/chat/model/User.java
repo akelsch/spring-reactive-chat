@@ -1,5 +1,6 @@
 package de.htwsaar.vs.chat.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -34,10 +35,10 @@ public class User {
     @JsonProperty(access = WRITE_ONLY)
     private String password;
 
-    @JsonProperty(access = WRITE_ONLY)
+    @JsonIgnore
     private List<GrantedAuthority> roles = new ArrayList<>();
 
-    @JsonProperty(access = WRITE_ONLY)
+    @JsonIgnore
     private List<GrantedAuthority> authorities = new ArrayList<>();
 
     public User() {
