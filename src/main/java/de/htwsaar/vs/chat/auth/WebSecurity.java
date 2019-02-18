@@ -7,8 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Class that contains Web Security Expressions used by Spring Security
@@ -34,5 +37,19 @@ public class WebSecurity {
         userRepository.save(user).subscribe();
 
         return true;
+    }
+
+    public boolean hasChatAuthority(Authentication authentication, String chatId) {
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userPrincipal.getUser();
+        List<GrantedAuthority> userAuthorities = user.getAuthorities();
+
+        for ( GrantedAuthority userAuthority : userAuthorities ) {
+            if(userAuthority.getAuthority().equals(String.format("CHAT_%s_ADMIN", chatId))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
