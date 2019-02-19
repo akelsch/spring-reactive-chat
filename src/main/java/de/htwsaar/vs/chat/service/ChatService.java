@@ -31,7 +31,7 @@ public class ChatService {
         this.chatRepository = chatRepository;
     }
 
-    public Flux<Chat> findAllForUser() {
+    public Flux<Chat> findAllChatsForCurrentUser() {
         return ReactiveSecurityContextHolder.getContext()
                 .map(SecurityContext::getAuthentication)
                 .map(Authentication::getPrincipal)
@@ -39,18 +39,18 @@ public class ChatService {
                 .flatMapMany(principal -> chatRepository.findAllByMembers(principal.getId()));
     }
 
-    public Flux<User> findAllMembersForChat(String chatId) {
+    @PostAuthorize("@webSecurity.addChatAuthority(authentication, #chat)")
+    public Mono<Chat> saveChat(Chat chat) {
+        return chatRepository.save(chat);
+    }
+
+    public Flux<User> findAllMembers(String chatId) {
         return chatRepository
                 .findById(chatId)
                 .flatMapMany(chat -> Flux.fromIterable(chat.getMembers()));
     }
 
-    @PostAuthorize("@webSecurity.addChatAuthority(authentication, #chat)")
-    public Mono<Chat> save(Chat chat) {
-        return chatRepository.save(chat);
-    }
-
-    public Mono<Chat> saveNewMember(String chatId, User member) {
+    public Mono<Chat> saveMember(String chatId, User member) {
         return chatRepository
                 .findById(chatId)
                 .doOnNext(chat -> chat.getMembers().add(member))
@@ -58,7 +58,7 @@ public class ChatService {
     }
 
     @PreAuthorize("@webSecurity.hasChatAuthority(authentication, #chatId) or #userId == principal.id")
-    public Mono<Void> removeMember(String chatId, String userId) {
+    public Mono<Void> deleteMember(String chatId, String userId) {
         return chatRepository
                 .findById(chatId)
                 .filter(chat -> chat.getMembers().removeIf(member -> member.getId().equals(userId)))

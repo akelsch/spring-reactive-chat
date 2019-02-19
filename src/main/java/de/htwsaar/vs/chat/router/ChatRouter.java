@@ -23,8 +23,8 @@ public class ChatRouter {
     public RouterFunction<ServerResponse> routeChats(ChatHandler chatHandler) {
         RouterFunction<ServerResponse> chatRoutes = RouterFunctions
                 .route(GET("/")
-                        .and(accept(APPLICATION_JSON)), chatHandler::getAll)
-                .andRoute(POST("/"), chatHandler::createChat);
+                        .and(accept(APPLICATION_JSON)), chatHandler::getAllChats)
+                .andRoute(POST("/"), chatHandler::postChat);
 
         return RouterFunctions.nest(path("/api/v1/chats"), chatRoutes);
     }
@@ -33,9 +33,9 @@ public class ChatRouter {
     public RouterFunction<ServerResponse> routeMembers(ChatHandler chatHandler) {
         RouterFunction<ServerResponse> memberRoutes = RouterFunctions
                 .route(GET("/")
-                        .and(accept(APPLICATION_JSON)), chatHandler::getAllMembersForChat)
-                .andRoute(POST("/"), chatHandler::addMemberToChat)
-                .andRoute(DELETE("/{userid}"), chatHandler::removeMemberFromChat);
+                        .and(accept(APPLICATION_JSON)), chatHandler::getAllMembers)
+                .andRoute(POST("/"), chatHandler::postMember)
+                .andRoute(DELETE("/{userid}"), chatHandler::deleteMember);
 
         return RouterFunctions.nest(path("/api/v1/chats/{chatid}/members"), memberRoutes);
     }
@@ -44,11 +44,11 @@ public class ChatRouter {
     public RouterFunction<ServerResponse> routeMessages(ChatHandler chatHandler) {
         RouterFunction<ServerResponse> messageRoutes = RouterFunctions
                 .route(GET("/")
-                        .and(accept(APPLICATION_JSON)), chatHandler::getAllMessagesForChat)
+                        .and(accept(APPLICATION_JSON)), chatHandler::getAllMessages)
                 .andRoute(GET("/paginated")
-                        .and(accept(APPLICATION_JSON)), chatHandler::getAllMessagesForChatPaginated)
-                .andRoute(POST("/"), chatHandler::sendMessageToChat)
-                .andRoute(DELETE("/{messageid}"), chatHandler::deleteMessageFromChat);
+                        .and(accept(APPLICATION_JSON)), chatHandler::getAllMessagesPaginated)
+                .andRoute(POST("/"), chatHandler::postMessage)
+                .andRoute(DELETE("/{messageid}"), chatHandler::deleteMessage);
 
         return RouterFunctions.nest(path("/api/v1/chats/{chatid}/messages"), messageRoutes);
     }

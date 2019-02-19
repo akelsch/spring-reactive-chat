@@ -38,85 +38,85 @@ public class ChatHandler {
         this.messageService = messageService;
     }
 
-    public Mono<ServerResponse> getAll(ServerRequest request) {
+    public Mono<ServerResponse> getAllChats(ServerRequest request) {
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(chatService.findAllForUser(), Chat.class);
+                .body(chatService.findAllChatsForCurrentUser(), Chat.class);
     }
 
-    public Mono<ServerResponse> createChat(ServerRequest request) {
+    public Mono<ServerResponse> postChat(ServerRequest request) {
         return request
                 .bodyToMono(Chat.class)
-                .flatMap(chatService::save)
+                .flatMap(chatService::saveChat)
                 .flatMap(chat -> ServerResponse.created(URI.create("/api/v1/chats/" + chat.getId())).build())
                 .onErrorResume(DecodingException.class, ResponseError::badRequest)
                 .onErrorResume(ConstraintViolationException.class, ResponseError::badRequest)
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
     }
 
-    public Mono<ServerResponse> getAllMembersForChat(ServerRequest request) {
+    public Mono<ServerResponse> getAllMembers(ServerRequest request) {
         String chatId = request.pathVariable("chatid");
 
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(chatService.findAllMembersForChat(chatId), User.class);
+                .body(chatService.findAllMembers(chatId), User.class);
     }
 
-    public Mono<ServerResponse> addMemberToChat(ServerRequest request) {
+    public Mono<ServerResponse> postMember(ServerRequest request) {
         String chatId = request.pathVariable("chatid");
 
         return request
                 .bodyToMono(User.class)
-                .flatMap(member -> chatService.saveNewMember(chatId, member))
+                .flatMap(member -> chatService.saveMember(chatId, member))
                 .flatMap(chat -> ServerResponse.created(URI.create("/api/v1/chats/" + chat.getId())).build())
                 .onErrorResume(DecodingException.class, ResponseError::badRequest)
                 .onErrorResume(ConstraintViolationException.class, ResponseError::badRequest)
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
     }
 
-    public Mono<ServerResponse> removeMemberFromChat(ServerRequest request) {
+    public Mono<ServerResponse> deleteMember(ServerRequest request) {
         String chatId = request.pathVariable("chatid");
         String userId = request.pathVariable("userid");
 
         return chatService
-                .removeMember(chatId, userId)
+                .deleteMember(chatId, userId)
                 .flatMap(signal -> ServerResponse.noContent().build());
     }
 
-    public Mono<ServerResponse> getAllMessagesForChat(ServerRequest request) {
+    public Mono<ServerResponse> getAllMessages(ServerRequest request) {
         String chatId = request.pathVariable("chatid");
 
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(messageService.findAllMessagesForChat(chatId), Message.class);
+                .body(messageService.findAllMessages(chatId), Message.class);
     }
 
-    public Mono<ServerResponse> getAllMessagesForChatPaginated(ServerRequest request) {
+    public Mono<ServerResponse> getAllMessagesPaginated(ServerRequest request) {
         String chatId = request.pathVariable("chatid");
         String start = request.queryParam("start").orElse("1");
         String chunk = request.queryParam("chunk").orElse("50");
 
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(messageService.findAllMessagesForChatPaginated(chatId, start, chunk), Message.class);
+                .body(messageService.findAllMessagesPaginated(chatId, start, chunk), Message.class);
     }
 
-    public Mono<ServerResponse> sendMessageToChat(ServerRequest request) {
+    public Mono<ServerResponse> postMessage(ServerRequest request) {
         String chatId = request.pathVariable("chatid");
 
         return request
                 .bodyToMono(Message.class)
-                .flatMap(message -> messageService.addMessageToChat(message, chatId))
+                .flatMap(message -> messageService.saveMessage(message, chatId))
                 .flatMap(message -> ServerResponse.created(URI.create("/api/v1/chats/" + chatId + "/messages/" + message.getId())).build())
                 .onErrorResume(DecodingException.class, ResponseError::badRequest)
                 .onErrorResume(ConstraintViolationException.class, ResponseError::badRequest)
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
     }
 
-    public Mono<ServerResponse> deleteMessageFromChat(ServerRequest request) {
+    public Mono<ServerResponse> deleteMessage(ServerRequest request) {
         String messageId = request.pathVariable("messageid");
 
         return ServerResponse.noContent()
-                .build(messageService.delete(messageId));
+                .build(messageService.deleteMessage(messageId));
     }
 }
