@@ -24,7 +24,8 @@ public class ChatRouter {
         RouterFunction<ServerResponse> chatRoutes = RouterFunctions
                 .route(GET("/")
                         .and(accept(APPLICATION_JSON)), chatHandler::getAllChats)
-                .andRoute(POST("/"), chatHandler::postChat);
+                .andRoute(POST("/"), chatHandler::postChat)
+                .andRoute(DELETE("/{chatid}"), chatHandler::deleteChat);
 
         return RouterFunctions.nest(path("/api/v1/chats"), chatRoutes);
     }

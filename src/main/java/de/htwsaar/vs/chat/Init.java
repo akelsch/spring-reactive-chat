@@ -43,6 +43,7 @@ public class Init implements CommandLineRunner {
         chat.setName("Testchat");
         chat.setMembers(new HashSet<>(asList(admin, user)));
 
+        // TODO give admin chat authority
         userRepository.deleteAll()
                 .then(chatRepository.deleteAll())
                 .thenMany(userRepository.saveAll(asList(admin, user)))

@@ -54,6 +54,14 @@ public class ChatHandler {
                 .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
     }
 
+    public Mono<ServerResponse> deleteChat(ServerRequest request) {
+        String chatId = request.pathVariable("chatid");
+
+        return chatService
+                .deleteChat(chatId)
+                .flatMap(signal -> ServerResponse.noContent().build());
+    }
+
     public Mono<ServerResponse> getAllMembers(ServerRequest request) {
         String chatId = request.pathVariable("chatid");
 
@@ -116,7 +124,8 @@ public class ChatHandler {
     public Mono<ServerResponse> deleteMessage(ServerRequest request) {
         String messageId = request.pathVariable("messageid");
 
-        return ServerResponse.noContent()
-                .build(messageService.deleteMessage(messageId));
+        return messageService
+                .deleteMessage(messageId)
+                .flatMap(signal -> ServerResponse.noContent().build());
     }
 }

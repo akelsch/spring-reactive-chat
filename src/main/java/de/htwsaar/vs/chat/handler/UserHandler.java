@@ -70,8 +70,9 @@ public class UserHandler {
     public Mono<ServerResponse> delete(ServerRequest request) {
         String uid = request.pathVariable("uid");
 
-        return ServerResponse.noContent()
-                .build(userService.deleteById(uid));
+        return userService
+                .deleteById(uid)
+                .flatMap(signal -> ServerResponse.noContent().build());
     }
 
     public Mono<ServerResponse> changePassword(ServerRequest request) {

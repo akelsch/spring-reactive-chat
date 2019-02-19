@@ -44,6 +44,7 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
+    // TODO @PreAuthorize
     public Mono<Void> deleteMessage(String messageId) {
         return messageRepository.deleteById(messageId);
     }

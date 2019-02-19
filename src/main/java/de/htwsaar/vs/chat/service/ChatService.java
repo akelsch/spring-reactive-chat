@@ -44,6 +44,11 @@ public class ChatService {
         return chatRepository.save(chat);
     }
 
+    @PreAuthorize("@webSecurity.hasChatAuthority(authentication, #chatId)")
+    public Mono<Void> deleteChat(String chatId) {
+        return chatRepository.deleteById(chatId);
+    }
+
     public Flux<User> findAllMembers(String chatId) {
         return chatRepository
                 .findById(chatId)
