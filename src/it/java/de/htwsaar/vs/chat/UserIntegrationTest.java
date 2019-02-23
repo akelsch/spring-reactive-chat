@@ -10,10 +10,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -25,10 +28,14 @@ import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
+/**
+ * @author Leslie Marxen
+ */
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureWebTestClient
-public class UserIntegrationTest  {
+public class UserIntegrationTest {
 
     @Autowired
     private WebTestClient webTestClient;
@@ -39,19 +46,19 @@ public class UserIntegrationTest  {
     private final List<User> users = new ArrayList<>();
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         userRepository.deleteAll();
         users.clear();
 
         users.addAll(userRepository.findAll().collectList().block());
-        users.stream().forEach(x -> x.setPassword(null));
-        for(int i = 0; i < 20; i++){
+        users.forEach(x -> x.setPassword(null));
+        for (int i = 0; i < 20; i++) {
             User u = new User();
 
             u.setUsername(String.format("t%d", i));
             u.setPassword(String.format("p%d", i));
 
-            switch(i % 2){
+            switch (i % 2) {
                 case 0:
                     u.setRoles(Arrays.asList(Role.ADMIN, Role.USER));
                     break;
@@ -71,70 +78,76 @@ public class UserIntegrationTest  {
 
 
     @Test
-    @WithMockUser(username = "t0", password = "p0")
-    void getAll(){
+    @WithMockUser
+    void getAll() {
 
-        final List<User> tmp = Arrays.asList(webTestClient
+        webTestClient
                 .get().uri("/api/v1/users")
+                .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(User[].class).returnResult().getResponseBody());
+                .expectHeader().contentType(APPLICATION_JSON)
+                .expectBodyList(User.class)
+                .consumeWith(
+                        usrs -> assertThat(usrs.getResponseBody().size() == users.size())
+                );
 
-
-        Assertions.assertTrue(tmp.containsAll(users));
     }
+
     @Test
-    @WithMockUser(username = "t0", password = "p0")
-    void getAdmins(){
+    @WithMockUser
+    void getAdmins() {
 
-
-        final List<User> tmp = Arrays.asList(webTestClient
+        webTestClient
                 .get().uri("/api/v1/users?roles=ADMIN")
+                .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(User[].class).returnResult().getResponseBody());
-
-        Assertions.assertTrue(tmp.containsAll(users.stream()
-                .filter(x -> x.getRoles().contains(Role.ADMIN))
-                .collect(Collectors.toList())
-        ));
+                .expectHeader().contentType(APPLICATION_JSON)
+                .expectBodyList(User.class)
+                .consumeWith(usrs -> assertThat(usrs.getResponseBody())
+                        .extracting("roles").contains(Role.ADMIN, Role.USER));
     }
 
     @Test
-    @WithMockUser(username = "t0", password = "p0")
-    void getUsers(){
-        final List<User> tmp = Arrays.asList(webTestClient
-                .get().uri("/api/v1/users")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(User[].class).returnResult().getResponseBody());
+    @WithMockUser
+    void getUsers() {
 
-        Assertions.assertTrue(tmp.containsAll(users.stream()
+        final List<User> notAdmins = users.stream()
                 .filter(x -> x.getRoles().contains(Role.USER))
-                .collect(Collectors.toList())
-        ));
+                .collect(Collectors.toList());
+
+        webTestClient
+                .get().uri("/api/v1/users?group=USER")
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(APPLICATION_JSON)
+                .expectBodyList(User.class)
+                .consumeWith(usrs -> assertThat(users.containsAll(notAdmins)));
     }
 
     @Test
-    @WithMockUser(username = "t0", password = "p0")
-    void getSingleUser(){
+    @WithMockUser
+    void getSingleUser() {
         final int rand = new Random().nextInt(users.size());
         final User u = userRepository.findByUsername(users.get(rand).getUsername()).block();
 
-        final List<User> tmp = Arrays.asList(webTestClient
+        webTestClient
                 .get().uri("/api/v1/users/" + u.getId())
+                .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(User[].class).returnResult().getResponseBody());
+                .expectHeader().contentType(APPLICATION_JSON)
+                .expectBodyList(User.class)
+                .consumeWith(usrs -> assertThat(users.size() == 1 && users.contains(u)));
 
-        Assertions.assertEquals(1, tmp.size());
-        Assertions.assertTrue(tmp.containsAll(users));
 
     }
 
     @Test
-    @WithMockUser(username = "t0", password = "p0")
-    void deleteUser(){
+    @WithMockUser
+    void deleteUser() {
 
         final User u = userRepository.findByUsername(users.get(0).getUsername()).block();
         final String id = u.getId();
@@ -145,14 +158,14 @@ public class UserIntegrationTest  {
                 .expectStatus().isNoContent();
 
         webTestClient
-                .get().uri("/api/v1/users/"  + id)
+                .get().uri("/api/v1/users/" + id)
                 .exchange()
                 .expectStatus().isNotFound();
     }
 
     @Test
     @WithMockUser(username = "t0", password = "p0")
-    void changePassword(){
+    void changePassword() {
         final User u = userRepository.findByUsername(users.get(0).getUsername()).block();
 
         webTestClient
@@ -165,7 +178,7 @@ public class UserIntegrationTest  {
 
     @Test
     @WithMockUser(username = "t0", password = "p0")
-    void getNonExistingUser(){
+    void getNonExistingUser() {
         final String id = "aaa";
 
         webTestClient
