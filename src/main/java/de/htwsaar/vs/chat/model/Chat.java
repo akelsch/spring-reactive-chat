@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 /**
@@ -26,6 +27,9 @@ public class Chat {
     @NotBlank
     private String name;
 
+    // TODO keep serializing members even though we have a /members sub-route?
+    //  idea: link to /members as well as /messages instead (like Spring HATEOAS with HAL)
+    @NotNull
     @DBRef
     private Set<User> members;
 }

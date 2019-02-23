@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
@@ -26,11 +28,16 @@ public class Message {
     @CreatedDate
     private LocalDateTime createdDate;
 
+    // TODO serialize id/name only? link to chat?
+    @NotNull
     @DBRef
     private Chat chat;
 
+    // TODO serialize id/username only? link to user?
+    @NotNull
     @DBRef
     private User sender;
 
+    @NotBlank
     private String content;
 }

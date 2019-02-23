@@ -41,10 +41,12 @@ public class ChatService {
 
     @PostAuthorize("@webSecurity.addChatAuthority(authentication, #chat)")
     public Mono<Chat> saveChat(Chat chat) {
+        // TODO add current user from ReactiveSecurityContextHolder automatically
         return chatRepository.save(chat);
     }
 
     @PreAuthorize("@webSecurity.hasChatAuthority(authentication, #chatId)")
+    // TODO @PostAuthorize removeChatAuthority
     public Mono<Void> deleteChat(String chatId) {
         return chatRepository.deleteById(chatId);
     }

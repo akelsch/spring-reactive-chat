@@ -37,6 +37,7 @@ public class MessageService {
     }
 
     public Mono<Message> saveMessage(Message message, String chatId) {
+        // TODO get chat sender from ReactiveSecurityContextHolder, see findAllChatsForCurrentUser
         Chat chat = new Chat();
         chat.setId(chatId);
         message.setChat(chat);
