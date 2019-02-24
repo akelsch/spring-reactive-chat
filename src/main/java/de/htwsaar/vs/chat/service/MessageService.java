@@ -1,5 +1,6 @@
 package de.htwsaar.vs.chat.service;
 
+import de.htwsaar.vs.chat.auth.UserPrincipal;
 import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.Message;
 import de.htwsaar.vs.chat.repository.MessageRepository;
@@ -8,6 +9,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.ChangeStreamEvent;
 import org.springframework.data.mongodb.core.ChangeStreamOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -46,12 +50,16 @@ public class MessageService {
     }
 
     public Mono<Message> saveMessage(Message message, String chatId) {
-        // TODO get chat sender from ReactiveSecurityContextHolder, see findAllChatsForCurrentUser
         Chat chat = new Chat();
         chat.setId(chatId);
         message.setChat(chat);
 
-        return messageRepository.save(message);
+        return ReactiveSecurityContextHolder.getContext()
+                .map(SecurityContext::getAuthentication)
+                .map(Authentication::getPrincipal)
+                .cast(UserPrincipal.class)
+                .doOnNext(principal -> message.setSender(principal.getUser()))
+                .flatMap(principal -> messageRepository.save(message));
     }
 
     // TODO @PreAuthorize
