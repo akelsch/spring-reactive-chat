@@ -14,6 +14,12 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.lang.reflect.Member;
+import java.util.HashSet;
+import java.util.Set;
+
+import static java.util.Arrays.asList;
+
 /**
  * Service layer for {@link Chat}.
  *
@@ -41,8 +47,15 @@ public class ChatService {
 
     @PostAuthorize("@webSecurity.addChatAuthority(authentication, #chat)")
     public Mono<Chat> saveChat(Chat chat) {
-        // TODO add current user from ReactiveSecurityContextHolder automatically
-        return chatRepository.save(chat);
+        Set<User> members = chat.getMembers();
+
+        return ReactiveSecurityContextHolder.getContext()
+                .map(SecurityContext::getAuthentication)
+                .map(Authentication::getPrincipal)
+                .cast(UserPrincipal.class)
+                .doOnNext(principal -> members.add(principal.getUser()))
+                .doOnNext(principal -> chat.setMembers(members))
+                .flatMap(principal -> chatRepository.save(chat));
     }
 
     @PreAuthorize("@webSecurity.hasChatAuthority(authentication, #chatId) " +
