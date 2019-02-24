@@ -11,6 +11,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * Class that contains Web Security Expressions used by Spring Security
  * (e.g. in annotations like {@link PreAuthorize} and {@link PostAuthorize}).
@@ -43,5 +45,17 @@ public class WebSecurity {
         return userPrincipal.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch(authority -> authority.equals(String.format("CHAT_%s_ADMIN", chatId)));
+    }
+
+    public boolean removeChatAuthority(Authentication authentication, String chatId) {
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userPrincipal.getUser();
+        List<GrantedAuthority> authorities = user.getAuthorities();
+        authorities.removeIf(authority -> authority.getAuthority().equals(String.format("CHAT_%s_ADMIN", chatId)));
+        user.setAuthorities(authorities);
+        
+        userRepository.save(user).subscribe();
+
+        return true;
     }
 }

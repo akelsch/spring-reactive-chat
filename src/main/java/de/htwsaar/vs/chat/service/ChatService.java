@@ -45,8 +45,8 @@ public class ChatService {
         return chatRepository.save(chat);
     }
 
-    @PreAuthorize("@webSecurity.hasChatAuthority(authentication, #chatId)")
-    // TODO @PostAuthorize removeChatAuthority
+    @PreAuthorize("@webSecurity.hasChatAuthority(authentication, #chatId) " +
+            "and @webSecurity.removeChatAuthority(authentication, #chatId)")
     public Mono<Void> deleteChat(String chatId) {
         return chatRepository.deleteById(chatId);
     }
