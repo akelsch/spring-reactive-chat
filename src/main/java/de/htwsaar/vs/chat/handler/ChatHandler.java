@@ -13,12 +13,14 @@ import org.springframework.core.codec.DecodingException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.ConstraintViolationException;
 import java.net.URI;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.TEXT_EVENT_STREAM;
 
 /**
  * Handler methods for {@link ChatRouter}.
@@ -127,5 +129,11 @@ public class ChatHandler {
         return messageService
                 .deleteMessage(messageId)
                 .flatMap(signal -> ServerResponse.noContent().build());
+    }
+
+    public Mono<ServerResponse> getNewMessages(ServerRequest request) {
+        return ServerResponse.ok()
+                .contentType(TEXT_EVENT_STREAM)
+                .body(messageService.streamNewMessages(), Message.class);
     }
 }

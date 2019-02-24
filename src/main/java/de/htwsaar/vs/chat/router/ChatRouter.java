@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.TEXT_EVENT_STREAM;
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 
 /**
@@ -49,7 +50,9 @@ public class ChatRouter {
                 .andRoute(GET("/paginated")
                         .and(accept(APPLICATION_JSON)), chatHandler::getAllMessagesPaginated)
                 .andRoute(POST("/"), chatHandler::postMessage)
-                .andRoute(DELETE("/{messageid}"), chatHandler::deleteMessage);
+                .andRoute(DELETE("/{messageid}"), chatHandler::deleteMessage)
+                .andRoute(GET("/stream")
+                        .and(accept(TEXT_EVENT_STREAM)), chatHandler::getNewMessages);
 
         return RouterFunctions.nest(path("/api/v1/chats/{chatid}/messages"), messageRoutes);
     }
