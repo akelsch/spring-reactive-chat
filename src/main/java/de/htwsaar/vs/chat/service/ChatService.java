@@ -4,6 +4,7 @@ import de.htwsaar.vs.chat.auth.UserPrincipal;
 import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.ChatRepository;
+import de.htwsaar.vs.chat.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,11 +15,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.lang.reflect.Member;
-import java.util.HashSet;
 import java.util.Set;
-
-import static java.util.Arrays.asList;
 
 /**
  * Service layer for {@link Chat}.
@@ -47,12 +44,13 @@ public class ChatService {
 
     @PostAuthorize("@webSecurity.addChatAuthority(authentication, #chat)")
     public Mono<Chat> saveChat(Chat chat) {
-        Set<User> members = chat.getMembers();
+        Set<User> members = CollectionUtils.emptySetIfNull(chat.getMembers());
 
         return ReactiveSecurityContextHolder.getContext()
                 .map(SecurityContext::getAuthentication)
                 .map(Authentication::getPrincipal)
                 .cast(UserPrincipal.class)
+                // TODO equals() with id only? so duplicate DBRefs can not happen
                 .doOnNext(principal -> members.add(principal.getUser()))
                 .doOnNext(principal -> chat.setMembers(members))
                 .flatMap(principal -> chatRepository.save(chat));
