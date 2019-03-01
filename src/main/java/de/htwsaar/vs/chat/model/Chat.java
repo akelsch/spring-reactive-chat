@@ -2,9 +2,9 @@ package de.htwsaar.vs.chat.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.htwsaar.vs.chat.model.serializer.CollectionSizeSerializer;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -18,13 +18,11 @@ import java.util.Set;
  * @author Niklas Reinhard
  * @author Julian Quint
  */
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 @Document
-public class Chat implements DocumentWithId {
-
-    @Id
-    private String id;
+public class Chat extends BaseDocument {
 
     @NotBlank
     private String name;

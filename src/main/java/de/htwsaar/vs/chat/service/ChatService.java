@@ -50,7 +50,6 @@ public class ChatService {
                 .map(SecurityContext::getAuthentication)
                 .map(Authentication::getPrincipal)
                 .cast(UserPrincipal.class)
-                // TODO equals() with id only? so duplicate DBRefs can not happen
                 .doOnNext(principal -> members.add(principal.getUser()))
                 .doOnNext(principal -> chat.setMembers(members))
                 .flatMap(principal -> chatRepository.save(chat));

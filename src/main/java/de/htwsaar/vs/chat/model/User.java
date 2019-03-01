@@ -2,8 +2,9 @@ package de.htwsaar.vs.chat.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import org.springframework.data.annotation.Id;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,12 +21,11 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
  *
  * @author Arthur Kelsch
  */
-@Data
+@Getter
+@Setter
+@ToString
 @Document
-public class User implements DocumentWithId {
-
-    @Id
-    private String id;
+public class User extends BaseDocument {
 
     @NotBlank
     @Indexed(unique = true)

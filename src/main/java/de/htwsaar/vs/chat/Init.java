@@ -3,12 +3,14 @@ package de.htwsaar.vs.chat;
 import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.ChatRepository;
+import de.htwsaar.vs.chat.repository.MessageRepository;
 import de.htwsaar.vs.chat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
 
@@ -19,12 +21,15 @@ public class Init implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
+    private final MessageRepository messageRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public Init(UserRepository userRepository, ChatRepository chatRepository, PasswordEncoder passwordEncoder) {
+    public Init(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository,
+                PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.chatRepository = chatRepository;
+        this.messageRepository = messageRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -41,13 +46,22 @@ public class Init implements CommandLineRunner {
 
         Chat chat = new Chat();
         chat.setName("Testchat");
-        chat.setMembers(new HashSet<>(asList(admin, user)));
 
         // TODO give admin chat authority
-        userRepository.deleteAll()
+        Mono<Void> deleteAll = userRepository.deleteAll()
                 .then(chatRepository.deleteAll())
-                .thenMany(userRepository.saveAll(asList(admin, user)))
-                .then(chatRepository.save(chat))
+                .then(messageRepository.deleteAll());
+
+        Mono<Void> saveUsers = userRepository.saveAll(asList(admin, user))
+                .collectList()
+                .doOnNext(users -> chat.setMembers(new HashSet<>(users)))
+                .then();
+
+        Mono<Void> saveChat = chatRepository.save(chat).then();
+
+        deleteAll
+                .then(saveUsers)
+                .then(saveChat)
                 .subscribe();
     }
 }
