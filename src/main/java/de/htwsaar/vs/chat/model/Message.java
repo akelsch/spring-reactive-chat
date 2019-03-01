@@ -1,5 +1,7 @@
 package de.htwsaar.vs.chat.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.htwsaar.vs.chat.model.serializer.DocumentIdSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -20,7 +22,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @Document
-public class Message {
+public class Message implements DocumentWithId {
 
     @Id
     private String id;
@@ -28,13 +30,13 @@ public class Message {
     @CreatedDate
     private LocalDateTime createdDate;
 
-    // TODO serialize id/name only? link to chat?
     @NotNull
+    @JsonSerialize(using = DocumentIdSerializer.class)
     @DBRef
     private Chat chat;
 
-    // TODO serialize id/username only? link to user?
     @NotNull
+    @JsonSerialize(using = DocumentIdSerializer.class)
     @DBRef
     private User sender;
 

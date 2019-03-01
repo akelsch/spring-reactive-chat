@@ -1,5 +1,7 @@
 package de.htwsaar.vs.chat.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.htwsaar.vs.chat.model.serializer.CollectionSizeSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -19,7 +21,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @Document
-public class Chat {
+public class Chat implements DocumentWithId {
 
     @Id
     private String id;
@@ -27,9 +29,8 @@ public class Chat {
     @NotBlank
     private String name;
 
-    // TODO keep serializing members even though we have a /members sub-route?
-    //  idea: link to /members as well as /messages instead (like Spring HATEOAS with HAL)
     @NotNull
+    @JsonSerialize(using = CollectionSizeSerializer.class)
     @DBRef
     private Set<User> members;
 }

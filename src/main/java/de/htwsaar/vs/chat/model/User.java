@@ -22,7 +22,7 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
  */
 @Data
 @Document
-public class User {
+public class User implements DocumentWithId {
 
     @Id
     private String id;
