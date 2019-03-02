@@ -1,6 +1,5 @@
 package de.htwsaar.vs.chat.service;
 
-import de.htwsaar.vs.chat.auth.Role;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
-import java.util.Collections;
 
 /**
  * Service layer for {@link User}.
@@ -36,7 +34,6 @@ public class UserService {
 
     public Mono<User> save(@Valid User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(Collections.singletonList(Role.USER));
 
         return userRepository.save(user);
     }

@@ -1,35 +1,34 @@
 package de.htwsaar.vs.chat.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.htwsaar.vs.chat.model.serializer.CollectionSizeSerializer;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 /**
- * Chat Model (MongoDB Document)
+ * Chat object model (MongoDB Document).
  *
  * @author Niklas Reinhard
+ * @author Julian Quint
  */
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 @Document
-public class Chat {
+public class Chat extends BaseDocument {
 
-    @Id
-    private String id;
-    private Boolean isGroup;
+    @NotBlank
     private String name;
-    private List<Member> members;
 
-    @Data
-    @NoArgsConstructor
-    @Document
-    public static class Member {
-        @DBRef
-        private User user;
-        private Boolean isAdmin = false;
-    }
+    @NotNull
+    @JsonSerialize(using = CollectionSizeSerializer.class)
+    @DBRef
+    private Set<User> members;
 }

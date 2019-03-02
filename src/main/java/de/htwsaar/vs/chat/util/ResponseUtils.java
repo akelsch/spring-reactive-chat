@@ -13,7 +13,7 @@ import static org.springframework.http.HttpStatus.CONFLICT;
  * @author Arthur Kelsch
  */
 @UtilityClass
-public class ResponseError {
+public final class ResponseUtils {
 
     public static <T> Mono<T> badRequest(Throwable e) {
         return badRequest(e, e.getMessage());

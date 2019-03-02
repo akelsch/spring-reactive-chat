@@ -4,9 +4,10 @@ import de.htwsaar.vs.chat.model.Password;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.router.UserRouter;
 import de.htwsaar.vs.chat.service.UserService;
-import de.htwsaar.vs.chat.util.ResponseError;
+import de.htwsaar.vs.chat.util.ResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.codec.DecodingException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
@@ -36,6 +37,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
  */
 @Component
 public class UserHandler {
+
+    private static final int ROLE_PREFIX_LENGTH = 5;
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
@@ -70,8 +73,7 @@ public class UserHandler {
 
         return userService
                 .deleteById(uid)
-                .flatMap(signal -> ServerResponse.noContent().build())
-                .switchIfEmpty(ServerResponse.notFound().build());
+                .flatMap(signal -> ServerResponse.noContent().build());
     }
 
     public Mono<ServerResponse> changePassword(ServerRequest request) {
@@ -79,21 +81,21 @@ public class UserHandler {
         Mono<Password> password = request
                 .bodyToMono(Password.class)
                 .doOnNext(this::validatePassword)
-                .onErrorResume(DecodingException.class, ResponseError::badRequest)
-                .onErrorResume(ConstraintViolationException.class, ResponseError::badRequest);
+                .onErrorResume(DecodingException.class, ResponseUtils::badRequest)
+                .onErrorResume(ConstraintViolationException.class, ResponseUtils::badRequest);
 
         return userService
                 .findById(uid)
                 .zipWith(password)
                 .doOnNext(this::matchOldPassword)
-                .doOnNext(t -> t.getT1().setPassword(t.getT2().getNewPassword()))
-                .flatMap(t -> userService.update(t.getT1()))
-                .flatMap(u -> ServerResponse.ok().build())
+                .doOnNext(tuple -> tuple.getT1().setPassword(tuple.getT2().getNewPassword()))
+                .flatMap(tuple -> userService.update(tuple.getT1()))
+                .flatMap(user -> ServerResponse.ok().build())
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
     private static Predicate<User> matchByQueryParams(MultiValueMap<String, String> queryParams) {
-        Predicate<User> predicate = u -> true;
+        Predicate<User> predicate = user -> true;
 
         for (Map.Entry<String, List<String>> entry : queryParams.entrySet()) {
             String key = entry.getKey();
@@ -101,14 +103,14 @@ public class UserHandler {
 
             switch (key) {
                 case "username":
-                    predicate = predicate.and(u -> {
-                        String username = u.getUsername();
-                        return username.equals(values.get(0));
-                    });
+                    predicate = predicate.and(user -> user.getUsername().equals(values.get(0)));
                     break;
                 case "roles":
-                    predicate = predicate.and(u -> {
-                        List<String> roles = u.getRoles().stream().map(Enum::name).collect(Collectors.toList());
+                    predicate = predicate.and(user -> {
+                        List<String> roles = user.getRoles().stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .map(role -> role.substring(ROLE_PREFIX_LENGTH))
+                                .collect(Collectors.toList());
                         return roles.containsAll(values);
                     });
                     break;

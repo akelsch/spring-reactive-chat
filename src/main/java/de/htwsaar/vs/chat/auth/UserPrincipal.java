@@ -1,13 +1,12 @@
 package de.htwsaar.vs.chat.auth;
 
 import de.htwsaar.vs.chat.model.User;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * {@link UserDetails} implementation used by Spring Security for authentication
@@ -19,6 +18,7 @@ import java.util.TreeSet;
 @RequiredArgsConstructor
 public class UserPrincipal implements UserDetails {
 
+    @Getter
     private final User user;
 
     public String getId() {
@@ -27,7 +27,11 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.unmodifiableSet(new TreeSet<>(user.getRoles()));
+        SortedSet<GrantedAuthority> authorities = new TreeSet<>(Comparator.comparing(GrantedAuthority::getAuthority));
+        authorities.addAll(user.getRoles());
+        authorities.addAll(user.getAuthorities());
+
+        return Collections.unmodifiableSet(authorities);
     }
 
     @Override
