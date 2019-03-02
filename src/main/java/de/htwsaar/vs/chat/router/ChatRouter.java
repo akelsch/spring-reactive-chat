@@ -26,7 +26,9 @@ public class ChatRouter {
                 .route(GET("/")
                         .and(accept(APPLICATION_JSON)), chatHandler::getAllChats)
                 .andRoute(POST("/"), chatHandler::postChat)
-                .andRoute(DELETE("/{chatid}"), chatHandler::deleteChat);
+                .andRoute(DELETE("/{chatid}"), chatHandler::deleteChat)
+                .andRoute(GET("/messages/stream")
+                        .and(accept(TEXT_EVENT_STREAM)), chatHandler::getNewMessages);
 
         return RouterFunctions.nest(path("/api/v1/chats"), chatRoutes);
     }
@@ -50,9 +52,7 @@ public class ChatRouter {
                 .andRoute(GET("/paginated")
                         .and(accept(APPLICATION_JSON)), chatHandler::getAllMessagesPaginated)
                 .andRoute(POST("/"), chatHandler::postMessage)
-                .andRoute(DELETE("/{messageid}"), chatHandler::deleteMessage)
-                .andRoute(GET("/stream")
-                        .and(accept(TEXT_EVENT_STREAM)), chatHandler::getNewMessages);
+                .andRoute(DELETE("/{messageid}"), chatHandler::deleteMessage);
 
         return RouterFunctions.nest(path("/api/v1/chats/{chatid}/messages"), messageRoutes);
     }

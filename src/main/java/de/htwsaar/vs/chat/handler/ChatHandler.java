@@ -133,6 +133,6 @@ public class ChatHandler {
     public Mono<ServerResponse> getNewMessages(ServerRequest request) {
         return ServerResponse.ok()
                 .contentType(TEXT_EVENT_STREAM)
-                .body(messageService.streamNewMessages(), Message.class);
+                .body(chatService.streamNewMessages(), Message.class);
     }
 }
