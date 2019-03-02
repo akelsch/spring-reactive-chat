@@ -15,6 +15,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
  *
  * @author Arthur Kelsch
  * @author Mahan Karimi
+ * @author Julian Quint
  */
 @Configuration
 public class UserRouter {
@@ -26,10 +27,8 @@ public class UserRouter {
                         .and(accept(APPLICATION_JSON)), userHandler::getAll)
                 .andRoute(GET("/{uid}")
                         .and(accept(APPLICATION_JSON)), userHandler::get)
-                .andRoute(DELETE("/{uid}")
-                        .and(accept(APPLICATION_JSON)), userHandler::delete)
-                .andRoute(POST("/{uid}/changePassword")
-                        .and(accept(APPLICATION_JSON)), userHandler::changePassword);
+                .andRoute(DELETE("/{uid}"), userHandler::delete)
+                .andRoute(POST("/{uid}/changePassword"), userHandler::changePassword);
 
         return RouterFunctions.nest(path("/api/v1/users"), userRoutes);
     }

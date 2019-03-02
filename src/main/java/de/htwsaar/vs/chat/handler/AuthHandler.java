@@ -3,7 +3,7 @@ package de.htwsaar.vs.chat.handler;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.router.AuthRouter;
 import de.htwsaar.vs.chat.service.UserService;
-import de.htwsaar.vs.chat.util.ResponseError;
+import de.htwsaar.vs.chat.util.ResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.codec.DecodingException;
 import org.springframework.dao.DuplicateKeyException;
@@ -35,9 +35,9 @@ public class AuthHandler {
                 .bodyToMono(User.class)
                 .flatMap(userService::save)
                 .flatMap(user -> ServerResponse.created(URI.create("/api/v1/users/" + user.getId())).build())
-                .onErrorResume(DecodingException.class, ResponseError::badRequest)
-                .onErrorResume(ConstraintViolationException.class, ResponseError::badRequest)
-                .onErrorResume(DuplicateKeyException.class, ResponseError::conflict);
+                .onErrorResume(DecodingException.class, ResponseUtils::badRequest)
+                .onErrorResume(ConstraintViolationException.class, ResponseUtils::badRequest)
+                .onErrorResume(DuplicateKeyException.class, ResponseUtils::conflict);
     }
 
     public Mono<ServerResponse> signin(ServerRequest request) {

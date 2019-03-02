@@ -6,8 +6,8 @@ import org.springframework.security.web.server.authentication.ServerAuthenticati
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import static de.htwsaar.vs.chat.util.JwtUtil.JWT_PREFIX;
-import static de.htwsaar.vs.chat.util.JwtUtil.createToken;
+import static de.htwsaar.vs.chat.util.JwtUtils.JWT_PREFIX;
+import static de.htwsaar.vs.chat.util.JwtUtils.createToken;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
@@ -21,9 +21,7 @@ public class JwtAuthenticationSuccessHandler implements ServerAuthenticationSucc
     public Mono<Void> onAuthenticationSuccess(WebFilterExchange webFilterExchange, Authentication authentication) {
         ServerWebExchange exchange = webFilterExchange.getExchange();
 
-        exchange
-                .getResponse()
-                .getHeaders()
+        exchange.getResponse().getHeaders()
                 .add(AUTHORIZATION, JWT_PREFIX + createToken(authentication));
 
         return webFilterExchange.getChain().filter(exchange);

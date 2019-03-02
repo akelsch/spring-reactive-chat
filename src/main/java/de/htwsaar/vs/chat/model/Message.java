@@ -1,35 +1,43 @@
 package de.htwsaar.vs.chat.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.htwsaar.vs.chat.model.serializer.DocumentIdSerializer;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
- * chat
+ * Message object model (MongoDB Document).
  *
  * @author Niklas Reinhard
+ * @author Julian Quint
  */
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 @Document
-public class Message {
+public class Message extends BaseDocument {
 
-    @Version
-    private Long version;
-    @Id
-    private String id;
-    @DBRef
-    private Chat chat;
-    // only id needed
-    @DBRef
-    private User sender;
-    private String content;
     @CreatedDate
     private LocalDateTime createdDate;
+
+    @NotNull
+    @JsonSerialize(using = DocumentIdSerializer.class)
+    @DBRef
+    private Chat chat;
+
+    @NotNull
+    @JsonSerialize(using = DocumentIdSerializer.class)
+    @DBRef
+    private User sender;
+
+    @NotBlank
+    private String content;
 }
