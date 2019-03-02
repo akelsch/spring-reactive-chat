@@ -1,5 +1,6 @@
 package de.htwsaar.vs.chat;
 
+import de.htwsaar.vs.chat.auth.ChatAuthority;
 import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.ChatRepository;
@@ -57,7 +58,7 @@ public class Init implements CommandLineRunner {
                 .then();
 
         Mono<Void> saveChat = chatRepository.save(chat)
-                .doOnNext(c -> admin.addAuthority(new SimpleGrantedAuthority(String.format("CHAT_%s_ADMIN", c.getId()))))
+                .doOnNext(c -> admin.addAuthority(new ChatAuthority(c.getId())))
                 .flatMap(c -> userRepository.save(admin))
                 .then();
 

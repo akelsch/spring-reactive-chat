@@ -4,7 +4,7 @@ import de.htwsaar.vs.chat.model.Password;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.router.UserRouter;
 import de.htwsaar.vs.chat.service.UserService;
-import de.htwsaar.vs.chat.util.ResponseError;
+import de.htwsaar.vs.chat.util.ResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.codec.DecodingException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -80,8 +80,8 @@ public class UserHandler {
         Mono<Password> password = request
                 .bodyToMono(Password.class)
                 .doOnNext(this::validatePassword)
-                .onErrorResume(DecodingException.class, ResponseError::badRequest)
-                .onErrorResume(ConstraintViolationException.class, ResponseError::badRequest);
+                .onErrorResume(DecodingException.class, ResponseUtils::badRequest)
+                .onErrorResume(ConstraintViolationException.class, ResponseUtils::badRequest);
 
         return userService
                 .findById(uid)

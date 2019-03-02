@@ -2,7 +2,7 @@ package de.htwsaar.vs.chat.auth.jwt;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import de.htwsaar.vs.chat.util.JwtUtils;
-import de.htwsaar.vs.chat.util.ResponseError;
+import de.htwsaar.vs.chat.util.ResponseUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
@@ -28,7 +28,7 @@ public class JwtAuthorizationConverter implements ServerAuthenticationConverter 
                 .map(JwtUtils::verifyToken)
                 .map(JwtUtils::getName)
                 .onErrorResume(JWTVerificationException.class,
-                        e -> ResponseError.badRequest(e, "JWT verification failed: " + e.getMessage()))
+                        e -> ResponseUtils.badRequest(e, "JWT verification failed: " + e.getMessage()))
                 .map(username -> new UsernamePasswordAuthenticationToken(username, null));
     }
 }

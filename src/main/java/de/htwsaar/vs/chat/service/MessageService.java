@@ -72,6 +72,7 @@ public class MessageService {
                 .filter(newAggregation(match(where("operationType").is("insert"))))
                 .build();
 
+        // TODO filter to contain messages for a single user only
         return reactiveTemplate
                 .changeStream("message", options, Message.class)
                 .map(ChangeStreamEvent::getBody);

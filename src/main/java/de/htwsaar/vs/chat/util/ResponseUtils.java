@@ -13,8 +13,7 @@ import static org.springframework.http.HttpStatus.CONFLICT;
  * @author Arthur Kelsch
  */
 @UtilityClass
-// TODO replace with global error handling mechanism
-public final class ResponseError {
+public final class ResponseUtils {
 
     public static <T> Mono<T> badRequest(Throwable e) {
         return badRequest(e, e.getMessage());

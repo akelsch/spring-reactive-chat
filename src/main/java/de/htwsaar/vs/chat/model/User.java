@@ -49,7 +49,15 @@ public class User extends BaseDocument {
         roles.add(role);
     }
 
+    public boolean removeRole(GrantedAuthority role) {
+        return roles.remove(role);
+    }
+
     public void addAuthority(GrantedAuthority authority) {
         authorities.add(authority);
+    }
+
+    public boolean removeAuthority(GrantedAuthority authority) {
+        return authorities.remove(authority);
     }
 }
