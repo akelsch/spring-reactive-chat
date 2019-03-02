@@ -21,9 +21,7 @@ public class JwtAuthenticationSuccessHandler implements ServerAuthenticationSucc
     public Mono<Void> onAuthenticationSuccess(WebFilterExchange webFilterExchange, Authentication authentication) {
         ServerWebExchange exchange = webFilterExchange.getExchange();
 
-        exchange
-                .getResponse()
-                .getHeaders()
+        exchange.getResponse().getHeaders()
                 .add(AUTHORIZATION, JWT_PREFIX + createToken(authentication));
 
         return webFilterExchange.getChain().filter(exchange);

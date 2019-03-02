@@ -28,7 +28,7 @@ public class JwtAuthorizationConverter implements ServerAuthenticationConverter 
 
     @Override
     public Mono<Authentication> convert(ServerWebExchange exchange) {
-        final ServerHttpRequest request = exchange.getRequest();
+        ServerHttpRequest request = exchange.getRequest();
 
         Mono<String> sseToken = Mono.justOrEmpty(request.getQueryParams().getFirst("token"))
                 .filter(token -> request.getHeaders().getAccept().contains(TEXT_EVENT_STREAM));

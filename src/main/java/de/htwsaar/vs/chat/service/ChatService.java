@@ -20,7 +20,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
-import java.util.Objects;
 import java.util.Set;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;

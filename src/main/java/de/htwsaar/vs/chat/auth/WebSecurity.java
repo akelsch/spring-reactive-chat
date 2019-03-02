@@ -30,8 +30,7 @@ public class WebSecurity {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         User user = userPrincipal.getUser();
 
-        return user.getAuthorities().stream()
-                .anyMatch(authority -> authority.equals(new ChatAuthority(chatId)));
+        return user.getAuthorities().contains(new ChatAuthority(chatId));
     }
 
     public boolean addChatAuthority(Authentication authentication, Chat chat) {

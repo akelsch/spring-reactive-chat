@@ -7,6 +7,7 @@ import de.htwsaar.vs.chat.service.UserService;
 import de.htwsaar.vs.chat.util.ResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.codec.DecodingException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
@@ -107,7 +108,7 @@ public class UserHandler {
                 case "roles":
                     predicate = predicate.and(user -> {
                         List<String> roles = user.getRoles().stream()
-                                .map(Object::toString)
+                                .map(GrantedAuthority::getAuthority)
                                 .map(role -> role.substring(ROLE_PREFIX_LENGTH))
                                 .collect(Collectors.toList());
                         return roles.containsAll(values);
