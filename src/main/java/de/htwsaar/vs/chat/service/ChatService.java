@@ -7,6 +7,7 @@ import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.ChatRepository;
 import de.htwsaar.vs.chat.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.ChangeStreamEvent;
 import org.springframework.data.mongodb.core.ChangeStreamOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -17,6 +18,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import java.util.Objects;
 import java.util.Set;
@@ -101,8 +103,9 @@ public class ChatService {
 
         return mongoOperations
                 .changeStream("message", options, Message.class)
+                .map(ChangeStreamEvent::getBody)
                 .zipWith(findAllChatsForCurrentUser().collectList())
-                .filter(tuple -> tuple.getT2().contains(Objects.requireNonNull(tuple.getT1().getBody()).getChat()))
-                .map(tuple -> tuple.getT1().getBody());
+                .filter(tuple -> tuple.getT2().contains(tuple.getT1().getChat()))
+                .map(Tuple2::getT1);
     }
 }
