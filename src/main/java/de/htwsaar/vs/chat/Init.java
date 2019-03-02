@@ -47,7 +47,6 @@ public class Init implements CommandLineRunner {
         Chat chat = new Chat();
         chat.setName("Testchat");
 
-        // TODO give admin chat authority
         Mono<Void> deleteAll = userRepository.deleteAll()
                 .then(chatRepository.deleteAll())
                 .then(messageRepository.deleteAll());
@@ -57,7 +56,10 @@ public class Init implements CommandLineRunner {
                 .doOnNext(users -> chat.setMembers(new HashSet<>(users)))
                 .then();
 
-        Mono<Void> saveChat = chatRepository.save(chat).then();
+        Mono<Void> saveChat = chatRepository.save(chat)
+                .doOnNext(c -> admin.addAuthority(new SimpleGrantedAuthority(String.format("CHAT_%s_ADMIN", c.getId()))))
+                .flatMap(c -> userRepository.save(admin))
+                .then();
 
         deleteAll
                 .then(saveUsers)
