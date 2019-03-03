@@ -32,7 +32,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @WebFluxTest
 @DisableWebFluxSecurityCsrf
 @Import({AuthRouter.class, AuthHandler.class})
-class AuthHandlerTest {
+class AuthHandlerTests {
 
     @Autowired
     private WebTestClient webTestClient;

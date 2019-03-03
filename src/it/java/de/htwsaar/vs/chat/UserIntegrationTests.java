@@ -28,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureWebTestClient
-class UserIntegrationTest {
+class UserIntegrationTests {
 
     @Autowired
     private WebTestClient webTestClient;

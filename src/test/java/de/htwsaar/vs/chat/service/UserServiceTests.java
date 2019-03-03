@@ -22,7 +22,7 @@ import static org.mockito.BDDMockito.given;
  * @author Arthur Kelsch
  */
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class UserServiceTests {
 
     @Mock
     private UserRepository userRepository;
