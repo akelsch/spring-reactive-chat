@@ -19,7 +19,7 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
- * Integration test testing routes defined in {@link AuthRouter}.
+ * Integration tests for routes defined in {@link AuthRouter}.
  *
  * @author Arthur Kelsch
  */

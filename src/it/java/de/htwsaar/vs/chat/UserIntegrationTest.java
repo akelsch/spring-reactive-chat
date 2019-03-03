@@ -1,103 +1,56 @@
 package de.htwsaar.vs.chat;
 
-import de.htwsaar.vs.chat.auth.Role;
 import de.htwsaar.vs.chat.model.User;
-import de.htwsaar.vs.chat.repository.UserRepository;
-import de.htwsaar.vs.chat.router.AuthRouter;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.Assertions.*;
+import de.htwsaar.vs.chat.router.UserRouter;
+import de.htwsaar.vs.chat.service.UserService;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpHeaders.LOCATION;
-import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
+ * Integration tests for routes defined in {@link UserRouter}.
+ *
  * @author Leslie Marxen
  */
-
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureWebTestClient
-public class UserIntegrationTest {
+class UserIntegrationTest {
 
     @Autowired
     private WebTestClient webTestClient;
 
     @Autowired
-    private UserRepository userRepository;
-
-    private final List<User> users = new ArrayList<>();
-
-    @BeforeEach
-    void setUp() {
-        userRepository.deleteAll();
-        users.clear();
-
-        users.addAll(userRepository.findAll().collectList().block());
-        users.forEach(x -> x.setPassword(null));
-        for (int i = 0; i < 20; i++) {
-            User u = new User();
-
-            u.setUsername(String.format("t%d", i));
-            u.setPassword(String.format("p%d", i));
-
-            switch (i % 2) {
-                case 0:
-                    u.setRoles(Arrays.asList(Role.ADMIN, Role.USER));
-                    break;
-                case 1:
-                    u.setRoles(Arrays.asList(Role.USER));
-                    break;
-            }
-
-
-            userRepository.save(u).subscribe();
-            u.setPassword(null);
-            users.add(u);
-
-
-        }
-    }
-
+    private UserService userService;
 
     @Test
     @WithMockUser
-    void getAll() {
-
+    void getAllUsers() {
         webTestClient
                 .get().uri("/api/v1/users")
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(APPLICATION_JSON)
-                .expectBodyList(User.class)
-                .consumeWith(
-                        usrs -> assertThat(usrs.getResponseBody().size() == users.size())
-                );
-
+                .expectBodyList(User.class);
     }
 
     @Test
     @WithMockUser
-    void getAdmins() {
-
+    void getAllUsersWithFilter() {
         webTestClient
                 .get().uri("/api/v1/users?roles=ADMIN")
                 .accept(APPLICATION_JSON)
@@ -105,110 +58,65 @@ public class UserIntegrationTest {
                 .expectStatus().isOk()
                 .expectHeader().contentType(APPLICATION_JSON)
                 .expectBodyList(User.class)
-                .consumeWith(usrs -> assertThat(usrs.getResponseBody())
-                        .extracting("roles").contains(Role.ADMIN, Role.USER));
+                .consumeWith(response -> assertThat(response.getResponseBody())
+                        .extracting("username").containsOnly("admin"));
     }
 
     @Test
     @WithMockUser
-    void getUsers() {
-
-        final List<User> notAdmins = users.stream()
-                .filter(x -> x.getRoles().contains(Role.USER))
-                .collect(Collectors.toList());
+    void getExistingUser() {
+        User user = userService.findAll().blockFirst();
 
         webTestClient
-                .get().uri("/api/v1/users?group=USER")
+                .get().uri("/api/v1/users/{id}", user.getId())
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(APPLICATION_JSON)
-                .expectBodyList(User.class)
-                .consumeWith(usrs -> assertThat(users.containsAll(notAdmins)));
+                .expectBody(User.class)
+                .consumeWith(response -> assertThat(response.getResponseBody()).isEqualTo(user));
     }
 
     @Test
     @WithMockUser
-    void getSingleUser() {
-        final int rand = new Random().nextInt(users.size());
-        final User u = userRepository.findByUsername(users.get(rand).getUsername()).block();
-
+    void getNonExistingUser() {
         webTestClient
-                .get().uri("/api/v1/users/" + u.getId())
+                .get().uri("/api/v1/users/{id}", "woops")
                 .accept(APPLICATION_JSON)
                 .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(APPLICATION_JSON)
-                .expectBodyList(User.class)
-                .consumeWith(usrs -> assertThat(users.size() == 1 && users.contains(u)));
-
-
+                .expectStatus().isNotFound();
     }
 
+    @Disabled("Does not work due to dynamic property 'id' of UserPrincipal")
     @Test
     @WithMockUser
-    void deleteUser() {
-
-        final User u = userRepository.findByUsername(users.get(0).getUsername()).block();
-        final String id = u.getId();
+    void delete() {
+        User user = userService.findAll().blockFirst();
 
         webTestClient
-                .delete().uri("/api/v1/users/" + id)
+                .delete().uri("/api/v1/users/{id}", user.getId())
                 .exchange()
                 .expectStatus().isNoContent();
-
-        webTestClient
-                .get().uri("/api/v1/users/" + id)
-                .exchange()
-                .expectStatus().isNotFound();
     }
 
+    @Disabled("Does not work due to dynamic property 'id' of UserPrincipal")
     @Test
-    @WithMockUser(username = "t0", password = "p0")
+    @WithMockUser
     void changePassword() {
-        final User u = userRepository.findByUsername(users.get(0).getUsername()).block();
+        User user = new User();
+        user.setUsername("testuser");
+        user.setPassword("testpassword");
+        user = userService.save(user).block();
+
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("oldPassword", "testpassword");
+        payload.put("newPassword", "newpassword123");
 
         webTestClient
-                .post().uri(String.format("/api/v1/users/%s/changePassword", u.getId()))
+                .post().uri("/api/v1/users/{id}/changePassword", user.getId())
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
                 .exchange()
                 .expectStatus().isOk();
-
     }
-
-
-    @Test
-    @WithMockUser(username = "t0", password = "p0")
-    void getNonExistingUser() {
-        final String id = "aaa";
-
-        webTestClient
-                .get().uri(String.format("/api/v1/users/%s", id))
-                .exchange()
-                .expectStatus().isNotFound();
-    }
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

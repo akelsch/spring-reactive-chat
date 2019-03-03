@@ -1,6 +1,5 @@
 package de.htwsaar.vs.chat.service;
 
-import de.htwsaar.vs.chat.auth.Role;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,13 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -45,20 +42,22 @@ class UserServiceTest {
         given(passwordEncoder.encode(any())).willReturn("encoded");
         given(userRepository.save(any())).willAnswer(invocation -> {
             User arg = invocation.getArgument(0);
-            return Mono.just(arg.withId("42")); // Clone the user and give him an ID
+            // Clone the user and give him an ID
+            User user = new User();
+            user.setUsername(arg.getUsername());
+            user.setPassword(arg.getPassword());
+            user.setId("42");
+            return Mono.just(user);
         });
 
-        User user = User.builder()
-                .username("testuser")
-                .password("testpassword")
-                .build();
+        User user = new User();
+        user.setUsername("testuser");
+        user.setPassword("testpassword");
 
-        User expected = User.builder()
-                .id("42")
-                .username("testuser")
-                .password("encoded")
-                .roles(Collections.singletonList(Role.USER))
-                .build();
+        User expected = new User();
+        expected.setId("42");
+        expected.setUsername("testuser");
+        expected.setPassword("encoded");
 
         StepVerifier.create(userService.save(user))
                 .expectNext(expected)
@@ -70,19 +69,17 @@ class UserServiceTest {
         given(passwordEncoder.encode(any())).willReturn("encoded");
         given(userRepository.save(any())).willAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
-        User user = User.builder()
-                .id("42")
-                .username("testuser")
-                .password("testpassword")
-                .roles(Arrays.asList(Role.USER, Role.ADMIN))
-                .build();
+        User user = new User();
+        user.setId("42");
+        user.setUsername("testuser");
+        user.setPassword("testpassword");
+        user.addRole(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
-        User expected = User.builder()
-                .id("42")
-                .username("testuser")
-                .password("encoded")
-                .roles(Arrays.asList(Role.USER, Role.ADMIN))
-                .build();
+        User expected = new User();
+        expected.setId("42");
+        expected.setUsername("testuser");
+        expected.setPassword("encoded");
+        expected.addRole(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
         StepVerifier.create(userService.update(user))
                 .expectNext(expected)
@@ -91,7 +88,9 @@ class UserServiceTest {
 
     @Test
     void findById() {
-        given(userRepository.findById("42")).willReturn(Mono.just(User.builder().username("testuser").build()));
+        User user = new User();
+        user.setUsername("testuser");
+        given(userRepository.findById("42")).willReturn(Mono.just(user));
 
         StepVerifier.create(userService.findById("42"))
                 .expectNextMatches(u -> u.getUsername().equals("testuser"))
@@ -100,8 +99,11 @@ class UserServiceTest {
 
     @Test
     void findAll() {
-        given(userRepository.findAll()).willReturn(Flux.just(User.builder().username("testuser1").build(),
-                User.builder().username("testuser2").build()));
+        User user1 = new User();
+        user1.setUsername("testuser1");
+        User user2 = new User();
+        user2.setUsername("testuser2");
+        given(userRepository.findAll()).willReturn(Flux.just(user1, user2));
 
         StepVerifier.create(userService.findAll())
                 .expectNextMatches(u -> u.getUsername().equals("testuser1"))

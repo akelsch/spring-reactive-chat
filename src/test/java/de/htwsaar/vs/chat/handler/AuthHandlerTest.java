@@ -42,7 +42,9 @@ class AuthHandlerTest {
 
     @Test
     void signup() {
-        given(userService.save(any())).willReturn(Mono.just(User.builder().id("42").build()));
+        User user = new User();
+        user.setId("42");
+        given(userService.save(any())).willReturn(Mono.just(user));
 
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("username", "testuser");
