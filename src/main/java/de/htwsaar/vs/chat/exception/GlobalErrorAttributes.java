@@ -19,7 +19,7 @@ import static org.springframework.http.HttpStatus.CONFLICT;
  * @author Julian Quint
  */
 @Component
-public class GlobalErrorAttributes extends DefaultErrorAttributes{
+public class GlobalErrorAttributes extends DefaultErrorAttributes {
 
     public GlobalErrorAttributes() {
         super(false);
@@ -29,10 +29,11 @@ public class GlobalErrorAttributes extends DefaultErrorAttributes{
     public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
         Map<String, Object> map = super.getErrorAttributes(request, includeStackTrace);
         Throwable error = getError(request);
-        if(error.getClass() == DecodingException.class || error.getClass() == ConstraintViolationException.class) {
+        if (error instanceof DecodingException || error instanceof ConstraintViolationException) {
             map.put("status", BAD_REQUEST.value());
             map.put("error", BAD_REQUEST.getReasonPhrase());
-        } if(error.getClass() == DuplicateKeyException.class) {
+        }
+        if (error instanceof DuplicateKeyException) {
             map.put("status", CONFLICT.value());
             map.put("error", CONFLICT.getReasonPhrase());
         }

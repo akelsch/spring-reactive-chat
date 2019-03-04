@@ -2,7 +2,6 @@ package de.htwsaar.vs.chat.exception;
 
 import java.util.Map;
 
-import de.htwsaar.vs.chat.exception.GlobalErrorAttributes;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
