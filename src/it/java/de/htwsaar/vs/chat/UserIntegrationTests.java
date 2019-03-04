@@ -113,7 +113,7 @@ class UserIntegrationTests {
         payload.put("newPassword", "newpassword123");
 
         webTestClient
-                .post().uri("/api/v1/users/{id}/changePassword", user.getId())
+                .post().uri("/api/v1/users/{id}/change_password", user.getId())
                 .contentType(APPLICATION_JSON)
                 .body(BodyInserters.fromObject(payload))
                 .exchange()

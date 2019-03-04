@@ -28,7 +28,7 @@ public class UserRouter {
                 .andRoute(GET("/{uid}")
                         .and(accept(APPLICATION_JSON)), userHandler::get)
                 .andRoute(DELETE("/{uid}"), userHandler::delete)
-                .andRoute(POST("/{uid}/changePassword"), userHandler::changePassword);
+                .andRoute(POST("/{uid}/change_password"), userHandler::changePassword);
 
         return RouterFunctions.nest(path("/api/v1/users"), userRoutes);
     }
