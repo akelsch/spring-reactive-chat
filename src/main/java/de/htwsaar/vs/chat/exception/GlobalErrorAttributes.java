@@ -1,4 +1,4 @@
-package de.htwsaar.vs.chat;
+package de.htwsaar.vs.chat.exception;
 
 import java.util.Map;
 
