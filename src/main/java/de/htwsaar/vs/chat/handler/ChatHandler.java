@@ -60,7 +60,7 @@ public class ChatHandler {
 
         return chatService
                 .deleteChat(chatId)
-                .flatMap(signal -> ServerResponse.noContent().build());
+                .then(ServerResponse.noContent().build());
     }
 
     public Mono<ServerResponse> getAllMembers(ServerRequest request) {
@@ -89,7 +89,7 @@ public class ChatHandler {
 
         return chatService
                 .deleteMember(chatId, userId)
-                .flatMap(signal -> ServerResponse.noContent().build());
+                .then(ServerResponse.noContent().build());
     }
 
     public Mono<ServerResponse> getAllMessages(ServerRequest request) {
@@ -127,7 +127,7 @@ public class ChatHandler {
 
         return messageService
                 .deleteMessage(messageId)
-                .flatMap(signal -> ServerResponse.noContent().build());
+                .then(ServerResponse.noContent().build());
     }
 
     public Mono<ServerResponse> getNewMessages(ServerRequest request) {
