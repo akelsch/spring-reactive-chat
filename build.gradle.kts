@@ -1,6 +1,7 @@
 plugins {
     java
     id("org.springframework.boot") version "2.1.3.RELEASE"
+    id("com.adarshr.test-logger") version "1.6.0"
 }
 
 val javaJwtVersion by extra("3.7.0")
@@ -31,6 +32,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("org.mockito:mockito-junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "junit", module = "junit")
     }

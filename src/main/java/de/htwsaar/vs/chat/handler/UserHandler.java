@@ -73,7 +73,7 @@ public class UserHandler {
 
         return userService
                 .deleteById(uid)
-                .flatMap(signal -> ServerResponse.noContent().build());
+                .then(ServerResponse.noContent().build());
     }
 
     public Mono<ServerResponse> changePassword(ServerRequest request) {
