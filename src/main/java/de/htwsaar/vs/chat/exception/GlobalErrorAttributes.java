@@ -2,10 +2,10 @@ package de.htwsaar.vs.chat.exception;
 
 import java.util.Map;
 
-import com.mongodb.DuplicateKeyException;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
 
 import org.springframework.core.codec.DecodingException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
