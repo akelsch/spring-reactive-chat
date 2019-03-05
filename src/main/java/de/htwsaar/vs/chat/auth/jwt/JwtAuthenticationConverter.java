@@ -1,10 +1,8 @@
 package de.htwsaar.vs.chat.auth.jwt;
 
 import de.htwsaar.vs.chat.model.User;
-import de.htwsaar.vs.chat.util.ResponseUtils;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.Decoder;
-import org.springframework.core.codec.DecodingException;
 import org.springframework.core.codec.Hints;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.MediaType;
@@ -35,7 +33,6 @@ public class JwtAuthenticationConverter implements ServerAuthenticationConverter
 
         return decoder
                 .decodeToMono(body, ResolvableType.forType(User.class), MediaType.APPLICATION_JSON, Hints.none())
-                .onErrorResume(DecodingException.class, ResponseUtils::badRequest)
                 .cast(User.class)
                 .filter(user -> user.getPassword() != null)
                 .map(u -> new UsernamePasswordAuthenticationToken(u.getUsername(), u.getPassword()));

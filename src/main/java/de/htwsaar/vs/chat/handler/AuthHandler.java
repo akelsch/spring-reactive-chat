@@ -3,16 +3,12 @@ package de.htwsaar.vs.chat.handler;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.router.AuthRouter;
 import de.htwsaar.vs.chat.service.UserService;
-import de.htwsaar.vs.chat.util.ResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.codec.DecodingException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import javax.validation.ConstraintViolationException;
 import java.net.URI;
 
 /**
@@ -34,10 +30,7 @@ public class AuthHandler {
         return request
                 .bodyToMono(User.class)
                 .flatMap(userService::save)
-                .flatMap(user -> ServerResponse.created(URI.create("/api/v1/users/" + user.getId())).build())
-                .onErrorResume(DecodingException.class, ResponseUtils::badRequest)
-                .onErrorResume(ConstraintViolationException.class, ResponseUtils::badRequest)
-                .onErrorResume(DuplicateKeyException.class, ResponseUtils::conflict);
+                .flatMap(user -> ServerResponse.created(URI.create("/api/v1/users/" + user.getId())).build());
     }
 
     public Mono<ServerResponse> signin(ServerRequest request) {

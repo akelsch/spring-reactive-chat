@@ -1,21 +1,17 @@
 package de.htwsaar.vs.chat.handler;
 
-import com.mongodb.DuplicateKeyException;
 import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.Message;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.router.ChatRouter;
 import de.htwsaar.vs.chat.service.ChatService;
 import de.htwsaar.vs.chat.service.MessageService;
-import de.htwsaar.vs.chat.util.ResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.codec.DecodingException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import javax.validation.ConstraintViolationException;
 import java.net.URI;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -49,10 +45,7 @@ public class ChatHandler {
         return request
                 .bodyToMono(Chat.class)
                 .flatMap(chatService::saveChat)
-                .flatMap(chat -> ServerResponse.created(URI.create("/api/v1/chats/" + chat.getId())).build())
-                .onErrorResume(DecodingException.class, ResponseUtils::badRequest)
-                .onErrorResume(ConstraintViolationException.class, ResponseUtils::badRequest)
-                .onErrorResume(DuplicateKeyException.class, ResponseUtils::conflict);
+                .flatMap(chat -> ServerResponse.created(URI.create("/api/v1/chats/" + chat.getId())).build());
     }
 
     public Mono<ServerResponse> deleteChat(ServerRequest request) {
@@ -77,10 +70,7 @@ public class ChatHandler {
         return request
                 .bodyToMono(User.class)
                 .flatMap(member -> chatService.saveMember(chatId, member))
-                .flatMap(chat -> ServerResponse.created(URI.create("/api/v1/chats/" + chat.getId())).build())
-                .onErrorResume(DecodingException.class, ResponseUtils::badRequest)
-                .onErrorResume(ConstraintViolationException.class, ResponseUtils::badRequest)
-                .onErrorResume(DuplicateKeyException.class, ResponseUtils::conflict);
+                .flatMap(chat -> ServerResponse.created(URI.create("/api/v1/chats/" + chat.getId())).build());
     }
 
     public Mono<ServerResponse> deleteMember(ServerRequest request) {
@@ -116,10 +106,7 @@ public class ChatHandler {
         return request
                 .bodyToMono(Message.class)
                 .flatMap(message -> messageService.saveMessage(message, chatId))
-                .flatMap(message -> ServerResponse.created(URI.create("/api/v1/chats/" + chatId + "/messages/" + message.getId())).build())
-                .onErrorResume(DecodingException.class, ResponseUtils::badRequest)
-                .onErrorResume(ConstraintViolationException.class, ResponseUtils::badRequest)
-                .onErrorResume(DuplicateKeyException.class, ResponseUtils::conflict);
+                .flatMap(message -> ServerResponse.created(URI.create("/api/v1/chats/" + chatId + "/messages/" + message.getId())).build());
     }
 
     public Mono<ServerResponse> deleteMessage(ServerRequest request) {
