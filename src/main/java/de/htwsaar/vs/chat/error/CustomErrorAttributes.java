@@ -1,5 +1,6 @@
 package de.htwsaar.vs.chat.error;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
 import org.springframework.core.codec.DecodingException;
 import org.springframework.dao.DuplicateKeyException;
@@ -37,7 +38,9 @@ public class CustomErrorAttributes extends DefaultErrorAttributes {
     }
 
     private Optional<HttpStatus> determineHttpStatus(Throwable error) {
-        if (error instanceof DecodingException || error instanceof ConstraintViolationException) {
+        if (error instanceof DecodingException
+                || error instanceof ConstraintViolationException
+                || error instanceof JWTVerificationException) {
             return Optional.of(BAD_REQUEST);
         }
 
