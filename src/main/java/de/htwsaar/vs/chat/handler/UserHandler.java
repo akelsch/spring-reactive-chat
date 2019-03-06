@@ -123,8 +123,8 @@ public class UserHandler {
         return userService.findById(uid)
                 .zipWith(role)
                 .filter(tuple -> tuple.getT1().removeRole(tuple.getT2()))
-                .flatMap(user -> ServerResponse.ok().build())
-                .switchIfEmpty(ServerResponse.notFound().build());
+                .then(ServerResponse.noContent().build())
+                ;
 
     }
 
