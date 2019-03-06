@@ -57,4 +57,9 @@ public class UserService {
     public Mono<Void> deleteById(String id) {
         return userRepository.deleteById(id);
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public Mono<User> updateRole(User user) {
+        return userRepository.save(user);
+    }
 }
