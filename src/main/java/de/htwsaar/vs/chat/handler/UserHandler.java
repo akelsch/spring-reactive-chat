@@ -9,6 +9,7 @@ import de.htwsaar.vs.chat.util.ResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.codec.DecodingException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
@@ -95,6 +96,39 @@ public class UserHandler {
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
+    public Mono<ServerResponse> addRole(ServerRequest request) {
+        String uid = request.pathVariable("uid");
+        Mono<GrantedAuthority> role = request
+                .bodyToMono(Role.class)
+                .doOnNext(this::validateRole)
+                .map(Role::getRole)
+                .map(SimpleGrantedAuthority::new);
+
+        return userService.findById(uid)
+                .zipWith(role)
+                .doOnNext(tuple -> tuple.getT1().addRole(tuple.getT2()))
+                .flatMap(tuple -> userService.updateRole(tuple.getT1()))
+                .flatMap(user -> ServerResponse.ok().build())
+                .switchIfEmpty(ServerResponse.notFound().build());
+    }
+
+    public Mono<ServerResponse> deleteRole(ServerRequest request) {
+        String uid = request.pathVariable("uid");
+        Mono<GrantedAuthority> role = request
+                .bodyToMono(Role.class)
+                .doOnNext(this::validateRole)
+                .map(Role::getRole)
+                .map(SimpleGrantedAuthority::new);
+
+        return userService.findById(uid)
+                .zipWith(role)
+                .filter(tuple -> tuple.getT1().removeRole(tuple.getT2()))
+                .flatMap(user -> ServerResponse.ok().build())
+                .switchIfEmpty(ServerResponse.notFound().build());
+
+    }
+
+
 
     private static Predicate<User> matchByQueryParams(MultiValueMap<String, String> queryParams) {
         Predicate<User> predicate = user -> true;
@@ -139,33 +173,7 @@ public class UserHandler {
         }
     }
 
-    public Mono<ServerResponse> deleteRole(ServerRequest request) {
-        String uid = request.pathVariable("uid");
-        Mono<Role> role = request
-                .bodyToMono(Role.class)
-                .doOnNext(this::validateRole);
 
-        return userService.findById(uid)
-                .zipWith(role)
-                .doOnNext(tuple -> tuple.getT1().removeRole(() -> tuple.getT2().getRole()))
-                .flatMap(tuple -> userService.updateRole(tuple.getT1()))
-                .flatMap(user -> ServerResponse.ok().build())
-                .switchIfEmpty(ServerResponse.notFound().build());
-    }
-
-    public Mono<ServerResponse> addRole(ServerRequest request) {
-        String uid = request.pathVariable("uid");
-        Mono<Role> role = request
-                .bodyToMono(Role.class)
-                .doOnNext(this::validateRole);
-
-        return userService.findById(uid)
-                .zipWith(role)
-                .doOnNext(tuple -> tuple.getT1().addRole(() -> tuple.getT2().getRole()))
-                .flatMap(tuple -> userService.updateRole(tuple.getT1()))
-                .flatMap(user -> ServerResponse.ok().build())
-                .switchIfEmpty(ServerResponse.notFound().build());
-    }
 
 
     private void validateRole(Role role) {
