@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 /**
  * Role Object Model.
@@ -15,5 +16,6 @@ import javax.validation.constraints.NotBlank;
 public class Role {
 
     @NotBlank
+    @Pattern(regexp = "ROLE_\\w+")
     private String role;
 }
