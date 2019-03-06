@@ -1,6 +1,7 @@
 package de.htwsaar.vs.chat.handler;
 
 import de.htwsaar.vs.chat.model.Password;
+import de.htwsaar.vs.chat.model.Role;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.router.UserRouter;
 import de.htwsaar.vs.chat.service.UserService;
@@ -94,6 +95,7 @@ public class UserHandler {
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
+
     private static Predicate<User> matchByQueryParams(MultiValueMap<String, String> queryParams) {
         Predicate<User> predicate = user -> true;
 
@@ -136,4 +138,6 @@ public class UserHandler {
             throw new ServerWebInputException("Old password does not match");
         }
     }
+
+
 }
