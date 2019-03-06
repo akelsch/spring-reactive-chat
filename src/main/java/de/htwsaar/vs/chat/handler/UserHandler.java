@@ -91,12 +91,12 @@ public class UserHandler {
                 .zipWith(password)
                 .doOnNext(this::matchOldPassword)
                 .doOnNext(tuple -> tuple.getT1().setPassword(tuple.getT2().getNewPassword()))
-                .flatMap(tuple -> userService.update(tuple.getT1()))
+                .flatMap(tuple -> userService.updatePassword(tuple.getT1()))
                 .flatMap(user -> ServerResponse.ok().build())
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
-    public Mono<ServerResponse> addRole(ServerRequest request) {
+    public Mono<ServerResponse> putRole(ServerRequest request) {
         String uid = request.pathVariable("uid");
         Mono<GrantedAuthority> role = request
                 .bodyToMono(Role.class)
@@ -104,10 +104,11 @@ public class UserHandler {
                 .map(Role::getRole)
                 .map(SimpleGrantedAuthority::new);
 
-        return userService.findById(uid)
+        return userService
+                .findById(uid)
                 .zipWith(role)
                 .doOnNext(tuple -> tuple.getT1().addRole(tuple.getT2()))
-                .flatMap(tuple -> userService.updateRole(tuple.getT1()))
+                .flatMap(tuple -> userService.updateRoles(tuple.getT1()))
                 .flatMap(user -> ServerResponse.ok().build())
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
@@ -120,15 +121,13 @@ public class UserHandler {
                 .map(Role::getRole)
                 .map(SimpleGrantedAuthority::new);
 
-        return userService.findById(uid)
+        return userService
+                .findById(uid)
                 .zipWith(role)
                 .filter(tuple -> tuple.getT1().removeRole(tuple.getT2()))
-                .then(ServerResponse.noContent().build())
-                ;
-
+                .flatMap(tuple -> userService.updateRoles(tuple.getT1()))
+                .then(ServerResponse.noContent().build());
     }
-
-
 
     private static Predicate<User> matchByQueryParams(MultiValueMap<String, String> queryParams) {
         Predicate<User> predicate = user -> true;
@@ -173,9 +172,6 @@ public class UserHandler {
         }
     }
 
-
-
-
     private void validateRole(Role role) {
         Set<ConstraintViolation<Role>> violations = validator.validate(role);
 
@@ -183,6 +179,4 @@ public class UserHandler {
             throw new ConstraintViolationException(violations);
         }
     }
-
-
 }

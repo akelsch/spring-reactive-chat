@@ -38,10 +38,15 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #user.id == principal.id")
-    public Mono<User> update(User user) {
+    @PreAuthorize("#user.id == principal.id")
+    public Mono<User> updatePassword(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
+        return userRepository.save(user);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public Mono<User> updateRoles(User user) {
         return userRepository.save(user);
     }
 
@@ -56,10 +61,5 @@ public class UserService {
     @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     public Mono<Void> deleteById(String id) {
         return userRepository.deleteById(id);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    public Mono<User> updateRole(User user) {
-        return userRepository.save(user);
     }
 }

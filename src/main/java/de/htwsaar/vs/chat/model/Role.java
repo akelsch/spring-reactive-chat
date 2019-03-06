@@ -1,7 +1,6 @@
 package de.htwsaar.vs.chat.model;
 
 import lombok.Data;
-import org.springframework.security.core.GrantedAuthority;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;

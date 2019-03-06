@@ -65,7 +65,7 @@ class UserServiceTests {
     }
 
     @Test
-    void update() {
+    void updatePassword() {
         given(passwordEncoder.encode(any())).willReturn("encoded");
         given(userRepository.save(any())).willAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
@@ -81,7 +81,7 @@ class UserServiceTests {
         expected.setPassword("encoded");
         expected.addRole(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
-        StepVerifier.create(userService.update(user))
+        StepVerifier.create(userService.updatePassword(user))
                 .expectNext(expected)
                 .verifyComplete();
     }
