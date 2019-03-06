@@ -139,5 +139,42 @@ public class UserHandler {
         }
     }
 
+    public Mono<ServerResponse> deleteRole(ServerRequest request) {
+        String uid = request.pathVariable("uid");
+        Mono<Role> role = request
+                .bodyToMono(Role.class)
+                .doOnNext(this::validateRole);
+
+        return userService.findById(uid)
+                .zipWith(role)
+                .doOnNext(tuple -> tuple.getT1().removeRole(() -> tuple.getT2().getRole()))
+                .flatMap(tuple -> userService.updateRole(tuple.getT1()))
+                .flatMap(user -> ServerResponse.ok().build())
+                .switchIfEmpty(ServerResponse.notFound().build());
+    }
+
+    public Mono<ServerResponse> addRole(ServerRequest request) {
+        String uid = request.pathVariable("uid");
+        Mono<Role> role = request
+                .bodyToMono(Role.class)
+                .doOnNext(this::validateRole);
+
+        return userService.findById(uid)
+                .zipWith(role)
+                .doOnNext(tuple -> tuple.getT1().addRole(() -> tuple.getT2().getRole()))
+                .flatMap(tuple -> userService.updateRole(tuple.getT1()))
+                .flatMap(user -> ServerResponse.ok().build())
+                .switchIfEmpty(ServerResponse.notFound().build());
+    }
+
+
+    private void validateRole(Role role) {
+        Set<ConstraintViolation<Role>> violations = validator.validate(role);
+
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
+    }
+
 
 }

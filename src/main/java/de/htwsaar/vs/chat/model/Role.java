@@ -13,6 +13,7 @@ import javax.validation.constraints.NotBlank;
  */
 @Data
 public class Role {
+
     @NotBlank
     private String role;
 }
