@@ -82,7 +82,7 @@ public class UserHandler {
         String uid = request.pathVariable("uid");
         Mono<Password> password = request
                 .bodyToMono(Password.class)
-                .doOnNext(this::validatePassword)
+                .doOnNext(this::validateObject)
                 .onErrorResume(DecodingException.class, ResponseUtils::badRequest)
                 .onErrorResume(ConstraintViolationException.class, ResponseUtils::badRequest);
 
@@ -100,7 +100,7 @@ public class UserHandler {
         String uid = request.pathVariable("uid");
         Mono<GrantedAuthority> role = request
                 .bodyToMono(Role.class)
-                .doOnNext(this::validateRole)
+                .doOnNext(this::validateObject)
                 .map(Role::getRole)
                 .map(SimpleGrantedAuthority::new);
 
@@ -117,7 +117,7 @@ public class UserHandler {
         String uid = request.pathVariable("uid");
         Mono<GrantedAuthority> role = request
                 .bodyToMono(Role.class)
-                .doOnNext(this::validateRole)
+                .doOnNext(this::validateObject)
                 .map(Role::getRole)
                 .map(SimpleGrantedAuthority::new);
 
@@ -155,8 +155,8 @@ public class UserHandler {
         return predicate;
     }
 
-    private void validatePassword(Password password) {
-        Set<ConstraintViolation<Password>> violations = validator.validate(password);
+    private <T> void validateObject(T obj) {
+        Set<ConstraintViolation<T>> violations = validator.validate(obj);
 
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
@@ -169,14 +169,6 @@ public class UserHandler {
 
         if (!passwordEncoder.matches(givenPassword, actualEncodedPassword)) {
             throw new ServerWebInputException("Old password does not match");
-        }
-    }
-
-    private void validateRole(Role role) {
-        Set<ConstraintViolation<Role>> violations = validator.validate(role);
-
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
         }
     }
 }
