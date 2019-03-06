@@ -17,7 +17,11 @@ The project makes use of [MongoDB Change Streams](https://docs.mongodb.com/manua
 >
 > &mdash; [Spring Data MongoDB Reference Documentation](https://docs.spring.io/spring-data/mongodb/docs/2.1.5.RELEASE/reference/html/#change-streams)
 
-To convert your standalone MongoDB instance into a replica set, refer to this [guide](https://docs.mongodb.com/manual/tutorial/convert-standalone-to-replica-set/). Don't worry, it's easy!
+Running a standalone MongoDB instance and calling the aforementioned endpoint will result in an exception:
+
+> com.mongodb.MongoCommandException: Command failed with error 40573 (Location40573): 'The $changeStream stage is only supported on replica sets' on server localhost:27017.
+
+To convert your standalone MongoDB instance into a replica set, please refer to this [guide](https://docs.mongodb.com/manual/tutorial/convert-standalone-to-replica-set/). Also, consider persisting the [`replication.replSetName`](https://docs.mongodb.com/manual/reference/configuration-options/#replication.replSetName) option in your [`mongod.conf`](https://docs.mongodb.com/manual/reference/configuration-options/#configuration-file) configuration file.
 
 Other than that, no manual configuration is necessary 😄
 
