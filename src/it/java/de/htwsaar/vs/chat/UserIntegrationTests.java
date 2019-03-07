@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -87,11 +88,12 @@ class UserIntegrationTests {
                 .expectStatus().isNotFound();
     }
 
-    @Disabled("Does not work due to dynamic property 'id' of UserPrincipal")
     @Test
-    @WithMockUser
+    @WithMockUser(roles = {"USER", "ADMIN"})
     void delete() {
-        User user = userService.findAll().blockFirst();
+        User user = userService.findAll()
+                .filter(u -> !u.getUsername().equals("admin"))
+                .blockFirst();
 
         webTestClient
                 .delete().uri("/api/v1/users/{id}", user.getId())
@@ -118,5 +120,92 @@ class UserIntegrationTests {
                 .body(BodyInserters.fromObject(payload))
                 .exchange()
                 .expectStatus().isOk();
+    }
+
+    @Test
+    @WithMockUser(roles = {"USER", "ADMIN"})
+    void putRoleWithValidPayload() {
+        User user = new User();
+        user.setUsername("testuser2");
+        user.setPassword("testpassword2");
+        user = userService.save(user).block();
+
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("role", "ROLE_TEST");
+
+        webTestClient
+                .put().uri("/api/v1/users/{id}/roles", user.getId())
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isOk();
+
+        assertThat(userService.findById(user.getId()).block().getRoles())
+                .contains(new SimpleGrantedAuthority("ROLE_TEST"));
+    }
+
+    @Test
+    @WithMockUser(roles = {"USER", "ADMIN"})
+    void putRoleWithEmptyRole() {
+        User user = new User();
+        user.setUsername("testuser3");
+        user.setPassword("testpassword3");
+        user = userService.save(user).block();
+
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("role", "");
+
+        webTestClient
+                .put().uri("/api/v1/users/{id}/roles", user.getId())
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    @WithMockUser(roles = {"USER", "ADMIN"})
+    void putRoleWithInvalidRole() {
+        User user = new User();
+        user.setUsername("testuser4");
+        user.setPassword("testpassword4");
+        user = userService.save(user).block();
+
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("role", "_TEST");
+
+        webTestClient
+                .put().uri("/api/v1/users/{id}/roles", user.getId())
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))
+                .exchange()
+                .expectStatus().isBadRequest();
+
+        assertThat(userService.findById(user.getId()).block().getRoles())
+                .doesNotContain(new SimpleGrantedAuthority("_TEST"));
+    }
+
+    @Disabled("WebTestClient does not support DELETE request bodies")
+    @Test
+    @WithMockUser(roles = {"USER", "ADMIN"})
+    void deleteRole() {
+        User user = new User();
+        user.setUsername("testuser5");
+        user.setPassword("testpassword5");
+        user.addRole(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        user = userService.save(user).block();
+
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("role", "ROLE_ADMIN");
+
+        webTestClient
+                .delete().uri("/api/v1/users/{id}/roles", user.getId())
+                /*.contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(payload))*/
+                .exchange()
+                .expectStatus().isNoContent();
+
+        assertThat(userService.findById(user.getId()).block().getRoles())
+                .doesNotContain(new SimpleGrantedAuthority("ROLE_ADMIN"));
     }
 }

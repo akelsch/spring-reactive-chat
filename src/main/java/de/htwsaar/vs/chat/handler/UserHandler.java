@@ -1,11 +1,13 @@
 package de.htwsaar.vs.chat.handler;
 
 import de.htwsaar.vs.chat.model.Password;
+import de.htwsaar.vs.chat.model.Role;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.router.UserRouter;
 import de.htwsaar.vs.chat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
@@ -79,16 +81,49 @@ public class UserHandler {
         String uid = request.pathVariable("uid");
         Mono<Password> password = request
                 .bodyToMono(Password.class)
-                .doOnNext(this::validatePassword);
+                .doOnNext(this::validateObject);
 
         return userService
                 .findById(uid)
                 .zipWith(password)
                 .doOnNext(this::matchOldPassword)
                 .doOnNext(tuple -> tuple.getT1().setPassword(tuple.getT2().getNewPassword()))
-                .flatMap(tuple -> userService.update(tuple.getT1()))
+                .flatMap(tuple -> userService.updatePassword(tuple.getT1()))
                 .flatMap(user -> ServerResponse.ok().build())
                 .switchIfEmpty(ServerResponse.notFound().build());
+    }
+
+    public Mono<ServerResponse> putRole(ServerRequest request) {
+        String uid = request.pathVariable("uid");
+        Mono<GrantedAuthority> role = request
+                .bodyToMono(Role.class)
+                .doOnNext(this::validateObject)
+                .map(Role::getRole)
+                .map(SimpleGrantedAuthority::new);
+
+        return userService
+                .findById(uid)
+                .zipWith(role)
+                .doOnNext(tuple -> tuple.getT1().addRole(tuple.getT2()))
+                .flatMap(tuple -> userService.updateRoles(tuple.getT1()))
+                .flatMap(user -> ServerResponse.ok().build())
+                .switchIfEmpty(ServerResponse.notFound().build());
+    }
+
+    public Mono<ServerResponse> deleteRole(ServerRequest request) {
+        String uid = request.pathVariable("uid");
+        Mono<GrantedAuthority> role = request
+                .bodyToMono(Role.class)
+                .doOnNext(this::validateObject)
+                .map(Role::getRole)
+                .map(SimpleGrantedAuthority::new);
+
+        return userService
+                .findById(uid)
+                .zipWith(role)
+                .filter(tuple -> tuple.getT1().removeRole(tuple.getT2()))
+                .flatMap(tuple -> userService.updateRoles(tuple.getT1()))
+                .then(ServerResponse.noContent().build());
     }
 
     private static Predicate<User> matchByQueryParams(MultiValueMap<String, String> queryParams) {
@@ -117,8 +152,8 @@ public class UserHandler {
         return predicate;
     }
 
-    private void validatePassword(Password password) {
-        Set<ConstraintViolation<Password>> violations = validator.validate(password);
+    private <T> void validateObject(T obj) {
+        Set<ConstraintViolation<T>> violations = validator.validate(obj);
 
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
