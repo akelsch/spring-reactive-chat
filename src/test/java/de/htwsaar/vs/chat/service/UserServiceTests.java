@@ -87,6 +87,27 @@ class UserServiceTests {
     }
 
     @Test
+    void updateRoles() {
+        given(userRepository.save(any())).willAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+
+        User user = new User();
+        user.setId("42");
+        user.setUsername("testuser");
+        user.setPassword("encoded");
+        user.addRole(new SimpleGrantedAuthority("ROLE_ADMIN"));
+
+        User expected = new User();
+        expected.setId("42");
+        expected.setUsername("testuser");
+        expected.setPassword("encoded");
+        expected.addRole(new SimpleGrantedAuthority("ROLE_ADMIN"));
+
+        StepVerifier.create(userService.updateRoles(user))
+                .expectNext(expected)
+                .verifyComplete();
+    }
+
+    @Test
     void findById() {
         User user = new User();
         user.setUsername("testuser");
