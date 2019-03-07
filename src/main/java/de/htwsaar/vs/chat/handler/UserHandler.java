@@ -5,9 +5,7 @@ import de.htwsaar.vs.chat.model.Role;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.router.UserRouter;
 import de.htwsaar.vs.chat.service.UserService;
-import de.htwsaar.vs.chat.util.ResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.codec.DecodingException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
  * @author Arthur Kelsch
  * @author Mahan Karimi
  * @author Leslie Marxen
+ * @author Julian Quint
  */
 @Component
 public class UserHandler {
@@ -82,9 +81,7 @@ public class UserHandler {
         String uid = request.pathVariable("uid");
         Mono<Password> password = request
                 .bodyToMono(Password.class)
-                .doOnNext(this::validateObject)
-                .onErrorResume(DecodingException.class, ResponseUtils::badRequest)
-                .onErrorResume(ConstraintViolationException.class, ResponseUtils::badRequest);
+                .doOnNext(this::validateObject);
 
         return userService
                 .findById(uid)
