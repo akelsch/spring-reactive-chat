@@ -2,6 +2,7 @@ package de.htwsaar.vs.chat.auth;
 
 import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.User;
+import de.htwsaar.vs.chat.repository.MessageRepository;
 import de.htwsaar.vs.chat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -15,15 +16,19 @@ import org.springframework.stereotype.Component;
  *
  * @author Arthur Kelsch
  * @author Julian Quint
+ * @author Mahan Karimi
  */
 @Component
 public class WebSecurity {
 
     private final UserRepository userRepository;
+    private final MessageRepository messageRepository;
+
 
     @Autowired
-    public WebSecurity(UserRepository userRepository) {
+    public WebSecurity(UserRepository userRepository, MessageRepository messageRepository) {
         this.userRepository = userRepository;
+        this.messageRepository = messageRepository;
     }
 
     public boolean hasChatAuthority(Authentication authentication, String chatId) {
@@ -53,4 +58,16 @@ public class WebSecurity {
 
         return true;
     }
+
+    public boolean deleteMessageAuthority(Authentication authentication, String messageId) {
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userPrincipal.getUser();
+        String senderId = messageRepository.findById(messageId).block().getSender().getId();
+
+        if (user.getId().equals(senderId)) {
+            messageRepository.deleteById(messageId).subscribe();
+        }
+        return true;
+    }
+
 }

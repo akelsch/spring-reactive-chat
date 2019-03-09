@@ -6,6 +6,7 @@ import de.htwsaar.vs.chat.model.Message;
 import de.htwsaar.vs.chat.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
@@ -18,6 +19,7 @@ import reactor.core.publisher.Mono;
  *
  * @author Niklas Reinhard
  * @author Julian Quint
+ * @author Mahan Karimi
  * @see MessageRepository
  */
 @Service
@@ -55,6 +57,7 @@ public class MessageService {
     }
 
     // TODO @PreAuthorize
+    @PreAuthorize("@webSecurity.deleteMessageAuthority(authentication, #massageId)")
     public Mono<Void> deleteMessage(String messageId) {
         return messageRepository.deleteById(messageId);
     }
