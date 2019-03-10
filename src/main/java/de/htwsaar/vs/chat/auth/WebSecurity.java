@@ -64,10 +64,7 @@ public class WebSecurity {
         User user = userPrincipal.getUser();
         String senderId = messageRepository.findById(messageId).block().getSender().getId();
 
-        if (user.getId().equals(senderId)) {
-            messageRepository.deleteById(messageId).subscribe();
-        }
-        return true;
+        return user.getId().equals(senderId);
     }
 
 }

@@ -56,7 +56,7 @@ public class MessageService {
                 .flatMap(principal -> messageRepository.save(message));
     }
 
-    // TODO @PreAuthorize
+
     @PreAuthorize("@webSecurity.deleteMessageAuthority(authentication, #massageId)")
     public Mono<Void> deleteMessage(String messageId) {
         return messageRepository.deleteById(messageId);
