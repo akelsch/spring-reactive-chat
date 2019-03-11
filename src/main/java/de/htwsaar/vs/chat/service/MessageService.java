@@ -32,6 +32,10 @@ public class MessageService {
         this.messageRepository = messageRepository;
     }
 
+    public Mono<Message> findById(String messageId) {
+        return messageRepository.findById(messageId);
+    }
+
     public Flux<Message> findAllMessages(String chatId) {
         return messageRepository.findAllByChatId(chatId);
     }
@@ -56,9 +60,8 @@ public class MessageService {
                 .flatMap(principal -> messageRepository.save(message));
     }
 
-
-    @PreAuthorize("@webSecurity.deleteMessageAuthority(authentication, #massageId)")
-    public Mono<Void> deleteMessage(String messageId) {
-        return messageRepository.deleteById(messageId);
+    @PreAuthorize("@webSecurity.isMessageSender(authentication, #message)")
+    public Mono<Void> deleteMessage(Message message) {
+        return messageRepository.delete(message);
     }
 }
