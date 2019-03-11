@@ -113,7 +113,8 @@ public class ChatHandler {
         String messageId = request.pathVariable("messageid");
 
         return messageService
-                .deleteMessage(messageId)
+                .findById(messageId)
+                .flatMap(messageService::deleteMessage)
                 .then(ServerResponse.noContent().build());
     }
 

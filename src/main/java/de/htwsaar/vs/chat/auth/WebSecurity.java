@@ -1,6 +1,7 @@
 package de.htwsaar.vs.chat.auth;
 
 import de.htwsaar.vs.chat.model.Chat;
+import de.htwsaar.vs.chat.model.Message;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Arthur Kelsch
  * @author Julian Quint
+ * @author Mahan Karimi
  */
 @Component
 public class WebSecurity {
@@ -52,5 +54,12 @@ public class WebSecurity {
         }
 
         return true;
+    }
+
+    public boolean isMessageSender(Authentication authentication, Message message) {
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userPrincipal.getUser();
+
+        return user.getId().equals(message.getSender().getId());
     }
 }
