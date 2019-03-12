@@ -126,6 +126,15 @@ public class UserHandler {
                 .then(ServerResponse.noContent().build());
     }
 
+    public Mono<ServerResponse> createStatus(ServerRequest request) {
+
+    }
+
+
+    public Mono<ServerResponse> deleteStatus(ServerRequest request) {
+        
+    }
+
     private static Predicate<User> matchByQueryParams(MultiValueMap<String, String> queryParams) {
         Predicate<User> predicate = user -> true;
 
