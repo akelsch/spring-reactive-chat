@@ -107,4 +107,20 @@ public class ChatService {
                 .filter(tuple -> tuple.getT2().contains(tuple.getT1().getChat()))
                 .map(Tuple2::getT1);
     }
+
+    public Flux<Chat> streamNewChats() {
+        ChangeStreamOptions options = ChangeStreamOptions.builder()
+                .filter(newAggregation(match(where("operationType").is("insert"))))
+                .build();
+
+        return mongoOperations
+                .changeStream("chat", options, Chat.class)
+                .map(ChangeStreamEvent::getBody)
+                .zipWith(ReactiveSecurityContextHolder.getContext()
+                        .map(SecurityContext::getAuthentication)
+                        .map(Authentication::getPrincipal)
+                        .cast(UserPrincipal.class))
+                .filter(tuple -> tuple.getT1().getMembers().contains(tuple.getT2().getUser()))
+                .map(Tuple2::getT1);
+    }
 }

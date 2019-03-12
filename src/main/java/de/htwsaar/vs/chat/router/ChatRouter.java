@@ -27,6 +27,8 @@ public class ChatRouter {
                         .and(accept(APPLICATION_JSON)), chatHandler::getAllChats)
                 .andRoute(POST("/"), chatHandler::postChat)
                 .andRoute(DELETE("/{chatid}"), chatHandler::deleteChat)
+                .andRoute(GET("/stream")
+                        .and(accept(TEXT_EVENT_STREAM)), chatHandler::getNewChats)
                 .andRoute(GET("/messages/stream")
                         .and(accept(TEXT_EVENT_STREAM)), chatHandler::getNewMessages);
 

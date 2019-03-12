@@ -123,4 +123,10 @@ public class ChatHandler {
                 .contentType(TEXT_EVENT_STREAM)
                 .body(chatService.streamNewMessages(), Message.class);
     }
+
+    public Mono<ServerResponse> getNewChats(ServerRequest request) {
+        return ServerResponse.ok()
+                .contentType(TEXT_EVENT_STREAM)
+                .body(chatService.streamNewChats(), Chat.class);
+    }
 }
