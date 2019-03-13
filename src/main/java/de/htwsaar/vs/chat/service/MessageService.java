@@ -1,15 +1,12 @@
 package de.htwsaar.vs.chat.service;
 
-import de.htwsaar.vs.chat.auth.UserPrincipal;
 import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.Message;
 import de.htwsaar.vs.chat.repository.MessageRepository;
+import de.htwsaar.vs.chat.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -52,10 +49,7 @@ public class MessageService {
         chat.setId(chatId);
         message.setChat(chat);
 
-        return ReactiveSecurityContextHolder.getContext()
-                .map(SecurityContext::getAuthentication)
-                .map(Authentication::getPrincipal)
-                .cast(UserPrincipal.class)
+        return SecurityUtils.getPrincipal()
                 .doOnNext(principal -> message.setSender(principal.getUser()))
                 .flatMap(principal -> messageRepository.save(message));
     }
