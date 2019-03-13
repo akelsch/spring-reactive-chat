@@ -63,6 +63,32 @@ public class ChatService {
         return chatRepository.deleteById(chatId);
     }
 
+    public Flux<Chat> streamNewChats() {
+        ChangeStreamOptions options = ChangeStreamOptions.builder()
+                .filter(newAggregation(match(where("operationType").is("insert"))))
+                .build();
+
+        return mongoOperations
+                .changeStream("chat", options, Chat.class)
+                .map(ChangeStreamEvent::getBody)
+                .zipWith(SecurityUtils.getPrincipal())
+                .filter(tuple -> tuple.getT1().getMembers().contains(tuple.getT2().getUser()))
+                .map(Tuple2::getT1);
+    }
+
+    public Flux<Message> streamNewMessages() {
+        ChangeStreamOptions options = ChangeStreamOptions.builder()
+                .filter(newAggregation(match(where("operationType").is("insert"))))
+                .build();
+
+        return mongoOperations
+                .changeStream("message", options, Message.class)
+                .map(ChangeStreamEvent::getBody)
+                .zipWith(findAllChatsForCurrentUser().collectList())
+                .filter(tuple -> tuple.getT2().contains(tuple.getT1().getChat()))
+                .map(Tuple2::getT1);
+    }
+
     public Flux<User> findAllMembers(String chatId) {
         return chatRepository
                 .findById(chatId)
@@ -84,31 +110,5 @@ public class ChatService {
                 .filter(chat -> chat.getMembers().removeIf(member -> member.getId().equals(userId)))
                 .flatMap(chatRepository::save)
                 .then();
-    }
-
-    public Flux<Message> streamNewMessages() {
-        ChangeStreamOptions options = ChangeStreamOptions.builder()
-                .filter(newAggregation(match(where("operationType").is("insert"))))
-                .build();
-
-        return mongoOperations
-                .changeStream("message", options, Message.class)
-                .map(ChangeStreamEvent::getBody)
-                .zipWith(findAllChatsForCurrentUser().collectList())
-                .filter(tuple -> tuple.getT2().contains(tuple.getT1().getChat()))
-                .map(Tuple2::getT1);
-    }
-
-    public Flux<Chat> streamNewChats() {
-        ChangeStreamOptions options = ChangeStreamOptions.builder()
-                .filter(newAggregation(match(where("operationType").is("insert"))))
-                .build();
-
-        return mongoOperations
-                .changeStream("chat", options, Chat.class)
-                .map(ChangeStreamEvent::getBody)
-                .zipWith(SecurityUtils.getPrincipal())
-                .filter(tuple -> tuple.getT1().getMembers().contains(tuple.getT2().getUser()))
-                .map(Tuple2::getT1);
     }
 }
