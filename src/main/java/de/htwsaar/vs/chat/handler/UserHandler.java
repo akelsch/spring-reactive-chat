@@ -133,7 +133,8 @@ public class UserHandler {
                 .findById(uid)
                 .doOnNext(user -> user.setStatus(user.getStatus()))
                 .flatMap(user -> userService.changeStatus(user))
-                .then(ServerResponse.noContent().build());
+                .flatMap(user -> ServerResponse.ok().build())
+                .switchIfEmpty(ServerResponse.notFound().build());
     }
 
 
