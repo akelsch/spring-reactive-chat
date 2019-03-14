@@ -62,4 +62,9 @@ public class UserService {
     public Mono<Void> deleteById(String id) {
         return userRepository.deleteById(id);
     }
+
+    public Mono<User> changeStatus(User user) {
+        return userRepository.save(user);
+    }
+
 }

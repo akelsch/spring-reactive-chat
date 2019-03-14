@@ -132,7 +132,7 @@ public class UserHandler {
 
 
     public Mono<ServerResponse> deleteStatus(ServerRequest request) {
-        
+
     }
 
     private static Predicate<User> matchByQueryParams(MultiValueMap<String, String> queryParams) {
