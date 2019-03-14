@@ -133,6 +133,13 @@ public class UserHandler {
 
     public Mono<ServerResponse> deleteStatus(ServerRequest request) {
 
+        String uid = request.pathVariable("uid");
+
+        return userService
+                .findById(uid)
+                .doOnNext(user -> user.setStatus(""))
+                .flatMap(user -> userService.changeStatus(user))
+                .then(ServerResponse.noContent().build());
     }
 
     private static Predicate<User> matchByQueryParams(MultiValueMap<String, String> queryParams) {
