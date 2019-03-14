@@ -127,7 +127,13 @@ public class UserHandler {
     }
 
     public Mono<ServerResponse> createStatus(ServerRequest request) {
+        String uid = request.pathVariable("uid");
 
+        return userService
+                .findById(uid)
+                .doOnNext(user -> user.setStatus(user.getStatus()))
+                .flatMap(user -> userService.changeStatus(user))
+                .then(ServerResponse.noContent().build());
     }
 
 
