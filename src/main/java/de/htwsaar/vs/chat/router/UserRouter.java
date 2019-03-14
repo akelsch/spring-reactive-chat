@@ -30,7 +30,8 @@ public class UserRouter {
                 .andRoute(DELETE("/{uid}"), userHandler::delete)
                 .andRoute(POST("/{uid}/change_password"), userHandler::changePassword)
                 .andRoute(PUT("/{uid}/roles"), userHandler::putRole)
-                .andRoute(DELETE("/{uid}/roles"), userHandler::deleteRole);
+                .andRoute(DELETE("/{uid}/roles"), userHandler::deleteRole)
+                .andRoute(DELETE("/{uid}/status"), userHandler::deleteStatus);
 
         return RouterFunctions.nest(path("/api/v1/users"), userRoutes);
     }
