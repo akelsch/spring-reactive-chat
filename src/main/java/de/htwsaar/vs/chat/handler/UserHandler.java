@@ -3,6 +3,7 @@ package de.htwsaar.vs.chat.handler;
 import de.htwsaar.vs.chat.model.Password;
 import de.htwsaar.vs.chat.model.Role;
 import de.htwsaar.vs.chat.model.User;
+import de.htwsaar.vs.chat.model.Status;
 import de.htwsaar.vs.chat.router.UserRouter;
 import de.htwsaar.vs.chat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,11 +129,15 @@ public class UserHandler {
 
     public Mono<ServerResponse> createStatus(ServerRequest request) {
         String uid = request.pathVariable("uid");
+        Mono<Status> status = request
+                .bodyToMono(Status.class)
+                .doOnNext(this::validateObject);
 
         return userService
                 .findById(uid)
-                .doOnNext(user -> user.setStatus(user.getStatus()))
-                .flatMap(user -> userService.changeStatus(user))
+                .zipWith(status)
+                .doOnNext(tupel -> tupel.getT1().setStatus(tupel.getT2().getStatus()))
+                .flatMap(tupel -> userService.changeStatus(tupel.getT1()))
                 .flatMap(user -> ServerResponse.ok().build())
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
