@@ -136,8 +136,8 @@ public class UserHandler {
         return userService
                 .findById(uid)
                 .zipWith(status)
-                .doOnNext(tupel -> tupel.getT1().setStatus(tupel.getT2().getStatus()))
-                .flatMap(tupel -> userService.changeStatus(tupel.getT1()))
+                .doOnNext(tuple -> tuple.getT1().setStatus(tuple.getT2().getStatus()))
+                .flatMap(tuple -> userService.changeStatus(tuple.getT1()))
                 .flatMap(user -> ServerResponse.ok().build())
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
