@@ -139,7 +139,6 @@ public class UserHandler {
 
 
     public Mono<ServerResponse> deleteStatus(ServerRequest request) {
-
         String uid = request.pathVariable("uid");
 
         return userService

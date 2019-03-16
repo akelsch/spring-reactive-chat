@@ -35,7 +35,7 @@ public class User extends BaseDocument {
     @JsonProperty(access = WRITE_ONLY)
     private String password;
 
-    @NotBlank
+
     private String status;
 
     @JsonIgnore
