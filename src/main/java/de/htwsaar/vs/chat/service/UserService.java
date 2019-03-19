@@ -50,6 +50,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @PreAuthorize("#user.id == principal.id")
+    public Mono<User> changeStatus(User user) {
+        return userRepository.save(user);
+    }
+
     public Mono<User> findById(String id) {
         return userRepository.findById(id);
     }
@@ -62,9 +67,4 @@ public class UserService {
     public Mono<Void> deleteById(String id) {
         return userRepository.deleteById(id);
     }
-
-    public Mono<User> changeStatus(User user) {
-        return userRepository.save(user);
-    }
-
 }

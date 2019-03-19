@@ -35,14 +35,13 @@ public class User extends BaseDocument {
     @JsonProperty(access = WRITE_ONLY)
     private String password;
 
-
-    private String status;
-
     @JsonIgnore
     private List<GrantedAuthority> roles = new ArrayList<>();
 
     @JsonIgnore
     private List<GrantedAuthority> authorities = new ArrayList<>();
+
+    private String status = "";
 
     public User() {
         addRole(new SimpleGrantedAuthority("ROLE_USER"));

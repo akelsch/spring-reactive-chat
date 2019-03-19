@@ -1,6 +1,5 @@
 package de.htwsaar.vs.chat.model;
 
-
 import lombok.Data;
 
 /**
