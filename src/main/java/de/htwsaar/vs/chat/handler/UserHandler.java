@@ -1,9 +1,9 @@
 package de.htwsaar.vs.chat.handler;
 
-import de.htwsaar.vs.chat.model.Password;
-import de.htwsaar.vs.chat.model.Role;
-import de.htwsaar.vs.chat.model.Status;
 import de.htwsaar.vs.chat.model.User;
+import de.htwsaar.vs.chat.model.sub.Password;
+import de.htwsaar.vs.chat.model.sub.Role;
+import de.htwsaar.vs.chat.model.sub.Status;
 import de.htwsaar.vs.chat.router.UserRouter;
 import de.htwsaar.vs.chat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
