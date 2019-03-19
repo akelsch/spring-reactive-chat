@@ -51,7 +51,7 @@ public class UserService {
     }
 
     @PreAuthorize("#user.id == principal.id")
-    public Mono<User> changeStatus(User user) {
+    public Mono<User> updateStatus(User user) {
         return userRepository.save(user);
     }
 

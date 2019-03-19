@@ -130,13 +130,14 @@ public class UserHandler {
     public Mono<ServerResponse> putStatus(ServerRequest request) {
         String uid = request.pathVariable("uid");
         Mono<Status> status = request
-                .bodyToMono(Status.class);
+                .bodyToMono(Status.class)
+                .doOnNext(this::validateObject);
 
         return userService
                 .findById(uid)
                 .zipWith(status)
                 .doOnNext(tuple -> tuple.getT1().setStatus(tuple.getT2().getStatus()))
-                .flatMap(tuple -> userService.changeStatus(tuple.getT1()))
+                .flatMap(tuple -> userService.updateStatus(tuple.getT1()))
                 .flatMap(user -> ServerResponse.ok().build())
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
@@ -147,7 +148,7 @@ public class UserHandler {
         return userService
                 .findById(uid)
                 .doOnNext(user -> user.setStatus(""))
-                .flatMap(userService::changeStatus)
+                .flatMap(userService::updateStatus)
                 .then(ServerResponse.noContent().build());
     }
 
