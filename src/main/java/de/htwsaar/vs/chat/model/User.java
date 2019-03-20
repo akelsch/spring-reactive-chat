@@ -41,6 +41,8 @@ public class User extends BaseDocument {
     @JsonIgnore
     private List<GrantedAuthority> authorities = new ArrayList<>();
 
+    private String status = "";
+
     public User() {
         addRole(new SimpleGrantedAuthority("ROLE_USER"));
     }

@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.BodyInserters;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -40,7 +39,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signup")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().valueMatches(LOCATION, "\\/api\\/v1\\/users\\/\\w{24}");
@@ -53,7 +52,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signup")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -67,7 +66,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signup")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isEqualTo(CONFLICT);
     }
@@ -81,7 +80,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signup")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -95,7 +94,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signup")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -109,7 +108,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signup")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -122,7 +121,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signup")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -135,7 +134,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signup")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -147,7 +146,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signup")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -161,7 +160,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signup")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -175,7 +174,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signup")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -189,7 +188,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signup")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -203,7 +202,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signin")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().valueMatches(AUTHORIZATION, "Bearer .+\\..+\\..+");
@@ -216,7 +215,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signin")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -230,7 +229,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signin")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isUnauthorized();
     }
@@ -244,7 +243,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signin")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isUnauthorized();
     }
@@ -258,7 +257,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signin")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isUnauthorized();
     }
@@ -271,7 +270,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signin")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isUnauthorized();
     }
@@ -284,7 +283,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signin")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isUnauthorized();
     }
@@ -296,7 +295,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signin")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isUnauthorized();
     }
@@ -310,7 +309,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signin")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isUnauthorized();
     }
@@ -324,7 +323,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signin")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isUnauthorized();
     }
@@ -338,7 +337,7 @@ class AuthIntegrationTests {
         webTestClient
                 .post().uri("/auth/signin")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isUnauthorized();
     }

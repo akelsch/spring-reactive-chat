@@ -13,7 +13,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.BodyInserters;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -117,7 +116,7 @@ class UserIntegrationTests {
         webTestClient
                 .post().uri("/api/v1/users/{id}/change_password", user.getId())
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isOk();
     }
@@ -127,7 +126,7 @@ class UserIntegrationTests {
     void putRoleWithValidPayload() {
         User user = new User();
         user.setUsername("testuser2");
-        user.setPassword("testpassword2");
+        user.setPassword("testpassword");
         user = userService.save(user).block();
 
         Map<String, String> payload = new LinkedHashMap<>();
@@ -136,7 +135,7 @@ class UserIntegrationTests {
         webTestClient
                 .put().uri("/api/v1/users/{id}/roles", user.getId())
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isOk();
 
@@ -149,7 +148,7 @@ class UserIntegrationTests {
     void putRoleWithEmptyRole() {
         User user = new User();
         user.setUsername("testuser3");
-        user.setPassword("testpassword3");
+        user.setPassword("testpassword");
         user = userService.save(user).block();
 
         Map<String, String> payload = new LinkedHashMap<>();
@@ -158,7 +157,7 @@ class UserIntegrationTests {
         webTestClient
                 .put().uri("/api/v1/users/{id}/roles", user.getId())
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -168,7 +167,7 @@ class UserIntegrationTests {
     void putRoleWithInvalidRole() {
         User user = new User();
         user.setUsername("testuser4");
-        user.setPassword("testpassword4");
+        user.setPassword("testpassword");
         user = userService.save(user).block();
 
         Map<String, String> payload = new LinkedHashMap<>();
@@ -177,7 +176,7 @@ class UserIntegrationTests {
         webTestClient
                 .put().uri("/api/v1/users/{id}/roles", user.getId())
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
 
@@ -191,7 +190,7 @@ class UserIntegrationTests {
     void deleteRole() {
         User user = new User();
         user.setUsername("testuser5");
-        user.setPassword("testpassword5");
+        user.setPassword("testpassword");
         user.addRole(new SimpleGrantedAuthority("ROLE_ADMIN"));
         user = userService.save(user).block();
 
@@ -201,11 +200,72 @@ class UserIntegrationTests {
         webTestClient
                 .delete().uri("/api/v1/users/{id}/roles", user.getId())
                 /*.contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))*/
+                .syncBody(payload)*/
                 .exchange()
                 .expectStatus().isNoContent();
 
         assertThat(userService.findById(user.getId()).block().getRoles())
                 .doesNotContain(new SimpleGrantedAuthority("ROLE_ADMIN"));
+    }
+
+    @Disabled("Does not work due to dynamic property 'id' of UserPrincipal")
+    @Test
+    @WithMockUser
+    void putStatusWithValidPayload() {
+        User user = new User();
+        user.setUsername("testuser6");
+        user.setPassword("testpassword");
+        user = userService.save(user).block();
+
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("status", "Hey there! I am using Spring WebFlux");
+
+        webTestClient
+                .put().uri("/api/v1/users/{id}/status", user.getId())
+                .contentType(APPLICATION_JSON)
+                .syncBody(payload)
+                .exchange()
+                .expectStatus().isOk();
+
+        assertThat(userService.findById(user.getId()).block().getStatus())
+                .isEqualTo("Hey there! I am using Spring WebFlux");
+    }
+
+    @Disabled("Does not work due to dynamic property 'id' of UserPrincipal")
+    @Test
+    @WithMockUser
+    void putStatusWithEmptyStatus() {
+        User user = new User();
+        user.setUsername("testuser7");
+        user.setPassword("testpassword");
+        user = userService.save(user).block();
+
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("status", "");
+
+        webTestClient
+                .put().uri("/api/v1/users/{id}/status", user.getId())
+                .contentType(APPLICATION_JSON)
+                .syncBody(payload)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Disabled("Does not work due to dynamic property 'id' of UserPrincipal")
+    @Test
+    @WithMockUser
+    void deleteStatus() {
+        User user = new User();
+        user.setUsername("testuser8");
+        user.setPassword("testpassword");
+        user.setStatus("Hey there! I am using Spring WebFlux");
+        user = userService.save(user).block();
+
+        webTestClient
+                .delete().uri("/api/v1/users/{id}/status", user.getId())
+                .exchange()
+                .expectStatus().isNoContent();
+
+        assertThat(userService.findById(user.getId()).block().getStatus()).isEmpty();
     }
 }
