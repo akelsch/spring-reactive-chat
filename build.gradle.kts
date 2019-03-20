@@ -4,7 +4,7 @@ plugins {
     id("com.adarshr.test-logger") version "1.6.0"
 }
 
-val javaJwtVersion by extra("3.7.0")
+val javaJwtVersion by extra("3.8.0")
 
 apply(plugin = "io.spring.dependency-management")
 apply(from = "gradle/integration-test.gradle.kts")
