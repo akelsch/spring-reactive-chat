@@ -13,7 +13,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.BodyInserters;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -117,7 +116,7 @@ class UserIntegrationTests {
         webTestClient
                 .post().uri("/api/v1/users/{id}/change_password", user.getId())
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isOk();
     }
@@ -136,7 +135,7 @@ class UserIntegrationTests {
         webTestClient
                 .put().uri("/api/v1/users/{id}/roles", user.getId())
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isOk();
 
@@ -158,7 +157,7 @@ class UserIntegrationTests {
         webTestClient
                 .put().uri("/api/v1/users/{id}/roles", user.getId())
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -177,7 +176,7 @@ class UserIntegrationTests {
         webTestClient
                 .put().uri("/api/v1/users/{id}/roles", user.getId())
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
 
@@ -201,7 +200,7 @@ class UserIntegrationTests {
         webTestClient
                 .delete().uri("/api/v1/users/{id}/roles", user.getId())
                 /*.contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))*/
+                .syncBody(payload)*/
                 .exchange()
                 .expectStatus().isNoContent();
 
@@ -224,7 +223,7 @@ class UserIntegrationTests {
         webTestClient
                 .put().uri("/api/v1/users/{id}/status", user.getId())
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isOk();
 
@@ -247,7 +246,7 @@ class UserIntegrationTests {
         webTestClient
                 .put().uri("/api/v1/users/{id}/status", user.getId())
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }

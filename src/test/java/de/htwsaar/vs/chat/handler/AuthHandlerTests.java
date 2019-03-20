@@ -12,7 +12,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
 
 import java.util.LinkedHashMap;
@@ -53,7 +52,7 @@ class AuthHandlerTests {
         webTestClient
                 .post().uri("/auth/signup")
                 .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(payload))
+                .syncBody(payload)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().valueEquals(LOCATION, "/api/v1/users/42");
@@ -61,9 +60,10 @@ class AuthHandlerTests {
 
     @Test
     void signin() {
+        // Handler itself does nothing except returning 200
         webTestClient
                 .post().uri("/auth/signin")
                 .exchange()
-                .expectStatus().isOk(); // Handler itself does nothing except returning 200
+                .expectStatus().isOk();
     }
 }
