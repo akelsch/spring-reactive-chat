@@ -102,7 +102,6 @@ public class ChatService {
                 .flatMap(chatRepository::save);
     }
 
-    // TODO delete chat authority for userId
     @PreAuthorize("@webSecurity.hasChatAuthority(authentication, #chatId) or #userId == principal.id")
     public Mono<Void> deleteMember(String chatId, String userId) {
         return chatRepository

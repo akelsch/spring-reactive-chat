@@ -11,7 +11,6 @@ import javax.validation.constraints.NotBlank;
  * @author Mahan Karimi
  * @see User
  */
-
 @Data
 public class Status {
 
