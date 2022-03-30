@@ -41,14 +41,14 @@ To run the project use
 ./gradlew bootRun
 ```
 
-To run the project with an specific profile, e.g. `prod`, use
+To run the project with a specific profile, e.g. `prod`, use
 
 ```Shell
-./gradlew bootRun -Pargs=--spring.profiles.active=prod
+./gradlew bootRun --args='--spring.profiles.active=prod'
 ```
 
-Note that the actual Spring arguments starting with `--` are comma-separated:
+Note that multiple Spring arguments have to be separated by space:
 
 ```Shell
-./gradlew bootRun -Pargs=--spring.profiles.active=prod,--spring.main.banner-mode=off
+./gradlew bootRun --args='--spring.profiles.active=prod --spring.main.banner-mode=off'
 ```

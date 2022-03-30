@@ -20,21 +20,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("com.auth0:java-jwt:3.18.2")
+    implementation("com.auth0:java-jwt:3.18.3")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-    }
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.springframework.security:spring-security-test")
-}
-
-tasks.bootRun {
-    if (project.hasProperty("args")) {
-        args = (project.properties["args"] as String).split(",")
-    }
 }
 
 tasks.withType<Test> {
@@ -47,12 +39,10 @@ testSets {
     }
 }
 
-tasks {
-    check {
-        dependsOn("integrationTest")
-    }
-}
-
 tasks.named("integrationTest") {
     shouldRunAfter("test")
+}
+
+tasks.named("check") {
+    dependsOn("integrationTest")
 }
