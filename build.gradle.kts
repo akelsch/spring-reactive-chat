@@ -1,33 +1,27 @@
 plugins {
     java
     id("org.springframework.boot") version "2.1.3.RELEASE"
-    id("com.adarshr.test-logger") version "1.6.0"
+    id("com.adarshr.test-logger") version "3.2.0"
+    id("org.unbroken-dome.test-sets") version "4.0.0"
 }
 
-val javaJwtVersion by extra("3.8.0")
-
 apply(plugin = "io.spring.dependency-management")
-apply(from = "gradle/integration-test.gradle.kts")
 
 group = "de.htwsaar.vs"
 version = "0.0.1-SNAPSHOT"
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-}
+java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("com.auth0:java-jwt:$javaJwtVersion")
-    // Managed
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("com.auth0:java-jwt:3.8.0")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("io.projectreactor:reactor-test")
@@ -38,6 +32,7 @@ dependencies {
     }
     testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.2.0")
 }
 
 tasks.bootRun {
@@ -48,4 +43,20 @@ tasks.bootRun {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+testSets {
+    create("integrationTest") {
+        dirName = "it"
+    }
+}
+
+tasks {
+    check {
+        dependsOn("integrationTest")
+    }
+}
+
+tasks.named("integrationTest") {
+    shouldRunAfter("test")
 }
