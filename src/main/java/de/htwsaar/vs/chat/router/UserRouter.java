@@ -23,7 +23,7 @@ public class UserRouter {
     @Bean
     public RouterFunction<ServerResponse> routeUsers(UserHandler userHandler) {
         RouterFunction<ServerResponse> userRoutes = RouterFunctions
-                .route(GET("/")
+                .route(GET("")
                         .and(accept(APPLICATION_JSON)), userHandler::getAll)
                 .andRoute(GET("/{uid}")
                         .and(accept(APPLICATION_JSON)), userHandler::get)

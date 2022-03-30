@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "2.3.12.RELEASE"
+    id("org.springframework.boot") version "2.5.11"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("com.adarshr.test-logger") version "3.2.0"
     id("org.unbroken-dome.test-sets") version "4.0.0"
