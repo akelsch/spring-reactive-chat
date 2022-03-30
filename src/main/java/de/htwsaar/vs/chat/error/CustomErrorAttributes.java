@@ -1,6 +1,7 @@
 package de.htwsaar.vs.chat.error;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
 import org.springframework.core.codec.DecodingException;
 import org.springframework.dao.DuplicateKeyException;
@@ -12,9 +13,6 @@ import javax.validation.ConstraintViolationException;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CONFLICT;
-
 /**
  * Extends {@link DefaultErrorAttributes} to change the response HTTP status code
  * in case of well known exceptions.
@@ -25,8 +23,8 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 public class CustomErrorAttributes extends DefaultErrorAttributes {
 
     @Override
-    public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
-        Map<String, Object> errorAttributes = super.getErrorAttributes(request, includeStackTrace);
+    public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
+        Map<String, Object> errorAttributes = super.getErrorAttributes(request, options);
         Optional<HttpStatus> errorStatus = determineHttpStatus(getError(request));
 
         errorStatus.ifPresent(httpStatus -> {
@@ -41,11 +39,11 @@ public class CustomErrorAttributes extends DefaultErrorAttributes {
         if (error instanceof DecodingException
                 || error instanceof ConstraintViolationException
                 || error instanceof JWTVerificationException) {
-            return Optional.of(BAD_REQUEST);
+            return Optional.of(HttpStatus.BAD_REQUEST);
         }
 
         if (error instanceof DuplicateKeyException) {
-            return Optional.of(CONFLICT);
+            return Optional.of(HttpStatus.CONFLICT);
         }
 
         return Optional.empty();
