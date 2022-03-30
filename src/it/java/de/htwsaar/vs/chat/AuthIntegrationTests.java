@@ -2,11 +2,9 @@ package de.htwsaar.vs.chat;
 
 import de.htwsaar.vs.chat.router.AuthRouter;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.LinkedHashMap;
@@ -22,7 +20,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
  *
  * @author Arthur Kelsch
  */
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureWebTestClient
 class AuthIntegrationTests {
@@ -42,7 +39,7 @@ class AuthIntegrationTests {
                 .bodyValue(payload)
                 .exchange()
                 .expectStatus().isCreated()
-                .expectHeader().valueMatches(LOCATION, "\\/api\\/v1\\/users\\/\\w{24}");
+                .expectHeader().valueMatches(LOCATION, "/api/v1/users/\\w{24}");
     }
 
     @Test

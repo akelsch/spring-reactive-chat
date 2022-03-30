@@ -5,13 +5,11 @@ import de.htwsaar.vs.chat.router.UserRouter;
 import de.htwsaar.vs.chat.service.UserService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.LinkedHashMap;
@@ -25,7 +23,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
  *
  * @author Leslie Marxen
  */
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureWebTestClient
 class UserIntegrationTests {
