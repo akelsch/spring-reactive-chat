@@ -52,7 +52,7 @@ class AuthHandlerTests {
         webTestClient
                 .post().uri("/auth/signup")
                 .contentType(APPLICATION_JSON)
-                .syncBody(payload)
+                .bodyValue(payload)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().valueEquals(LOCATION, "/api/v1/users/42");

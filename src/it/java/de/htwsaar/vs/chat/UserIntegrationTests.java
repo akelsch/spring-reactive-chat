@@ -116,7 +116,7 @@ class UserIntegrationTests {
         webTestClient
                 .post().uri("/api/v1/users/{id}/change_password", user.getId())
                 .contentType(APPLICATION_JSON)
-                .syncBody(payload)
+                .bodyValue(payload)
                 .exchange()
                 .expectStatus().isOk();
     }
@@ -135,7 +135,7 @@ class UserIntegrationTests {
         webTestClient
                 .put().uri("/api/v1/users/{id}/roles", user.getId())
                 .contentType(APPLICATION_JSON)
-                .syncBody(payload)
+                .bodyValue(payload)
                 .exchange()
                 .expectStatus().isOk();
 
@@ -157,7 +157,7 @@ class UserIntegrationTests {
         webTestClient
                 .put().uri("/api/v1/users/{id}/roles", user.getId())
                 .contentType(APPLICATION_JSON)
-                .syncBody(payload)
+                .bodyValue(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -176,7 +176,7 @@ class UserIntegrationTests {
         webTestClient
                 .put().uri("/api/v1/users/{id}/roles", user.getId())
                 .contentType(APPLICATION_JSON)
-                .syncBody(payload)
+                .bodyValue(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
 
@@ -200,7 +200,7 @@ class UserIntegrationTests {
         webTestClient
                 .delete().uri("/api/v1/users/{id}/roles", user.getId())
                 /*.contentType(APPLICATION_JSON)
-                .syncBody(payload)*/
+                .bodyValue(payload)*/
                 .exchange()
                 .expectStatus().isNoContent();
 
@@ -223,7 +223,7 @@ class UserIntegrationTests {
         webTestClient
                 .put().uri("/api/v1/users/{id}/status", user.getId())
                 .contentType(APPLICATION_JSON)
-                .syncBody(payload)
+                .bodyValue(payload)
                 .exchange()
                 .expectStatus().isOk();
 
@@ -246,7 +246,7 @@ class UserIntegrationTests {
         webTestClient
                 .put().uri("/api/v1/users/{id}/status", user.getId())
                 .contentType(APPLICATION_JSON)
-                .syncBody(payload)
+                .bodyValue(payload)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
