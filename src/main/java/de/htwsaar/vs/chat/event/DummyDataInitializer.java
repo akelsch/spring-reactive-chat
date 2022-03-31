@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-@Profile("dev")
+@Profile({"dev", "test"})
 public class DummyDataInitializer implements ApplicationListener<ApplicationReadyEvent> {
 
     private final UserRepository userRepository;

@@ -71,7 +71,8 @@ class UserIntegrationTests {
                 .expectStatus().isOk()
                 .expectHeader().contentType(APPLICATION_JSON)
                 .expectBody(User.class)
-                .consumeWith(response -> assertThat(response.getResponseBody()).isEqualTo(user));
+                .consumeWith(response -> assertThat(response.getResponseBody().getId())
+                        .isEqualTo(user.getId()));
     }
 
     @Test
