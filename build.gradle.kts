@@ -1,10 +1,12 @@
 plugins {
     java
-    id("org.springframework.boot") version "2.5.11"
+    id("org.springframework.boot") version "2.6.5"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("com.adarshr.test-logger") version "3.2.0"
     id("org.unbroken-dome.test-sets") version "4.0.0"
 }
+
+extra["embedded-mongo.version"] = "3.2.8"
 
 group = "de.htwsaar.vs"
 version = "0.0.1-SNAPSHOT"
@@ -20,7 +22,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("com.auth0:java-jwt:3.18.3")
+    implementation("com.auth0:java-jwt:3.19.0")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
