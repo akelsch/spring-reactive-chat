@@ -1,4 +1,4 @@
-package de.htwsaar.vs.chat;
+package de.htwsaar.vs.chat.event;
 
 import de.htwsaar.vs.chat.auth.ChatAuthority;
 import de.htwsaar.vs.chat.model.Chat;
@@ -7,18 +7,20 @@ import de.htwsaar.vs.chat.repository.ChatRepository;
 import de.htwsaar.vs.chat.repository.MessageRepository;
 import de.htwsaar.vs.chat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import java.util.HashSet;
-
-import static java.util.Arrays.asList;
+import java.util.List;
+import java.util.Set;
 
 @Component
-public class Init implements CommandLineRunner {
+@Profile("dev")
+public class DummyDataInitializer implements ApplicationListener<ApplicationReadyEvent> {
 
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
@@ -26,8 +28,8 @@ public class Init implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public Init(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository,
-                PasswordEncoder passwordEncoder) {
+    public DummyDataInitializer(UserRepository userRepository, ChatRepository chatRepository,
+                                MessageRepository messageRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;
@@ -35,7 +37,7 @@ public class Init implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) {
+    public void onApplicationEvent(ApplicationReadyEvent event) {
         User admin = new User();
         admin.setUsername("admin");
         admin.setPassword(passwordEncoder.encode("nimda"));
@@ -52,15 +54,17 @@ public class Init implements CommandLineRunner {
                 .then(chatRepository.deleteAll())
                 .then(messageRepository.deleteAll());
 
-        Mono<Void> saveUsers = userRepository.saveAll(asList(admin, user))
+        Mono<Void> saveUsers = userRepository.saveAll(List.of(admin, user))
                 .collectList()
-                .doOnNext(users -> chat.setMembers(new HashSet<>(users)))
+                .doOnNext(users -> chat.setMembers(Set.copyOf(users)))
                 .then();
 
         Mono<Void> saveChat = chatRepository.save(chat)
                 .doOnNext(c -> admin.addAuthority(new ChatAuthority(c.getId())))
                 .flatMap(c -> userRepository.save(admin))
                 .then();
+
+        // TODO add messages
 
         deleteAll
                 .then(saveUsers)

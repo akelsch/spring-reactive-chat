@@ -2,8 +2,8 @@ package de.htwsaar.vs.chat.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,17 +14,15 @@ import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
-
 /**
  * User object model (MongoDB document).
  *
  * @author Arthur Kelsch
  */
-@Getter
-@Setter
-@ToString
-@Document
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
+@Document(collection = "users")
 public class User extends BaseDocument {
 
     @NotBlank
@@ -32,7 +30,7 @@ public class User extends BaseDocument {
     private String username;
 
     @NotBlank
-    @JsonProperty(access = WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @JsonIgnore

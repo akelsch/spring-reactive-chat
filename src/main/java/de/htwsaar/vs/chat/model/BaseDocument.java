@@ -1,8 +1,6 @@
 package de.htwsaar.vs.chat.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 
 /**
@@ -10,9 +8,7 @@ import org.springframework.data.annotation.Id;
  *
  * @author Arthur Kelsch
  */
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
 public abstract class BaseDocument {
 
     @Id

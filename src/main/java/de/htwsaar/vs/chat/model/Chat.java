@@ -1,7 +1,7 @@
 package de.htwsaar.vs.chat.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,10 +15,10 @@ import java.util.Set;
  * @author Niklas Reinhard
  * @author Julian Quint
  */
-@Getter
-@Setter
-@ToString
-@Document
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
+@Document(collection = "chats")
 public class Chat extends BaseDocument {
 
     private String name;

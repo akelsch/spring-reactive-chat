@@ -2,8 +2,8 @@ package de.htwsaar.vs.chat.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.htwsaar.vs.chat.model.serializer.DocumentIdSerializer;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -19,10 +19,10 @@ import java.time.LocalDateTime;
  * @author Niklas Reinhard
  * @author Julian Quint
  */
-@Getter
-@Setter
-@ToString
-@Document
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
+@Document(collection = "messages")
 public class Message extends BaseDocument {
 
     @CreatedDate

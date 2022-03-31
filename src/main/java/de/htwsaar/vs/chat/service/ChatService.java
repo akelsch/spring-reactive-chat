@@ -69,7 +69,7 @@ public class ChatService {
                 .build();
 
         return mongoOperations
-                .changeStream("chat", options, Chat.class)
+                .changeStream("chats", options, Chat.class)
                 .map(ChangeStreamEvent::getBody)
                 .zipWith(SecurityUtils.getPrincipal())
                 .filter(tuple -> tuple.getT1().getMembers().contains(tuple.getT2().getUser()))
@@ -82,7 +82,7 @@ public class ChatService {
                 .build();
 
         return mongoOperations
-                .changeStream("message", options, Message.class)
+                .changeStream("messages", options, Message.class)
                 .map(ChangeStreamEvent::getBody)
                 .zipWith(findAllChatsForCurrentUser().collectList())
                 .filter(tuple -> tuple.getT2().contains(tuple.getT1().getChat()))
