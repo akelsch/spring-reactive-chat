@@ -6,7 +6,7 @@ Chat application built with Spring WebFlux
 
 ## Requirements
 
-- Java 8+
+- Java 17
 - MongoDB 3.6+
 
 ## Getting Started
