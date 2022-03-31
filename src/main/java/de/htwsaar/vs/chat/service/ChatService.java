@@ -4,7 +4,6 @@ import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.Message;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.ChatRepository;
-import de.htwsaar.vs.chat.util.CollectionUtils;
 import de.htwsaar.vs.chat.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ChangeStreamEvent;
@@ -17,6 +16,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
@@ -49,7 +50,7 @@ public class ChatService {
 
     @PostAuthorize("@webSecurity.addChatAuthority(authentication, #chat)")
     public Mono<Chat> saveChat(Chat chat) {
-        Set<User> members = CollectionUtils.emptySetIfNull(chat.getMembers());
+        Set<User> members = Objects.requireNonNullElseGet(chat.getMembers(), HashSet::new);
 
         return SecurityUtils.getPrincipal()
                 .doOnNext(principal -> members.add(principal.getUser()))

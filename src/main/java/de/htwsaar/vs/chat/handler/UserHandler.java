@@ -21,11 +21,8 @@ import reactor.util.function.Tuple2;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -155,23 +152,14 @@ public class UserHandler {
     private static Predicate<User> matchByQueryParams(MultiValueMap<String, String> queryParams) {
         Predicate<User> predicate = user -> true;
 
-        for (Map.Entry<String, List<String>> entry : queryParams.entrySet()) {
-            String key = entry.getKey();
-            List<String> values = entry.getValue();
-
+        for (String key : queryParams.keySet()) {
             switch (key) {
-                case "username":
-                    predicate = predicate.and(user -> user.getUsername().equals(values.get(0)));
-                    break;
-                case "roles":
-                    predicate = predicate.and(user -> {
-                        List<String> roles = user.getRoles().stream()
-                                .map(GrantedAuthority::getAuthority)
-                                .map(role -> role.substring(ROLE_PREFIX_LENGTH))
-                                .collect(Collectors.toList());
-                        return roles.containsAll(values);
-                    });
-                    break;
+                case "username" -> predicate = predicate.and(user -> user.getUsername().equals(queryParams.getFirst(key)));
+                case "roles" -> predicate = predicate.and(user -> user.getRoles().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .map(role -> role.substring(ROLE_PREFIX_LENGTH))
+                        .toList()
+                        .containsAll(queryParams.get(key)));
             }
         }
 
