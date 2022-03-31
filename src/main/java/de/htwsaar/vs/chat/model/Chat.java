@@ -24,6 +24,6 @@ public class Chat extends BaseDocument {
     private String name;
 
     @NotNull
-    @DBRef
+    @DBRef // TODO replace with manual references so non-reactive MongoDB dependency can be removed
     private Set<User> members;
 }
