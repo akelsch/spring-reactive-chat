@@ -1,4 +1,4 @@
-package de.htwsaar.vs.chat.configuration;
+package de.htwsaar.vs.chat.config;
 
 import de.htwsaar.vs.chat.auth.UserPrincipal;
 import de.htwsaar.vs.chat.auth.jwt.JwtAuthenticationConverter;
@@ -93,7 +93,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin(allowedOrigin);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

@@ -1,4 +1,4 @@
-package de.htwsaar.vs.chat.configuration;
+package de.htwsaar.vs.chat.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.EnableReactiveMongoAuditing;
