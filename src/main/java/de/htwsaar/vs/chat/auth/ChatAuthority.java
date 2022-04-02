@@ -23,8 +23,8 @@ public class ChatAuthority implements GrantedAuthority {
 
     private String authority;
 
-    public ChatAuthority(String authority) {
-        this.authority = "CHAT_" + authority + "_MOD";
+    public ChatAuthority(String chatId) {
+        this.authority = "CHAT_%s_MOD".formatted(chatId);
     }
 
     @Override
