@@ -7,7 +7,7 @@ plugins {
     id("org.unbroken-dome.test-sets") version "4.0.0"
 }
 
-extra["embedded-mongo.version"] = "3.2.8"
+extra["embedded-mongo.version"] = "3.4.3"
 
 group = "de.htwsaar.vs"
 version = "0.0.1-SNAPSHOT"
