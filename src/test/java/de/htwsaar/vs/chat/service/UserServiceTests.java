@@ -2,9 +2,9 @@ package de.htwsaar.vs.chat.service;
 
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,12 +30,8 @@ class UserServiceTests {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @InjectMocks
     private UserService userService;
-
-    @BeforeEach
-    void setUp() {
-        userService = new UserService(userRepository, passwordEncoder);
-    }
 
     @Test
     void save() {

@@ -1,66 +1,59 @@
 package de.htwsaar.vs.chat.handler;
 
-import de.htwsaar.vs.chat.DisableWebFluxSecurityCsrf;
 import de.htwsaar.vs.chat.model.User;
-import de.htwsaar.vs.chat.router.AuthRouter;
 import de.htwsaar.vs.chat.service.UserService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.reactive.function.server.MockServerRequest;
+import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.net.URI;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.http.HttpHeaders.LOCATION;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link AuthHandler}.
  *
  * @author Arthur Kelsch
  */
-@WebFluxTest
-@DisableWebFluxSecurityCsrf
-@Import({AuthRouter.class, AuthHandler.class})
+@ExtendWith(MockitoExtension.class)
 class AuthHandlerTests {
 
-    @Autowired
-    private WebTestClient webTestClient;
-
-    @MockBean
+    @Mock
     private UserService userService;
+
+    @InjectMocks
+    private AuthHandler authHandler;
 
     @Test
     void signup() {
         User user = new User();
         user.setId("42");
-        given(userService.save(any())).willReturn(Mono.just(user));
+        when(userService.save(any())).thenReturn(Mono.just(user));
 
-        Map<String, String> payload = new LinkedHashMap<>();
-        payload.put("username", "testuser");
-        payload.put("password", "testpassword");
+        MockServerRequest request = MockServerRequest.builder().body(Mono.just(new User()));
+        ServerResponse response = authHandler.signup(request).block();
 
-        webTestClient
-                .post().uri("/auth/signup")
-                .contentType(APPLICATION_JSON)
-                .bodyValue(payload)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().valueEquals(LOCATION, "/api/v1/users/42");
+        assertNotNull(response);
+        assertEquals(HttpStatus.CREATED, response.statusCode());
+        assertEquals(URI.create("/api/v1/users/42"), response.headers().getLocation());
     }
 
     @Test
     void signin() {
-        // Handler itself does nothing except returning 200
-        webTestClient
-                .post().uri("/auth/signin")
-                .exchange()
-                .expectStatus().isOk();
+        MockServerRequest request = MockServerRequest.builder().build();
+        ServerResponse response = authHandler.signin(request).block();
+
+        // The handler itself does nothing except returning 200
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.statusCode());
     }
 }
