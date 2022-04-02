@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /**
  * Message object model (MongoDB Document).
@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 public class Message extends BaseDocument {
 
     @CreatedDate
-    private LocalDateTime createdDate;
+    private Instant createdDate;
 
     @NotNull
     @JsonSerialize(using = DocumentIdSerializer.class)
