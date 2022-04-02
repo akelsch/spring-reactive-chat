@@ -1,4 +1,4 @@
-package de.htwsaar.vs.chat.model.sub;
+package de.htwsaar.vs.chat.model.user;
 
 import de.htwsaar.vs.chat.model.User;
 import lombok.Data;
@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
  * @see User
  */
 @Data
-public class Status {
+public class StatusRequest {
 
     @NotBlank
     private String status;

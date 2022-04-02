@@ -14,7 +14,7 @@ import static org.springframework.http.MediaType.TEXT_EVENT_STREAM;
 
 /**
  * Converts a token from an Authorization HTTP header into an {@link Authentication}
- * object. This includes verifying the tokens signature.
+ * object. This includes verifying the tokens' signature.
  * <p>
  * If the Authorization header is empty, query parameters get checked for a
  * token as server-sent events do not support setting custom HTTP headers.

@@ -13,7 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
  * should be a {@link Chat} id.
  * <p>
  * Important: A no-args constructor is required so authorities fetched from the
- * database dont get wrapped by the pattern string again!
+ * database do not get wrapped by the pattern string again!
  *
  * @author Arthur Kelsch
  */

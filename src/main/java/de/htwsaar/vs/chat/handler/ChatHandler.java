@@ -49,7 +49,7 @@ public class ChatHandler {
     }
 
     public Mono<ServerResponse> deleteChat(ServerRequest request) {
-        String chatId = request.pathVariable("chatid");
+        String chatId = request.pathVariable("chatId");
 
         return chatService
                 .deleteChat(chatId)
@@ -69,7 +69,7 @@ public class ChatHandler {
     }
 
     public Mono<ServerResponse> getAllMembers(ServerRequest request) {
-        String chatId = request.pathVariable("chatid");
+        String chatId = request.pathVariable("chatId");
 
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
@@ -77,7 +77,7 @@ public class ChatHandler {
     }
 
     public Mono<ServerResponse> postMember(ServerRequest request) {
-        String chatId = request.pathVariable("chatid");
+        String chatId = request.pathVariable("chatId");
 
         return request
                 .bodyToMono(User.class)
@@ -86,8 +86,8 @@ public class ChatHandler {
     }
 
     public Mono<ServerResponse> deleteMember(ServerRequest request) {
-        String chatId = request.pathVariable("chatid");
-        String userId = request.pathVariable("userid");
+        String chatId = request.pathVariable("chatId");
+        String userId = request.pathVariable("userId");
 
         return chatService
                 .deleteMember(chatId, userId)
@@ -95,7 +95,7 @@ public class ChatHandler {
     }
 
     public Mono<ServerResponse> getAllMessages(ServerRequest request) {
-        String chatId = request.pathVariable("chatid");
+        String chatId = request.pathVariable("chatId");
 
         return ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
@@ -103,7 +103,7 @@ public class ChatHandler {
     }
 
     public Mono<ServerResponse> getAllMessagesPaginated(ServerRequest request) {
-        String chatId = request.pathVariable("chatid");
+        String chatId = request.pathVariable("chatId");
         String start = request.queryParam("start").orElse("1");
         String chunk = request.queryParam("chunk").orElse("50");
 
@@ -113,7 +113,7 @@ public class ChatHandler {
     }
 
     public Mono<ServerResponse> postMessage(ServerRequest request) {
-        String chatId = request.pathVariable("chatid");
+        String chatId = request.pathVariable("chatId");
 
         return request
                 .bodyToMono(Message.class)
@@ -122,7 +122,7 @@ public class ChatHandler {
     }
 
     public Mono<ServerResponse> deleteMessage(ServerRequest request) {
-        String messageId = request.pathVariable("messageid");
+        String messageId = request.pathVariable("messageId");
 
         return messageService
                 .findById(messageId)

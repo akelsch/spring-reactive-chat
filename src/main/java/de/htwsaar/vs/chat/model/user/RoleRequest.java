@@ -1,4 +1,4 @@
-package de.htwsaar.vs.chat.model.sub;
+package de.htwsaar.vs.chat.model.user;
 
 import de.htwsaar.vs.chat.model.User;
 import lombok.Data;
@@ -13,7 +13,7 @@ import javax.validation.constraints.Pattern;
  * @see User
  */
 @Data
-public class Role {
+public class RoleRequest {
 
     @NotBlank
     @Pattern(regexp = "ROLE_\\w+")

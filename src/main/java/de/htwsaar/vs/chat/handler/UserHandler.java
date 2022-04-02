@@ -1,9 +1,9 @@
 package de.htwsaar.vs.chat.handler;
 
 import de.htwsaar.vs.chat.model.User;
-import de.htwsaar.vs.chat.model.sub.Password;
-import de.htwsaar.vs.chat.model.sub.Role;
-import de.htwsaar.vs.chat.model.sub.Status;
+import de.htwsaar.vs.chat.model.user.PasswordRequest;
+import de.htwsaar.vs.chat.model.user.RoleRequest;
+import de.htwsaar.vs.chat.model.user.StatusRequest;
 import de.htwsaar.vs.chat.router.UserRouter;
 import de.htwsaar.vs.chat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,8 +77,8 @@ public class UserHandler {
 
     public Mono<ServerResponse> changePassword(ServerRequest request) {
         String uid = request.pathVariable("uid");
-        Mono<Password> password = request
-                .bodyToMono(Password.class)
+        Mono<PasswordRequest> password = request
+                .bodyToMono(PasswordRequest.class)
                 .doOnNext(this::validateObject);
 
         return userService
@@ -94,9 +94,9 @@ public class UserHandler {
     public Mono<ServerResponse> putRole(ServerRequest request) {
         String uid = request.pathVariable("uid");
         Mono<GrantedAuthority> role = request
-                .bodyToMono(Role.class)
+                .bodyToMono(RoleRequest.class)
                 .doOnNext(this::validateObject)
-                .map(Role::getRole)
+                .map(RoleRequest::getRole)
                 .map(SimpleGrantedAuthority::new);
 
         return userService
@@ -111,9 +111,9 @@ public class UserHandler {
     public Mono<ServerResponse> deleteRole(ServerRequest request) {
         String uid = request.pathVariable("uid");
         Mono<GrantedAuthority> role = request
-                .bodyToMono(Role.class)
+                .bodyToMono(RoleRequest.class)
                 .doOnNext(this::validateObject)
-                .map(Role::getRole)
+                .map(RoleRequest::getRole)
                 .map(SimpleGrantedAuthority::new);
 
         return userService
@@ -126,8 +126,8 @@ public class UserHandler {
 
     public Mono<ServerResponse> putStatus(ServerRequest request) {
         String uid = request.pathVariable("uid");
-        Mono<Status> status = request
-                .bodyToMono(Status.class)
+        Mono<StatusRequest> status = request
+                .bodyToMono(StatusRequest.class)
                 .doOnNext(this::validateObject);
 
         return userService
@@ -174,7 +174,7 @@ public class UserHandler {
         }
     }
 
-    private void matchOldPassword(Tuple2<User, Password> tuple) {
+    private void matchOldPassword(Tuple2<User, PasswordRequest> tuple) {
         String givenPassword = tuple.getT2().getOldPassword();
         String actualEncodedPassword = tuple.getT1().getPassword();
 

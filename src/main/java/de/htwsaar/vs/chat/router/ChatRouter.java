@@ -26,7 +26,7 @@ public class ChatRouter {
                 .route(GET("")
                         .and(accept(APPLICATION_JSON)), chatHandler::getAllChats)
                 .andRoute(POST(""), chatHandler::postChat)
-                .andRoute(DELETE("/{chatid}"), chatHandler::deleteChat)
+                .andRoute(DELETE("/{chatId}"), chatHandler::deleteChat)
                 .andRoute(GET("/stream")
                         .and(accept(TEXT_EVENT_STREAM)), chatHandler::getNewChats)
                 .andRoute(GET("/messages/stream")
@@ -41,9 +41,9 @@ public class ChatRouter {
                 .route(GET("")
                         .and(accept(APPLICATION_JSON)), chatHandler::getAllMembers)
                 .andRoute(POST(""), chatHandler::postMember)
-                .andRoute(DELETE("/{userid}"), chatHandler::deleteMember);
+                .andRoute(DELETE("/{userId}"), chatHandler::deleteMember);
 
-        return RouterFunctions.nest(path("/api/v1/chats/{chatid}/members"), memberRoutes);
+        return RouterFunctions.nest(path("/api/v1/chats/{chatId}/members"), memberRoutes);
     }
 
     @Bean
@@ -54,8 +54,8 @@ public class ChatRouter {
                 .andRoute(GET("/paginated")
                         .and(accept(APPLICATION_JSON)), chatHandler::getAllMessagesPaginated)
                 .andRoute(POST(""), chatHandler::postMessage)
-                .andRoute(DELETE("/{messageid}"), chatHandler::deleteMessage);
+                .andRoute(DELETE("/{messageId}"), chatHandler::deleteMessage);
 
-        return RouterFunctions.nest(path("/api/v1/chats/{chatid}/messages"), messageRoutes);
+        return RouterFunctions.nest(path("/api/v1/chats/{chatId}/messages"), messageRoutes);
     }
 }
