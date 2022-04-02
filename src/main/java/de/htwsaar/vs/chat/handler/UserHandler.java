@@ -153,14 +153,15 @@ public class UserHandler {
         Predicate<User> predicate = user -> true;
 
         for (String key : queryParams.keySet()) {
-            switch (key) {
-                case "username" -> predicate = predicate.and(user -> user.getUsername().equals(queryParams.getFirst(key)));
-                case "roles" -> predicate = predicate.and(user -> user.getRoles().stream()
+            predicate = switch (key) {
+                case "username" -> predicate.and(user -> user.getUsername().equals(queryParams.getFirst(key)));
+                case "roles" -> predicate.and(user -> user.getRoles().stream()
                         .map(GrantedAuthority::getAuthority)
                         .map(role -> role.substring(ROLE_PREFIX_LENGTH))
                         .toList()
                         .containsAll(queryParams.get(key)));
-            }
+                default -> predicate;
+            };
         }
 
         return predicate;
