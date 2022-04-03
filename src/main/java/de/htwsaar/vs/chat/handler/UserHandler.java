@@ -6,23 +6,17 @@ import de.htwsaar.vs.chat.model.user.RoleRequest;
 import de.htwsaar.vs.chat.model.user.StatusRequest;
 import de.htwsaar.vs.chat.router.UserRouter;
 import de.htwsaar.vs.chat.service.UserService;
+import de.htwsaar.vs.chat.service.ValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.springframework.web.server.ServerWebInputException;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
-import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -38,8 +32,7 @@ import java.util.function.Predicate;
 public class UserHandler {
 
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
-    private final Validator validator;
+    private final ValidationService validationService;
 
     public Mono<ServerResponse> getAll(ServerRequest request) {
         MultiValueMap<String, String> queryParams = request.queryParams();
@@ -70,14 +63,12 @@ public class UserHandler {
         String uid = request.pathVariable("uid");
         Mono<PasswordRequest> password = request
                 .bodyToMono(PasswordRequest.class)
-                .doOnNext(this::validateObject);
+                .doOnNext(validationService::validateObject);
 
         return userService
                 .findById(uid)
                 .zipWith(password)
-                .doOnNext(this::matchOldPassword)
-                .doOnNext(tuple -> tuple.getT1().setPassword(tuple.getT2().getNewPassword()))
-                .flatMap(tuple -> userService.updatePassword(tuple.getT1()))
+                .flatMap(tuple -> userService.updatePassword(tuple.getT1(), tuple.getT2()))
                 .flatMap(user -> ServerResponse.ok().build())
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
@@ -86,7 +77,7 @@ public class UserHandler {
         String uid = request.pathVariable("uid");
         Mono<GrantedAuthority> role = request
                 .bodyToMono(RoleRequest.class)
-                .doOnNext(this::validateObject)
+                .doOnNext(validationService::validateObject)
                 .map(RoleRequest::getRole)
                 .map(SimpleGrantedAuthority::new);
 
@@ -103,7 +94,7 @@ public class UserHandler {
         String uid = request.pathVariable("uid");
         Mono<GrantedAuthority> role = request
                 .bodyToMono(RoleRequest.class)
-                .doOnNext(this::validateObject)
+                .doOnNext(validationService::validateObject)
                 .map(RoleRequest::getRole)
                 .map(SimpleGrantedAuthority::new);
 
@@ -119,7 +110,7 @@ public class UserHandler {
         String uid = request.pathVariable("uid");
         Mono<StatusRequest> status = request
                 .bodyToMono(StatusRequest.class)
-                .doOnNext(this::validateObject);
+                .doOnNext(validationService::validateObject);
 
         return userService
                 .findById(uid)
@@ -156,22 +147,5 @@ public class UserHandler {
         }
 
         return predicate;
-    }
-
-    private <T> void validateObject(T obj) {
-        Set<ConstraintViolation<T>> violations = validator.validate(obj);
-
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
-        }
-    }
-
-    private void matchOldPassword(Tuple2<User, PasswordRequest> tuple) {
-        String givenPassword = tuple.getT2().getOldPassword();
-        String actualEncodedPassword = tuple.getT1().getPassword();
-
-        if (!passwordEncoder.matches(givenPassword, actualEncodedPassword)) {
-            throw new ServerWebInputException("Old password does not match");
-        }
     }
 }
