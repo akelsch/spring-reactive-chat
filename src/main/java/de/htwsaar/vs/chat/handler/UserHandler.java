@@ -36,8 +36,6 @@ import java.util.function.Predicate;
 @Component
 public class UserHandler {
 
-    private static final int ROLE_PREFIX_LENGTH = 5;
-
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final Validator validator;
@@ -156,7 +154,7 @@ public class UserHandler {
                 case "username" -> predicate.and(user -> user.getUsername().equals(queryParams.getFirst(key)));
                 case "roles" -> predicate.and(user -> user.getRoles().stream()
                         .map(GrantedAuthority::getAuthority)
-                        .map(role -> role.substring(ROLE_PREFIX_LENGTH))
+                        .map(role -> role.replace("ROLE_", ""))
                         .toList()
                         .containsAll(queryParams.get(key)));
                 default -> predicate;
