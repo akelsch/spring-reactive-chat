@@ -9,6 +9,7 @@ import de.htwsaar.vs.chat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -19,15 +20,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.server.WebFilter;
 
 import java.util.List;
-
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers.pathMatchers;
 
 /**
  * Configuration class for Spring Security.
@@ -97,7 +96,7 @@ public class SecurityConfiguration {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin(allowedOrigin);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.addExposedHeader(AUTHORIZATION);
+        configuration.addExposedHeader(HttpHeaders.AUTHORIZATION);
         configuration.applyPermitDefaultValues();
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -107,23 +106,21 @@ public class SecurityConfiguration {
     }
 
     private WebFilter jwtAuthenticationFilter() {
-        UserDetailsRepositoryReactiveAuthenticationManager authenticationManager =
-                new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService());
+        var authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService());
         authenticationManager.setPasswordEncoder(passwordEncoder());
 
-        AuthenticationWebFilter jwtAuthenticationFilter = new AuthenticationWebFilter(authenticationManager);
+        var jwtAuthenticationFilter = new AuthenticationWebFilter(authenticationManager);
         jwtAuthenticationFilter.setServerAuthenticationConverter(new JwtAuthenticationConverter());
         jwtAuthenticationFilter.setAuthenticationSuccessHandler(new JwtAuthenticationSuccessHandler());
-        jwtAuthenticationFilter.setRequiresAuthenticationMatcher(pathMatchers(AUTH_SIGNIN_MATCHER));
+        jwtAuthenticationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers(AUTH_SIGNIN_MATCHER));
 
         return jwtAuthenticationFilter;
     }
 
     private WebFilter jwtAuthorizationFilter() {
-        AuthenticationWebFilter jwtAuthorizationFilter =
-                new AuthenticationWebFilter(new JwtAuthorizationManager(userDetailsService()));
+        var jwtAuthorizationFilter = new AuthenticationWebFilter(new JwtAuthorizationManager(userDetailsService()));
         jwtAuthorizationFilter.setServerAuthenticationConverter(new JwtAuthorizationConverter());
-        jwtAuthorizationFilter.setRequiresAuthenticationMatcher(pathMatchers(API_MATCHER));
+        jwtAuthorizationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers(API_MATCHER));
 
         return jwtAuthorizationFilter;
     }
