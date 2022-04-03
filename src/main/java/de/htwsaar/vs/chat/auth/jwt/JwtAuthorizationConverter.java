@@ -1,16 +1,14 @@
 package de.htwsaar.vs.chat.auth.jwt;
 
 import de.htwsaar.vs.chat.util.JwtUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-
-import static de.htwsaar.vs.chat.util.JwtUtils.JWT_PREFIX;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.MediaType.TEXT_EVENT_STREAM;
 
 /**
  * Converts a token from an Authorization HTTP header into an {@link Authentication}
@@ -29,12 +27,11 @@ public class JwtAuthorizationConverter implements ServerAuthenticationConverter 
         ServerHttpRequest request = exchange.getRequest();
 
         Mono<String> sseToken = Mono.justOrEmpty(request.getQueryParams().getFirst("token"))
-                .filter(token -> request.getHeaders().getAccept().contains(TEXT_EVENT_STREAM));
+                .filter(token -> request.getHeaders().getAccept().contains(MediaType.TEXT_EVENT_STREAM));
 
-        return Mono.justOrEmpty(request.getHeaders().getFirst(AUTHORIZATION))
+        return Mono.justOrEmpty(request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION))
                 .switchIfEmpty(sseToken)
-                .filter(authorization -> authorization.toLowerCase().startsWith(JWT_PREFIX.toLowerCase()))
-                .map(authorization -> authorization.substring(JWT_PREFIX.length()))
+                .mapNotNull(JwtUtils::unwrapBearerToken)
                 .map(JwtUtils::verifyToken)
                 .map(JwtUtils::getName)
                 .map(username -> new UsernamePasswordAuthenticationToken(username, null));

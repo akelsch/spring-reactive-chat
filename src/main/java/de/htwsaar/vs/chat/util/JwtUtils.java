@@ -1,14 +1,13 @@
 package de.htwsaar.vs.chat.util;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import de.htwsaar.vs.chat.auth.UserPrincipal;
 import lombok.experimental.UtilityClass;
 import org.springframework.security.core.Authentication;
 
 import java.util.Date;
-
-import static com.auth0.jwt.algorithms.Algorithm.HMAC256;
 
 /**
  * Utility class providing methods to work with JSON Web Tokens.
@@ -18,10 +17,10 @@ import static com.auth0.jwt.algorithms.Algorithm.HMAC256;
 @UtilityClass
 public final class JwtUtils {
 
-    public static final String JWT_PREFIX = "Bearer ";
+    private static final long EXPIRES_IN = 24 * 60 * 60 * 1000L;
 
-    private static final long JWT_EXP = 86_400_000;
-    private static final String JWT_SECRET = "avtQCXgvuLGn93dB3Mm8UXL9yLNqUXDM";
+    private static final String SECRET = "avtQCXgvuLGn93dB3Mm8UXL9yLNqUXDM";
+    private static final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET);
 
     /**
      * Creates a new JWT with the following claims:
@@ -42,8 +41,20 @@ public final class JwtUtils {
         return JWT.create()
                 .withSubject(userPrincipal.getId())
                 .withClaim("name", userPrincipal.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + JWT_EXP))
-                .sign(HMAC256(JWT_SECRET.getBytes()));
+                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRES_IN))
+                .sign(ALGORITHM);
+    }
+
+    public static String wrapBearerToken(String token) {
+        return "Bearer %s".formatted(token);
+    }
+
+    public static String unwrapBearerToken(String bearerToken) {
+        if (bearerToken.toLowerCase().startsWith("bearer ")) {
+            return bearerToken.substring("bearer ".length());
+        }
+
+        return null;
     }
 
     /**
@@ -53,7 +64,8 @@ public final class JwtUtils {
      * @return a verified and decoded JWT
      */
     public static DecodedJWT verifyToken(String token) {
-        return JWT.require(HMAC256(JWT_SECRET.getBytes()))
+        return JWT.require(ALGORITHM)
+                .withClaimPresence("name")
                 .build()
                 .verify(token);
     }
