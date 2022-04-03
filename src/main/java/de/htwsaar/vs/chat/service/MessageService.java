@@ -50,7 +50,7 @@ public class MessageService {
         message.setChat(chat);
 
         return SecurityUtils.getPrincipal()
-                .doOnNext(principal -> message.setSender(principal.getUser()))
+                .doOnNext(principal -> message.setSender(principal.user()))
                 .flatMap(principal -> messageRepository.save(message));
     }
 

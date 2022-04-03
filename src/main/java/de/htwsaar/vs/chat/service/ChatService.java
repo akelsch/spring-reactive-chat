@@ -53,7 +53,7 @@ public class ChatService {
         Set<User> members = Objects.requireNonNullElseGet(chat.getMembers(), HashSet::new);
 
         return SecurityUtils.getPrincipal()
-                .doOnNext(principal -> members.add(principal.getUser()))
+                .doOnNext(principal -> members.add(principal.user()))
                 .doOnNext(principal -> chat.setMembers(members))
                 .flatMap(principal -> chatRepository.save(chat));
     }
@@ -73,7 +73,7 @@ public class ChatService {
                 .changeStream("chats", options, Chat.class)
                 .map(ChangeStreamEvent::getBody)
                 .zipWith(SecurityUtils.getPrincipal())
-                .filter(tuple -> tuple.getT1().getMembers().contains(tuple.getT2().getUser()))
+                .filter(tuple -> tuple.getT1().getMembers().contains(tuple.getT2().user()))
                 .map(Tuple2::getT1);
     }
 

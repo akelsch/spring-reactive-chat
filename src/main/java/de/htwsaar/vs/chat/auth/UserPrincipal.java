@@ -1,8 +1,6 @@
 package de.htwsaar.vs.chat.auth;
 
 import de.htwsaar.vs.chat.model.User;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,11 +13,7 @@ import java.util.*;
  * @author Arthur Kelsch
  * @see User
  */
-@RequiredArgsConstructor
-public class UserPrincipal implements UserDetails {
-
-    @Getter
-    private final User user;
+public record UserPrincipal(User user) implements UserDetails {
 
     public String getId() {
         return user.getId();

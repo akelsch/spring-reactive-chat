@@ -4,7 +4,7 @@ import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.Message;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -19,25 +19,18 @@ import org.springframework.stereotype.Component;
  * @author Mahan Karimi
  */
 @Component
+@RequiredArgsConstructor
 public class WebSecurity {
 
     private final UserRepository userRepository;
 
-    @Autowired
-    public WebSecurity(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
     public boolean hasChatAuthority(Authentication authentication, String chatId) {
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        User user = userPrincipal.getUser();
-
-        return user.getAuthorities().contains(new ChatAuthority(chatId));
+        return authentication.getAuthorities().contains(new ChatAuthority(chatId));
     }
 
     public boolean addChatAuthority(Authentication authentication, Chat chat) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        User user = userPrincipal.getUser();
+        User user = userPrincipal.user();
 
         user.addAuthority(new ChatAuthority(chat.getId()));
         userRepository.save(user).subscribe();
@@ -47,7 +40,7 @@ public class WebSecurity {
 
     public boolean removeChatAuthority(Authentication authentication, String chatId) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        User user = userPrincipal.getUser();
+        User user = userPrincipal.user();
 
         if (user.removeAuthority(new ChatAuthority(chatId))) {
             userRepository.save(user).subscribe();
@@ -58,7 +51,7 @@ public class WebSecurity {
 
     public boolean isMessageSender(Authentication authentication, Message message) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        User user = userPrincipal.getUser();
+        User user = userPrincipal.user();
 
         return user.getId().equals(message.getSender().getId());
     }

@@ -105,7 +105,7 @@ class UserIntegrationTests {
         User user = new User();
         user.setUsername("testuser");
         user.setPassword("testpassword");
-        user = userService.save(user).block();
+        user = userService.createUser(user).block();
 
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("oldPassword", "testpassword");
@@ -125,7 +125,7 @@ class UserIntegrationTests {
         User user = new User();
         user.setUsername("testuser2");
         user.setPassword("testpassword");
-        user = userService.save(user).block();
+        user = userService.createUser(user).block();
 
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("role", "ROLE_TEST");
@@ -147,7 +147,7 @@ class UserIntegrationTests {
         User user = new User();
         user.setUsername("testuser3");
         user.setPassword("testpassword");
-        user = userService.save(user).block();
+        user = userService.createUser(user).block();
 
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("role", "");
@@ -166,7 +166,7 @@ class UserIntegrationTests {
         User user = new User();
         user.setUsername("testuser4");
         user.setPassword("testpassword");
-        user = userService.save(user).block();
+        user = userService.createUser(user).block();
 
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("role", "_TEST");
@@ -190,7 +190,7 @@ class UserIntegrationTests {
         user.setUsername("testuser5");
         user.setPassword("testpassword");
         user.addRole(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        user = userService.save(user).block();
+        user = userService.createUser(user).block();
 
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("role", "ROLE_ADMIN");
@@ -213,7 +213,7 @@ class UserIntegrationTests {
         User user = new User();
         user.setUsername("testuser6");
         user.setPassword("testpassword");
-        user = userService.save(user).block();
+        user = userService.createUser(user).block();
 
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("status", "Hey there! I am using Spring WebFlux");
@@ -236,7 +236,7 @@ class UserIntegrationTests {
         User user = new User();
         user.setUsername("testuser7");
         user.setPassword("testpassword");
-        user = userService.save(user).block();
+        user = userService.createUser(user).block();
 
         Map<String, String> payload = new LinkedHashMap<>();
         payload.put("status", "");
@@ -257,7 +257,7 @@ class UserIntegrationTests {
         user.setUsername("testuser8");
         user.setPassword("testpassword");
         user.setStatus("Hey there! I am using Spring WebFlux");
-        user = userService.save(user).block();
+        user = userService.createUser(user).block();
 
         webTestClient
                 .delete().uri("/api/v1/users/{id}/status", user.getId())

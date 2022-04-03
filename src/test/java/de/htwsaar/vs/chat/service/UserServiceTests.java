@@ -34,7 +34,7 @@ class UserServiceTests {
     private UserService userService;
 
     @Test
-    void save() {
+    void createUser() {
         given(passwordEncoder.encode(any())).willReturn("encoded");
         given(userRepository.save(any())).willAnswer(invocation -> {
             User arg = invocation.getArgument(0);
@@ -55,7 +55,7 @@ class UserServiceTests {
         expected.setUsername("testuser");
         expected.setPassword("encoded");
 
-        StepVerifier.create(userService.save(user))
+        StepVerifier.create(userService.createUser(user))
                 .expectNext(expected)
                 .verifyComplete();
     }

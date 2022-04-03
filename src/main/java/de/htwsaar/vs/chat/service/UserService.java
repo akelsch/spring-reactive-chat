@@ -32,7 +32,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Mono<User> save(@Valid User user) {
+    public Mono<User> createUser(@Valid User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return userRepository.save(user);

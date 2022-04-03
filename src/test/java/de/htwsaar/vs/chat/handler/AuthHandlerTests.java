@@ -37,7 +37,7 @@ class AuthHandlerTests {
     void signup() {
         User user = new User();
         user.setId("42");
-        when(userService.save(any())).thenReturn(Mono.just(user));
+        when(userService.createUser(any())).thenReturn(Mono.just(user));
 
         MockServerRequest request = MockServerRequest.builder().body(Mono.just(new User()));
         ServerResponse response = authHandler.signup(request).block();

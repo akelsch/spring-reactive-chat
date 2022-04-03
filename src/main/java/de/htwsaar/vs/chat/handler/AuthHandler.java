@@ -3,10 +3,11 @@ package de.htwsaar.vs.chat.handler;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.router.AuthRouter;
 import de.htwsaar.vs.chat.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -17,20 +18,19 @@ import java.net.URI;
  * @author Arthur Kelsch
  */
 @Component
+@RequiredArgsConstructor
 public class AuthHandler {
 
     private final UserService userService;
 
-    @Autowired
-    public AuthHandler(UserService userService) {
-        this.userService = userService;
-    }
-
     public Mono<ServerResponse> signup(ServerRequest request) {
         return request
                 .bodyToMono(User.class)
-                .flatMap(userService::save)
-                .flatMap(user -> ServerResponse.created(URI.create("/api/v1/users/" + user.getId())).build());
+                .flatMap(userService::createUser)
+                .flatMap(user -> {
+                    URI uri = UriComponentsBuilder.fromUriString("/api/v1/users/{uid}").build(user.getId());
+                    return ServerResponse.created(uri).build();
+                });
     }
 
     public Mono<ServerResponse> signin(ServerRequest request) {
