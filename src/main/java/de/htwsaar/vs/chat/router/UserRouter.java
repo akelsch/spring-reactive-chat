@@ -3,11 +3,11 @@ package de.htwsaar.vs.chat.router;
 import de.htwsaar.vs.chat.handler.UserHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 
 /**
@@ -23,10 +23,8 @@ public class UserRouter {
     @Bean
     public RouterFunction<ServerResponse> routeUsers(UserHandler userHandler) {
         RouterFunction<ServerResponse> userRoutes = RouterFunctions
-                .route(GET("")
-                        .and(accept(APPLICATION_JSON)), userHandler::getAll)
-                .andRoute(GET("/{uid}")
-                        .and(accept(APPLICATION_JSON)), userHandler::get)
+                .route(GET("").and(accept(MediaType.APPLICATION_JSON)), userHandler::getAll)
+                .andRoute(GET("/{uid}").and(accept(MediaType.APPLICATION_JSON)), userHandler::get)
                 .andRoute(DELETE("/{uid}"), userHandler::delete)
                 .andRoute(POST("/{uid}/change_password"), userHandler::changePassword)
                 .andRoute(PUT("/{uid}/roles"), userHandler::putRole)

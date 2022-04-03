@@ -7,6 +7,7 @@ import de.htwsaar.vs.chat.model.user.StatusRequest;
 import de.htwsaar.vs.chat.router.UserRouter;
 import de.htwsaar.vs.chat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,8 +24,6 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import java.util.Set;
 import java.util.function.Predicate;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
  * Handler methods for {@link UserRouter}.
@@ -54,7 +53,7 @@ public class UserHandler {
         MultiValueMap<String, String> queryParams = request.queryParams();
 
         return ServerResponse.ok()
-                .contentType(APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(userService.findAll().filter(matchByQueryParams(queryParams)), User.class);
     }
 
@@ -63,7 +62,7 @@ public class UserHandler {
 
         return userService
                 .findById(uid)
-                .flatMap(user -> ServerResponse.ok().contentType(APPLICATION_JSON).body(Mono.just(user), User.class))
+                .flatMap(user -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(Mono.just(user), User.class))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 

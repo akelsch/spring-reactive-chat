@@ -7,15 +7,13 @@ import de.htwsaar.vs.chat.router.ChatRouter;
 import de.htwsaar.vs.chat.service.ChatService;
 import de.htwsaar.vs.chat.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.TEXT_EVENT_STREAM;
 
 /**
  * Handler methods for {@link ChatRouter}.
@@ -37,7 +35,7 @@ public class ChatHandler {
 
     public Mono<ServerResponse> getAllChats(ServerRequest request) {
         return ServerResponse.ok()
-                .contentType(APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(chatService.findAllChatsForCurrentUser(), Chat.class);
     }
 
@@ -58,13 +56,13 @@ public class ChatHandler {
 
     public Mono<ServerResponse> getNewChats(ServerRequest request) {
         return ServerResponse.ok()
-                .contentType(TEXT_EVENT_STREAM)
+                .contentType(MediaType.TEXT_EVENT_STREAM)
                 .body(chatService.streamNewChats(), Chat.class);
     }
 
     public Mono<ServerResponse> getNewMessages(ServerRequest request) {
         return ServerResponse.ok()
-                .contentType(TEXT_EVENT_STREAM)
+                .contentType(MediaType.TEXT_EVENT_STREAM)
                 .body(chatService.streamNewMessages(), Message.class);
     }
 
@@ -72,7 +70,7 @@ public class ChatHandler {
         String chatId = request.pathVariable("chatId");
 
         return ServerResponse.ok()
-                .contentType(APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(chatService.findAllMembers(chatId), User.class);
     }
 
@@ -98,7 +96,7 @@ public class ChatHandler {
         String chatId = request.pathVariable("chatId");
 
         return ServerResponse.ok()
-                .contentType(APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(messageService.findAllMessages(chatId), Message.class);
     }
 
@@ -108,7 +106,7 @@ public class ChatHandler {
         String chunk = request.queryParam("chunk").orElse("50");
 
         return ServerResponse.ok()
-                .contentType(APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(messageService.findAllMessagesPaginated(chatId, start, chunk), Message.class);
     }
 
