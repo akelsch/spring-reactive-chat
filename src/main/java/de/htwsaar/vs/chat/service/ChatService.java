@@ -66,7 +66,7 @@ public class ChatService {
 
         return mongoOperations
                 .changeStream("chats", options, Chat.class)
-                .map(ChangeStreamEvent::getBody)
+                .mapNotNull(ChangeStreamEvent::getBody)
                 .zipWith(SecurityUtils.getPrincipal())
                 .filter(tuple -> tuple.getT1().getMembers().contains(tuple.getT2().user()))
                 .map(Tuple2::getT1);
@@ -79,7 +79,7 @@ public class ChatService {
 
         return mongoOperations
                 .changeStream("messages", options, Message.class)
-                .map(ChangeStreamEvent::getBody)
+                .mapNotNull(ChangeStreamEvent::getBody)
                 .zipWith(findAllChatsForCurrentUser().collectList())
                 .filter(tuple -> tuple.getT2().contains(tuple.getT1().getChat()))
                 .map(Tuple2::getT1);
@@ -100,6 +100,7 @@ public class ChatService {
 
     @PreAuthorize("@webSecurity.hasChatAuthority(authentication, #chatId) or #userId == principal.id")
     public Mono<Void> deleteMember(String chatId, String userId) {
+        // TODO also remove chat authority for userId
         return chatRepository
                 .findById(chatId)
                 .filter(chat -> chat.getMembers().removeIf(member -> member.getId().equals(userId)))
