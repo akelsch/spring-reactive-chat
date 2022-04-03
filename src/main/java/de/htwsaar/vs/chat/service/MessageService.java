@@ -4,7 +4,7 @@ import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.Message;
 import de.htwsaar.vs.chat.repository.MessageRepository;
 import de.htwsaar.vs.chat.util.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -20,14 +20,10 @@ import reactor.core.publisher.Mono;
  * @see MessageRepository
  */
 @Service
+@RequiredArgsConstructor
 public class MessageService {
 
     private final MessageRepository messageRepository;
-
-    @Autowired
-    public MessageService(MessageRepository messageRepository) {
-        this.messageRepository = messageRepository;
-    }
 
     public Mono<Message> findById(String messageId) {
         return messageRepository.findById(messageId);

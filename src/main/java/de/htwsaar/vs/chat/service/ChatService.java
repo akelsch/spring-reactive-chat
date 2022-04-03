@@ -5,7 +5,7 @@ import de.htwsaar.vs.chat.model.Message;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.ChatRepository;
 import de.htwsaar.vs.chat.util.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.ChangeStreamEvent;
 import org.springframework.data.mongodb.core.ChangeStreamOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
@@ -32,16 +32,11 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
  * @see ChatRepository
  */
 @Service
+@RequiredArgsConstructor
 public class ChatService {
 
     private final ChatRepository chatRepository;
     private final ReactiveMongoOperations mongoOperations;
-
-    @Autowired
-    public ChatService(ChatRepository chatRepository, ReactiveMongoOperations mongoOperations) {
-        this.chatRepository = chatRepository;
-        this.mongoOperations = mongoOperations;
-    }
 
     public Flux<Chat> findAllChatsForCurrentUser() {
         return SecurityUtils.getPrincipal()

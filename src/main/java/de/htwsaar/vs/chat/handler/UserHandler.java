@@ -6,7 +6,7 @@ import de.htwsaar.vs.chat.model.user.RoleRequest;
 import de.htwsaar.vs.chat.model.user.StatusRequest;
 import de.htwsaar.vs.chat.router.UserRouter;
 import de.htwsaar.vs.chat.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,18 +34,12 @@ import java.util.function.Predicate;
  * @author Julian Quint
  */
 @Component
+@RequiredArgsConstructor
 public class UserHandler {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final Validator validator;
-
-    @Autowired
-    public UserHandler(UserService userService, PasswordEncoder passwordEncoder, Validator validator) {
-        this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
-        this.validator = validator;
-    }
 
     public Mono<ServerResponse> getAll(ServerRequest request) {
         MultiValueMap<String, String> queryParams = request.queryParams();

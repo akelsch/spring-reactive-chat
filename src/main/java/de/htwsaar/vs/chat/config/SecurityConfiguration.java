@@ -6,7 +6,7 @@ import de.htwsaar.vs.chat.auth.jwt.JwtAuthenticationSuccessHandler;
 import de.htwsaar.vs.chat.auth.jwt.JwtAuthorizationConverter;
 import de.htwsaar.vs.chat.auth.jwt.JwtAuthorizationManager;
 import de.htwsaar.vs.chat.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +35,7 @@ import java.util.List;
  */
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration {
 
     private static final String AUTH_SIGNUP_MATCHER = "/auth/signup";
@@ -48,11 +49,6 @@ public class SecurityConfiguration {
 
     @Value("${chat.cors.allowedOrigin:http://localhost:8080}")
     private String allowedOrigin;
-
-    @Autowired
-    public SecurityConfiguration(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Bean
     public ReactiveUserDetailsService userDetailsService() {

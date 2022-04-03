@@ -6,7 +6,7 @@ import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.router.ChatRouter;
 import de.htwsaar.vs.chat.service.ChatService;
 import de.htwsaar.vs.chat.service.MessageService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -22,16 +22,11 @@ import java.net.URI;
  * @author Julian Quint
  */
 @Component
+@RequiredArgsConstructor
 public class ChatHandler {
 
     private final ChatService chatService;
     private final MessageService messageService;
-
-    @Autowired
-    public ChatHandler(ChatService chatService, MessageService messageService) {
-        this.chatService = chatService;
-        this.messageService = messageService;
-    }
 
     public Mono<ServerResponse> getAllChats(ServerRequest request) {
         return ServerResponse.ok()

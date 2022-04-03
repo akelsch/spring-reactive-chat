@@ -7,8 +7,8 @@ import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.ChatRepository;
 import de.htwsaar.vs.chat.repository.MessageRepository;
 import de.htwsaar.vs.chat.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
@@ -22,6 +22,7 @@ import java.util.Set;
 
 @Component
 @Profile({"dev", "test"})
+@RequiredArgsConstructor
 @Slf4j
 public class DummyDataInitializer implements ApplicationListener<ApplicationReadyEvent> {
 
@@ -29,15 +30,6 @@ public class DummyDataInitializer implements ApplicationListener<ApplicationRead
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public DummyDataInitializer(UserRepository userRepository, ChatRepository chatRepository,
-                                MessageRepository messageRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.chatRepository = chatRepository;
-        this.messageRepository = messageRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
