@@ -1,6 +1,7 @@
 package de.htwsaar.vs.chat.service;
 
 import de.htwsaar.vs.chat.model.User;
+import de.htwsaar.vs.chat.model.user.PasswordRequest;
 import de.htwsaar.vs.chat.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,6 +63,7 @@ class UserServiceTests {
 
     @Test
     void updatePassword() {
+        given(passwordEncoder.matches("testpassword", "testpassword")).willReturn(true);
         given(passwordEncoder.encode(any())).willReturn("encoded");
         given(userRepository.save(any())).willAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
@@ -71,13 +73,17 @@ class UserServiceTests {
         user.setPassword("testpassword");
         user.addRole(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
+        PasswordRequest passwordRequest = new PasswordRequest();
+        passwordRequest.setOldPassword("testpassword");
+        passwordRequest.setNewPassword("newpassword");
+
         User expected = new User();
         expected.setId("42");
         expected.setUsername("testuser");
         expected.setPassword("encoded");
         expected.addRole(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
-        StepVerifier.create(userService.updatePassword(user))
+        StepVerifier.create(userService.updatePassword(user, passwordRequest))
                 .expectNext(expected)
                 .verifyComplete();
     }
