@@ -38,10 +38,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private static final String AUTH_SIGNUP_MATCHER = "/auth/signup";
-    private static final String AUTH_SIGNIN_MATCHER = "/auth/signin";
-    private static final String API_MATCHER = "/api/**";
-
     private final UserRepository userRepository;
 
     @Value("${chat.https.enabled:false}")
@@ -51,40 +47,24 @@ public class SecurityConfiguration {
     private String allowedOrigin;
 
     @Bean
-    public ReactiveUserDetailsService userDetailsService() {
-        return username -> userRepository
-                .findByUsername(username)
-                .map(UserPrincipal::new);
-    }
-
-    @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
                 .csrf().disable()
-                .cors()
-                .and()
-                .authorizeExchange()
-                .pathMatchers(AUTH_SIGNUP_MATCHER).permitAll()
-                .pathMatchers(AUTH_SIGNIN_MATCHER, API_MATCHER).authenticated()
-                .anyExchange().permitAll()
-                .and()
+                .cors().and()
+                .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers("/auth/signup").permitAll()
+                        .anyExchange().authenticated())
                 .addFilterAt(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
                 .addFilterAt(jwtAuthorizationFilter(), SecurityWebFiltersOrder.AUTHORIZATION);
 
         if (httpsEnabled) {
             http
-                    .redirectToHttps()
-                    .and()
-                    .headers()
-                    .hsts().includeSubdomains(false);
+                    .redirectToHttps().and()
+                    .headers(headers -> headers
+                            .hsts(hsts -> hsts.includeSubdomains(false)));
         }
 
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -101,6 +81,18 @@ public class SecurityConfiguration {
         return source;
     }
 
+    @Bean
+    public ReactiveUserDetailsService userDetailsService() {
+        return username -> userRepository
+                .findByUsername(username)
+                .map(UserPrincipal::new);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     private WebFilter jwtAuthenticationFilter() {
         var authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService());
         authenticationManager.setPasswordEncoder(passwordEncoder());
@@ -108,7 +100,7 @@ public class SecurityConfiguration {
         var jwtAuthenticationFilter = new AuthenticationWebFilter(authenticationManager);
         jwtAuthenticationFilter.setServerAuthenticationConverter(new JwtAuthenticationConverter());
         jwtAuthenticationFilter.setAuthenticationSuccessHandler(new JwtAuthenticationSuccessHandler());
-        jwtAuthenticationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers(AUTH_SIGNIN_MATCHER));
+        jwtAuthenticationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers("/auth/signin"));
 
         return jwtAuthenticationFilter;
     }
@@ -116,7 +108,7 @@ public class SecurityConfiguration {
     private WebFilter jwtAuthorizationFilter() {
         var jwtAuthorizationFilter = new AuthenticationWebFilter(new JwtAuthorizationManager(userDetailsService()));
         jwtAuthorizationFilter.setServerAuthenticationConverter(new JwtAuthorizationConverter());
-        jwtAuthorizationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers(API_MATCHER));
+        jwtAuthorizationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.anyExchange());
 
         return jwtAuthorizationFilter;
     }

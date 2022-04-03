@@ -21,11 +21,7 @@ import reactor.core.publisher.Mono;
  */
 public class JwtAuthenticationConverter implements ServerAuthenticationConverter {
 
-    private final Decoder<?> decoder;
-
-    public JwtAuthenticationConverter() {
-        decoder = new Jackson2JsonDecoder();
-    }
+    private final Decoder<?> decoder = new Jackson2JsonDecoder();
 
     @Override
     public Mono<Authentication> convert(ServerWebExchange exchange) {

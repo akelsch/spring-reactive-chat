@@ -22,7 +22,7 @@ public class JwtAuthorizationManager implements ReactiveAuthenticationManager {
 
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
-        final String username = authentication.getName();
+        String username = authentication.getName();
 
         return userDetailsService
                 .findByUsername(username)
