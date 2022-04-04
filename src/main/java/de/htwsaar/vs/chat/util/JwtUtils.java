@@ -45,13 +45,10 @@ public final class JwtUtils {
                 .sign(ALGORITHM);
     }
 
-    public static String wrapBearerToken(String token) {
-        return "Bearer %s".formatted(token);
-    }
-
     public static String unwrapBearerToken(String bearerToken) {
-        if (bearerToken.toLowerCase().startsWith("bearer ")) {
-            return bearerToken.substring("bearer ".length());
+        String bearerPrefix = "bearer ";
+        if (bearerToken.toLowerCase().startsWith(bearerPrefix)) {
+            return bearerToken.substring(bearerPrefix.length());
         }
 
         return null;

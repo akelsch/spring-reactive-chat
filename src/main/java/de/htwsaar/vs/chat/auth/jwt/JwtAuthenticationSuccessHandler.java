@@ -1,7 +1,6 @@
 package de.htwsaar.vs.chat.auth.jwt;
 
 import de.htwsaar.vs.chat.util.JwtUtils;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.server.WebFilterExchange;
 import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler;
@@ -20,7 +19,7 @@ public class JwtAuthenticationSuccessHandler implements ServerAuthenticationSucc
         ServerWebExchange exchange = webFilterExchange.getExchange();
 
         String token = JwtUtils.createToken(authentication);
-        exchange.getResponse().getHeaders().add(HttpHeaders.AUTHORIZATION, JwtUtils.wrapBearerToken(token));
+        exchange.getResponse().getHeaders().setBearerAuth(token);
 
         return webFilterExchange.getChain().filter(exchange);
     }
