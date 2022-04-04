@@ -37,7 +37,7 @@ gradlew bootRun --args='--spring.profiles.active=dev'
 
 ## Using MongoDB
 
-The project makes use of [MongoDB Change Streams](https://www.mongodb.com/docs/manual/changeStreams/) to stream new chat messages via a Server-Sent Events (SSE) endpoint.
+The project makes use of [MongoDB Change Streams](https://www.mongodb.com/docs/manual/changeStreams/) to stream new chats and chat messages via Server-Sent Events (SSE) endpoints based on the `text/event-stream` media type.
 
 > Change Stream support is only possible for replica sets or for a sharded cluster.
 >
