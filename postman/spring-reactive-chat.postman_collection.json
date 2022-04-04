@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "d59b2faf-3fc1-40bc-b38f-f589d0e36e69",
+		"_postman_id": "5ae90bfe-7860-48f9-ab85-03758322c608",
 		"name": "spring-reactive-chat",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -45,7 +45,8 @@
 									"pm.test(\"Header contains Authorization\", function () {\r",
 									"    pm.expect(pm.response.headers.has(\"Authorization\")).to.be.true;\r",
 									"    const authHeader = pm.response.headers.get(\"Authorization\");\r",
-									"    pm.collectionVariables.set(\"jwt\", authHeader.replace(\"Bearer \", \"\"))\r",
+									"    pm.collectionVariables.set(\"jwt_bearer\", authHeader);\r",
+									"    pm.collectionVariables.set(\"jwt\", authHeader.replace(\"Bearer \", \"\"));\r",
 									"});\r",
 									""
 								],
@@ -365,6 +366,99 @@
 					"name": "Chats",
 					"item": [
 						{
+							"name": "Stream",
+							"item": [
+								{
+									"name": "Stream New Chats",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "text/event-stream",
+												"type": "default"
+											}
+										],
+										"url": {
+											"raw": "{{host}}/api/v1/chats/stream?token={{jwt_bearer}}",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"chats",
+												"stream"
+											],
+											"query": [
+												{
+													"key": "token",
+													"value": "{{jwt_bearer}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Stream New Messages",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "text/event-stream",
+												"type": "default"
+											}
+										],
+										"url": {
+											"raw": "{{host}}/api/v1/chats/messages/stream?token={{jwt_bearer}}",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"chats",
+												"messages",
+												"stream"
+											],
+											"query": [
+												{
+													"key": "token",
+													"value": "{{jwt_bearer}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"auth": {
+								"type": "noauth"
+							},
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							]
+						},
+						{
 							"name": "Get All Chats",
 							"request": {
 								"method": "GET",
@@ -426,47 +520,6 @@
 										"v1",
 										"chats",
 										"6246137d34bbe075319ac6eb"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Stream New Chats",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{host}}/api/v1/chats/stream",
-									"host": [
-										"{{host}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"chats",
-										"stream"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Stream New Messages",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{host}}/api/v1/chats/messages/stream",
-									"host": [
-										"{{host}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"chats",
-										"messages",
-										"stream"
 									]
 								}
 							},
@@ -720,6 +773,10 @@
 			"key": "host",
 			"value": "http://localhost:8088",
 			"type": "default"
+		},
+		{
+			"key": "jwt_bearer",
+			"value": ""
 		},
 		{
 			"key": "jwt",
