@@ -1,12 +1,12 @@
 package de.htwsaar.vs.chat.event;
 
-import de.htwsaar.vs.chat.auth.ChatAuthority;
 import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.Message;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.ChatRepository;
 import de.htwsaar.vs.chat.repository.MessageRepository;
 import de.htwsaar.vs.chat.repository.UserRepository;
+import de.htwsaar.vs.chat.security.ChatAuthority;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;

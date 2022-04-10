@@ -1,7 +1,7 @@
 package de.htwsaar.vs.chat.util;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
-import de.htwsaar.vs.chat.auth.UserPrincipal;
+import de.htwsaar.vs.chat.security.UserPrincipal;
 import lombok.experimental.UtilityClass;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;

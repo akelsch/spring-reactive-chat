@@ -43,7 +43,7 @@ public class ChatService {
                 .flatMapMany(principal -> chatRepository.findAllByMembers(principal.getId()));
     }
 
-    @PostAuthorize("@webSecurity.addChatAuthority(authentication, #chat)")
+    @PostAuthorize("@webSecurity.addChatAuthority(authentication, #chat.id)")
     public Mono<Chat> saveChat(Chat chat) {
         Set<User> members = Objects.requireNonNullElseGet(chat.getMembers(), HashSet::new);
 

@@ -1,4 +1,4 @@
-package de.htwsaar.vs.chat.auth;
+package de.htwsaar.vs.chat.security;
 
 import de.htwsaar.vs.chat.model.User;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,8 +1,8 @@
 package de.htwsaar.vs.chat.config;
 
-import de.htwsaar.vs.chat.auth.UserPrincipal;
-import de.htwsaar.vs.chat.config.authentication.SigninAuthenticationWebFilter;
 import de.htwsaar.vs.chat.repository.UserRepository;
+import de.htwsaar.vs.chat.security.UserPrincipal;
+import de.htwsaar.vs.chat.security.authentication.SigninAuthenticationWebFilter;
 import de.htwsaar.vs.chat.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

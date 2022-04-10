@@ -1,4 +1,4 @@
-package de.htwsaar.vs.chat.config.authentication;
+package de.htwsaar.vs.chat.security.authentication;
 
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;

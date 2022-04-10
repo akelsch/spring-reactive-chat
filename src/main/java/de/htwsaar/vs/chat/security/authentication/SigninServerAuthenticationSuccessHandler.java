@@ -1,4 +1,4 @@
-package de.htwsaar.vs.chat.config.authentication;
+package de.htwsaar.vs.chat.security.authentication;
 
 import de.htwsaar.vs.chat.util.JwtUtils;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;

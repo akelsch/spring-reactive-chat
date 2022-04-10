@@ -1,6 +1,5 @@
-package de.htwsaar.vs.chat.auth;
+package de.htwsaar.vs.chat.security;
 
-import de.htwsaar.vs.chat.model.Chat;
 import de.htwsaar.vs.chat.model.Message;
 import de.htwsaar.vs.chat.model.User;
 import de.htwsaar.vs.chat.repository.UserRepository;
@@ -24,18 +23,19 @@ public class WebSecurity {
 
     private final UserRepository userRepository;
 
-    public boolean hasChatAuthority(Authentication authentication, String chatId) {
-        return authentication.getAuthorities().contains(new ChatAuthority(chatId));
-    }
-
-    public boolean addChatAuthority(Authentication authentication, Chat chat) {
+    /* CHAT */
+    public boolean addChatAuthority(Authentication authentication, String chatId) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         User user = userPrincipal.user();
 
-        user.addAuthority(new ChatAuthority(chat.getId()));
+        user.addAuthority(new ChatAuthority(chatId));
         userRepository.save(user).subscribe();
 
         return true;
+    }
+
+    public boolean hasChatAuthority(Authentication authentication, String chatId) {
+        return authentication.getAuthorities().contains(new ChatAuthority(chatId));
     }
 
     public boolean removeChatAuthority(Authentication authentication, String chatId) {
@@ -49,6 +49,7 @@ public class WebSecurity {
         return true;
     }
 
+    /* MESSAGE */
     public boolean isMessageSender(Authentication authentication, Message message) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         User user = userPrincipal.user();
