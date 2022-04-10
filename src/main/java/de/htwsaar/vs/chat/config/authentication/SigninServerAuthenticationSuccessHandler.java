@@ -1,6 +1,7 @@
-package de.htwsaar.vs.chat.auth.jwt;
+package de.htwsaar.vs.chat.config.authentication;
 
 import de.htwsaar.vs.chat.util.JwtUtils;
+import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.server.WebFilterExchange;
 import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler;
@@ -8,11 +9,13 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 /**
- * Adds an Authorization HTTP header with a token to the response.
+ * Adds an Authorization HTTP header containing a Bearer token to the response
+ * once {@link UserDetailsRepositoryReactiveAuthenticationManager} was able to
+ * successfully authenticate the user in the database.
  *
  * @author Arthur Kelsch
  */
-public class JwtAuthenticationSuccessHandler implements ServerAuthenticationSuccessHandler {
+class SigninServerAuthenticationSuccessHandler implements ServerAuthenticationSuccessHandler {
 
     @Override
     public Mono<Void> onAuthenticationSuccess(WebFilterExchange webFilterExchange, Authentication authentication) {

@@ -1,4 +1,4 @@
-package de.htwsaar.vs.chat.auth.jwt;
+package de.htwsaar.vs.chat.config.authentication;
 
 import de.htwsaar.vs.chat.model.User;
 import org.springframework.core.ResolvableType;
@@ -7,6 +7,7 @@ import org.springframework.core.codec.Hints;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
@@ -16,11 +17,13 @@ import reactor.core.publisher.Mono;
 import java.util.Objects;
 
 /**
- * Converts a JSON payload from a request into an {@link Authentication} object.
+ * Converts the JSON payload of an incoming HTTP request containing username and
+ * password to a proper {@link Authentication} object that can be consumed by
+ * {@link UserDetailsRepositoryReactiveAuthenticationManager}.
  *
  * @author Arthur Kelsch
  */
-public class JwtAuthenticationConverter implements ServerAuthenticationConverter {
+class SigninServerAuthenticationConverter implements ServerAuthenticationConverter {
 
     private final Decoder<?> decoder = new Jackson2JsonDecoder();
 

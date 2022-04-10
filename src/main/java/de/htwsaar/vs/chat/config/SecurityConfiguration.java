@@ -1,8 +1,7 @@
 package de.htwsaar.vs.chat.config;
 
 import de.htwsaar.vs.chat.auth.UserPrincipal;
-import de.htwsaar.vs.chat.auth.jwt.JwtAuthenticationConverter;
-import de.htwsaar.vs.chat.auth.jwt.JwtAuthenticationSuccessHandler;
+import de.htwsaar.vs.chat.config.authentication.SigninAuthenticationWebFilter;
 import de.htwsaar.vs.chat.repository.UserRepository;
 import de.htwsaar.vs.chat.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.web.server.ServerBearerTokenAuthenticationConverter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
-import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
@@ -55,7 +52,7 @@ public class SecurityConfiguration {
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/auth/signup").permitAll()
                         .anyExchange().authenticated())
-                .addFilterAt(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
+                .addFilterAt(signinAuthenticationWebFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .bearerTokenConverter(bearerTokenConverter())
                         .jwt(jwt -> jwt.jwtDecoder(JwtUtils.createJwtDecoder())));
@@ -96,16 +93,11 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    private WebFilter jwtAuthenticationFilter() {
+    private WebFilter signinAuthenticationWebFilter() {
         var authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService());
         authenticationManager.setPasswordEncoder(passwordEncoder());
 
-        var jwtAuthenticationFilter = new AuthenticationWebFilter(authenticationManager);
-        jwtAuthenticationFilter.setServerAuthenticationConverter(new JwtAuthenticationConverter());
-        jwtAuthenticationFilter.setAuthenticationSuccessHandler(new JwtAuthenticationSuccessHandler());
-        jwtAuthenticationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers("/auth/signin"));
-
-        return jwtAuthenticationFilter;
+        return new SigninAuthenticationWebFilter(authenticationManager);
     }
 
     private ServerAuthenticationConverter bearerTokenConverter() {
