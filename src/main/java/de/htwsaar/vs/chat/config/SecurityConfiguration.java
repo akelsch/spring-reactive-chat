@@ -3,9 +3,8 @@ package de.htwsaar.vs.chat.config;
 import de.htwsaar.vs.chat.auth.UserPrincipal;
 import de.htwsaar.vs.chat.auth.jwt.JwtAuthenticationConverter;
 import de.htwsaar.vs.chat.auth.jwt.JwtAuthenticationSuccessHandler;
-import de.htwsaar.vs.chat.auth.jwt.JwtAuthorizationConverter;
-import de.htwsaar.vs.chat.auth.jwt.JwtAuthorizationManager;
 import de.htwsaar.vs.chat.repository.UserRepository;
+import de.htwsaar.vs.chat.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -18,8 +17,10 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.web.server.ServerBearerTokenAuthenticationConverter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
+import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
@@ -55,7 +56,9 @@ public class SecurityConfiguration {
                         .pathMatchers("/auth/signup").permitAll()
                         .anyExchange().authenticated())
                 .addFilterAt(jwtAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
-                .addFilterAt(jwtAuthorizationFilter(), SecurityWebFiltersOrder.AUTHORIZATION);
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .bearerTokenConverter(bearerTokenConverter())
+                        .jwt(jwt -> jwt.jwtDecoder(JwtUtils.createJwtDecoder())));
 
         if (httpsEnabled) {
             http
@@ -105,11 +108,10 @@ public class SecurityConfiguration {
         return jwtAuthenticationFilter;
     }
 
-    private WebFilter jwtAuthorizationFilter() {
-        var jwtAuthorizationFilter = new AuthenticationWebFilter(new JwtAuthorizationManager(userDetailsService()));
-        jwtAuthorizationFilter.setServerAuthenticationConverter(new JwtAuthorizationConverter());
-        jwtAuthorizationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.anyExchange());
-
-        return jwtAuthorizationFilter;
+    private ServerAuthenticationConverter bearerTokenConverter() {
+        ServerBearerTokenAuthenticationConverter bearerTokenConverter = new ServerBearerTokenAuthenticationConverter();
+        bearerTokenConverter.setAllowUriQueryParameter(true);
+        // TODO ensure compatibility with previously used "token" query parameter
+        return bearerTokenConverter;
     }
 }

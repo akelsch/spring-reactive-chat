@@ -29,6 +29,6 @@ public class SecurityUtils {
         return ReactiveSecurityContextHolder.getContext()
                 .map(SecurityContext::getAuthentication)
                 .map(Authentication::getPrincipal)
-                .cast(UserPrincipal.class);
+                .cast(UserPrincipal.class); // TODO org.springframework.security.oauth2.jwt.Jwt
     }
 }
